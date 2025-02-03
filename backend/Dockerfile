@@ -1,11 +1,13 @@
-FROM golang:1.20 AS builder
+FROM golang:1.23 AS builder
+
 WORKDIR /app
 COPY go.mod go.sum ./
-RUN go mod tidy
-COPY . .
-RUN go build -o main .
 
-FROM alpine:latest
-WORKDIR /root/
-COPY --from=builder /app/main .
-CMD ["./main"]
+# Verify the module files are copied correctly
+RUN ls -la
+
+RUN go mod tidy -v
+
+COPY . .
+
+RUN go build -o /app/backend .

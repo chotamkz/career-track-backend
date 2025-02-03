@@ -1,3 +1,3 @@
 module github.com/chotamkz/career-track-backend
 
-go 1.23.0
+go 1.23
