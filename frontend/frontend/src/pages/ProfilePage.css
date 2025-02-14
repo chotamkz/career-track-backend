@@ -1,0 +1,127 @@
+.ProfilePage{
+    text-align: center;
+    height: 100%;
+}
+
+body{
+    min-height: 100vh;
+    display: flex;  
+    flex-direction: column;
+}
+
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .profile-container {
+    width: 400px;
+    margin-top: 200px;
+    margin-left: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 70px;
+  }
+    
+  .card {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 750px;
+    height: 200px;
+  }
+  
+  .profile-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+  }
+  
+  .profile-info {
+    flex: 1;
+  }
+  
+  .profile-name {
+    font-size: 25px;
+    font-weight: bold;
+    width: 200px;
+    position: relative;
+    left: 14px;
+  }
+  
+  .profile-city {
+    color: gray;
+    width: 100px;
+    position: relative;
+  }
+  
+  .edit-button {
+    background: #f5f2f2;
+    color: black;
+    border: none;
+    padding: 15px 50px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    position: relative;
+    right: 26%;
+    transition: background-color 0.3s ease
+  }
+
+  .edit-button:hover{
+    background-color: rgb(235, 235, 235);
+  }
+  
+  .profile-avatar {
+    width: 200px;
+    height: 200px;
+    background: lightgray;
+    border-radius: 8px;
+  }
+  
+  /* Resume Upload Card */
+  .resume-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .upload-text {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .file-formats {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .file-box, .size-box {
+    background: gray;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  #sizebox{
+    background: white;
+    color: black;
+    border: solid gray 1px;
+  }
+
+  /* Other Cards */
+  .history-card h3,
+  .recommendations-card h3 {
+    margin: 0;
+  }
+
+  .ProfilePage .footer{
+    margin-top: 600px;
+  }

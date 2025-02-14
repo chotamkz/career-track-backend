@@ -1,0 +1,20 @@
+.App {
+    text-align: center;
+    height: 100%;
+  }
+  
+  .Welcome-Text{
+  position: absolute;
+  top: 200px;
+  left: 35%;
+  line-break: strict;
+  width: 30%;
+  }
+  
+  #Vacancies{
+    position: absolute;
+    top: 450px;
+    left: 8%;
+    font-size: 40px;
+  }
+  

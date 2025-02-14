@@ -1,0 +1,123 @@
+.filter-box {
+    position: absolute;
+    top: 50px;
+    right: 332px;
+    width: 500px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 2;
+}
+
+.filter-item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: black;
+    position: relative;
+}
+
+.filter-item label {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.filter-item input,
+.filter-item select {
+    width: 60%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.filter-item input::placeholder {
+    color: #ABB7C2;
+}
+
+.select-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 38.2%;
+    transform: translateY(-50%);
+    color: #ABB7C2;
+    pointer-events: none;
+    font-size: 15px;
+}
+
+select { 
+    appearance: none;/* Remove default styles */
+    background-color: transparent;
+    color: black;
+    padding: 8px 12px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+select.placeholder {
+    color: transparent; /* Hide the default text so only the placeholder appears */
+}
+
+.optionVacancy{
+    color: black;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+    margin-right: 34%;
+    flex-wrap: wrap;
+}
+
+.radio-group label {
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+
+}
+
+.radio-group input {
+    margin-right: 8px;
+    width: 10px;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.filter-actions button {
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+
+.apply-btn {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.apply-btn:hover {
+    background-color: #0056b3;
+}
+
+#select{
+    width: 63.5%;
+}
+
+#radioGroup2{
+    position: relative;
+    left: 10.5px;
+}
