@@ -1,41 +1,72 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"github.com/chotamkz/career-track-backend/internal/config"
 	"github.com/chotamkz/career-track-backend/internal/db"
+	httpDelivery "github.com/chotamkz/career-track-backend/internal/transport/http"
 	"github.com/chotamkz/career-track-backend/internal/util"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Не удалось загрузить .env файл")
+	if err := godotenv.Load(".env"); err != nil {
+		log.Println("WARNING: .env file not found; using system environment variables")
 	}
+
 	cfg := config.LoadConfig()
 
 	logger := util.NewLogger(cfg.LogLevel)
+	logger.Info("Configuration loaded successfully")
 
 	dbConn, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
-		logger.Fatalf("Не удалось подключиться к базе данных: %v", err)
+		logger.Fatalf("Failed to open DB connection: %v", err)
 	}
 	defer dbConn.Close()
 
-	if err = dbConn.Ping(); err != nil {
-		logger.Fatalf("Не удалось подключиться к базе данных: %v", err)
+	dbConn.SetConnMaxLifetime(3 * time.Minute)
+	dbConn.SetMaxOpenConns(10)
+	dbConn.SetMaxIdleConns(10)
+
+	if err := dbConn.Ping(); err != nil {
+		logger.Fatalf("Failed to ping DB: %v", err)
 	}
-	logger.Info("Успешное подключение к базе данных")
+	logger.Info("Successfully connected to the database")
 
 	migrationFile := "migrations/0001_create_tables.sql"
 	if err := db.Migrate(dbConn, migrationFile); err != nil {
-		logger.Fatalf("Ошибка миграции базы данных: %v", err)
+		logger.Fatalf("Database migration failed: %v", err)
 	}
-	logger.Info("Миграция базы данных успешно завершена")
+	logger.Info("Database migration completed successfully")
 
-	logger.Info("Сервер готов к запуску")
+	server := httpDelivery.NewServer(cfg, dbConn, logger)
+
+	go func() {
+		logger.Info("HTTP server is starting on " + cfg.ServerAddress)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+	logger.Info("Shutdown signal received; shutting down HTTP server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		logger.Errorf("HTTP server shutdown error: %v", err)
+	}
+	logger.Info("HTTP server shut down gracefully")
 }

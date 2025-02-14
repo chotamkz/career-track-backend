@@ -6,19 +6,23 @@ import (
 )
 
 type Config struct {
-	DatabaseURL string
-	LogLevel    string
+	DatabaseURL   string
+	ServerAddress string
+	LogLevel      string
 }
 
 func LoadConfig() *Config {
-	databaseURL := os.Getenv("DATABASE_URL")
+	databaseURL := getEnv("DATABASE_URL", "")
 	if databaseURL == "" {
-		log.Fatal("Переменная окружения DATABASE_URL не задана")
+		log.Fatal("DATABASE_URL environment variable is not set")
 	}
+	serverAddress := getEnv("SERVER_ADDRESS", ":8080")
+	logLevel := getEnv("LOG_LEVEL", "INFO")
 
 	return &Config{
-		DatabaseURL: databaseURL,
-		LogLevel:    getEnv("LOG_LEVEL", "INFO"),
+		DatabaseURL:   databaseURL,
+		ServerAddress: serverAddress,
+		LogLevel:      logLevel,
 	}
 }
 
