@@ -1,8 +1,9 @@
 import React from "react";
 import "./VacancyPage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
-import VacancyComponent from "../VacancyContainer/VacancyComponent";
 import FooterComp from "../Footer/FooterComp";
+import SearchBar from "../SearchBar/SearchBar";
+import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
 
 
 function VacancyPage() {
@@ -12,8 +13,12 @@ function VacancyPage() {
           <NavigationBar />
             </div>
 
-          <div className="VacancySearching">
-          <VacancyComponent />
+          <div className="SearchBar">
+          <SearchBar />
+          </div>
+          
+          <div className="VacancyDisplay">
+          <VacancyDisplay />
           </div>
 
           <div className="FooterSection">

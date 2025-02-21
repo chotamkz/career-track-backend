@@ -36,7 +36,7 @@ const FooterComp = () => {
       </div>
       <hr />
       <div className="footer-bottom">
-        <p>Terms of use</p>
+        <p>Terms of Use</p>
         <p>Privacy Statement</p>
         <p id="rights">@2025  All Rights Reserved. </p>
       </div>

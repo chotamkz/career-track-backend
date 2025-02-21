@@ -59,7 +59,7 @@ select {
 }
 
 select.placeholder {
-    color: transparent; /* Hide the default text so only the placeholder appears */
+    color: transparent;
 }
 
 .optionVacancy{

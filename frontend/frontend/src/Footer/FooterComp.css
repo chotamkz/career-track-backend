@@ -78,7 +78,7 @@
     border-top: 1px solid #d1d1d1;
     padding-top: 10px;
     margin-top: 20px;
-    gap: 20px;
+    gap: 40px;
   }
   
   .footer-bottom a {
@@ -90,8 +90,13 @@
   .footer-bottom a:hover {
     text-decoration: underline;
   }
+
+  .footer-bottom p{
+    font-weight: bold;
+  }
   
   #rights{
     position: absolute;
     left: 74.33%;
+    font-weight: bold;
   }
