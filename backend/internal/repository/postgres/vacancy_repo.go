@@ -27,7 +27,7 @@ func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
 		var v model.Vacancy
 		err := rows.Scan(
 			&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Conditions,
-			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.UpdatedAt,
+			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL,
 		)
 		if err != nil {
 			return nil, err

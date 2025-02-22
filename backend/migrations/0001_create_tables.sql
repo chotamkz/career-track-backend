@@ -37,7 +37,11 @@ CREATE TABLE IF NOT EXISTS vacancies (
                                          posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          employer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    salary_from NUMERIC,
+    salary_to NUMERIC,
+    salary_currency TEXT,
+    salary_gross BOOLEAN,
+    vacancy_url TEXT
     );
 
 CREATE TABLE IF NOT EXISTS applications (

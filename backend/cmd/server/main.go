@@ -49,6 +49,15 @@ func main() {
 	}
 	logger.Info("Database migration completed successfully")
 
+	///import csv
+	/*		err = delivery.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
+			if err != nil {
+				log.Fatalf("CSV import failed: %v", err)
+			}
+
+			log.Println("CSV import completed successfully.")*/
+	////
+
 	server := httpDelivery.NewServer(cfg, dbConn, logger)
 
 	go func() {
