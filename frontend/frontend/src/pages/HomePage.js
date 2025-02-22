@@ -11,6 +11,9 @@ function HomePage() {
           <div className="Navbar">
           <NavigationBar />
             </div>
+            <div className="handsImg">
+              <img src="/hands.png" alt="handsPNG"></img>
+            </div>
           <div className="Welcome-Text">
           <h1> Платформа для поиска стажировок и работы для студента
           </h1>

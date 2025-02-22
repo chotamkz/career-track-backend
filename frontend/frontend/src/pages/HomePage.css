@@ -18,3 +18,11 @@
     font-size: 40px;
   }
   
+ .handsImg img{
+  position: relative;
+  top: 600px;
+  }
+
+  .FooterSection .footer{
+    margin-top: 400px;
+  }
