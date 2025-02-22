@@ -12,7 +12,7 @@ function VacancyDisplay() {
   useEffect(() => {
     const fetchVacancy = async () => {
       try {
-        const response = await fetch(`/api/vacancies/${id}`);
+        const response = await fetch(`/api/v1/vacancies/${id}`);
         if (!response.ok) throw new Error("Ошибка загрузки вакансии");
         const data = await response.json();
         setVacancy(data);
@@ -22,7 +22,7 @@ function VacancyDisplay() {
         setLoading(false);
       }
     };     
-    
+
     fetchVacancy();
   }, [id]);
 
