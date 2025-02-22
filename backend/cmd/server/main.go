@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"github.com/chotamkz/career-track-backend/internal/config"
-	"github.com/chotamkz/career-track-backend/internal/db"
 	httpDelivery "github.com/chotamkz/career-track-backend/internal/transport/http"
 	"github.com/chotamkz/career-track-backend/internal/util"
 	"log"
@@ -43,11 +42,11 @@ func main() {
 	}
 	logger.Info("Successfully connected to the database")
 
-	migrationFile := "migrations/0001_create_tables.sql"
-	if err := db.Migrate(dbConn, migrationFile); err != nil {
-		logger.Fatalf("Database migration failed: %v", err)
-	}
-	logger.Info("Database migration completed successfully")
+	//migrationFile := "./migrations/0001_create_tables.sql"
+	//if err := db.Migrate(dbConn, migrationFile); err != nil {
+	//	logger.Fatalf("Database migration failed: %v", err)
+	//}
+	//logger.Info("Database migration completed successfully")
 
 	///import csv
 	/*		err = delivery.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)

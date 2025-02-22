@@ -2,8 +2,11 @@ version: "3.8"
 
 services:
   backend:
-    build:
-      context: ./backend
+    image: career-track-backend
+    environment:
+      - DATABASE_URL=postgresql://careertrack_4xw8_user:6lnnX26z4Uo7ZC8k0ORenIn8WWLdKfMG@dpg-cussi0jqf0us739oh6og-a.oregon-postgres.render.com/careertrack_4xw8
+      - SERVER_ADDRESS=:8080
+      - LOG_LEVEL=INFO
     ports:
       - "8080:8080"
     depends_on:

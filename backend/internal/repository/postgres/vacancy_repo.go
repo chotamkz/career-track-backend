@@ -15,7 +15,7 @@ func NewVacancyRepo(db *sql.DB) repository.VacancyRepository {
 }
 
 func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
-	query := `SELECT id, title, description, requirements, conditions, location, posted_date, employer_id, created_at, updated_at FROM vacancies`
+	query := `SELECT id, title, description, requirements, conditions, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url  FROM vacancies`
 	rows, err := vr.DB.Query(query)
 	if err != nil {
 		return nil, err
