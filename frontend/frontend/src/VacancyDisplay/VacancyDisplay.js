@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import "./VacancyDisplay.css";
 
 function VacancyDisplay() {
-  const { id } = useParams();
-  const [vacancy, setVacancy] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [specialty, setSpecialty] = useState("");
-
-  useEffect(() => {
-    const fetchVacancy = async () => {
-      try {
-        const response = await fetch(`/api/v1/vacancies/${id}`);
-        if (!response.ok) throw new Error("Ошибка загрузки вакансии");
-        const data = await response.json();
-        setVacancy(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };     
-
-    fetchVacancy();
-  }, [id]);
+    const [vacancy, setVacancies] = useState([]); // Store multiple vacancies
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [specialty, setSpecialty] = useState("");
+  
+    useEffect(() => {
+      const fetchVacancies = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/v1/vacancies");
+          if (!response.ok) throw new Error("Ошибка загрузки вакансий");
+          const data = await response.json();
+          setVacancies(data); // Store the array of vacancies
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchVacancies();
+    }, []); // ✅ Remove `id` from dependencies since it's not needed
+  
+    if (loading) return <p>Загрузка...</p>;
+    if (error) return <p>Ошибка: {error}</p>;
+  
 
   if (loading) return <p>Загрузка вакансии...</p>;
   if (error) return <p>Ошибка: {error}</p>;
