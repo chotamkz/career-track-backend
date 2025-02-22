@@ -49,7 +49,7 @@ func main() {
 	//logger.Info("Database migration completed successfully")
 
 	///import csv
-	/*		err = delivery.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
+	/*		err = transport.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
 			if err != nil {
 				log.Fatalf("CSV import failed: %v", err)
 			}
