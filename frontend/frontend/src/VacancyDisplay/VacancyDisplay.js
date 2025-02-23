@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import "./VacancyDisplay.css";
 
 function VacancyDisplay() {
-  const [vacancies, setVacancies] = useState([]); // ✅ Используем множественное число
+  const [vacancies, setVacancies] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [specialty, setSpecialty] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const vacanciesPerPage = 5; 
 
   useEffect(() => {
     const fetchVacancies = async () => {
@@ -13,7 +15,7 @@ function VacancyDisplay() {
         const response = await fetch("http://localhost:8080/api/v1/vacancies");
         if (!response.ok) throw new Error("Ошибка загрузки вакансий");
         const data = await response.json();
-        setVacancies(data); // ✅ Сохраняем массив вакансий
+        setVacancies(data); 
       } catch (err) {
         setError(err.message);
       } finally {
@@ -24,8 +26,19 @@ function VacancyDisplay() {
     fetchVacancies();
   }, []);
 
-  if (loading) return <p>Загрузка...</p>;
-  if (error) return <p>Ошибка: {error}</p>;
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  if (loading) return <p id="loadingErr">Загрузка...</p>;
+  if (error) return <p id="resultErr">Ошибка: {error}</p>;
+
+  const indexOfLastVacancy = currentPage * vacanciesPerPage;
+  const indexOfFirstVacancy = indexOfLastVacancy - vacanciesPerPage;
+  const currentVacancies = vacancies.slice(indexOfFirstVacancy, indexOfLastVacancy);
+
+  const totalPages = Math.ceil(vacancies.length / vacanciesPerPage);
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
 
   return (
     <div className="vacancy-display">
@@ -33,17 +46,17 @@ function VacancyDisplay() {
         <h3>Ключевые слова</h3>
         <input type="text" placeholder="Профессия или должность" />
         <label>
-          <input type="checkbox" /> В названии вакансии
+          <input id="CheckboxkeyWords" type="checkbox" /> В названии вакансии
         </label>
         <label>
-          <input type="checkbox" /> В названии компании
+          <input id="CheckboxkeyWords" type="checkbox" /> В названии компании
         </label>
         <label>
-          <input type="checkbox" /> В названии описания
+          <input id="CheckboxkeyWords" type="checkbox" /> В названии описания
         </label>
 
         <h3>Тип работы</h3>
-        <select
+        <select id="selectType"
           value={specialty}
           onChange={(e) => setSpecialty(e.target.value)}
           className={!specialty ? "placeholder" : ""}
@@ -59,19 +72,18 @@ function VacancyDisplay() {
 
         <h3>Локация</h3>
         <label>
-          <input type="checkbox" /> Алматы
+          <input id="locationCheckbox" type="checkbox" /> Алматы
         </label>
         <label>
-          <input type="checkbox" /> Астана
+          <input id="locationCheckbox" type="checkbox" /> Астана
         </label>
         <label>
-          <input type="checkbox" /> Караганда
+          <input id="locationCheckbox" type="checkbox" /> Караганда
         </label>
       </div>
 
-      {/* ✅ Используем map() для отображения всех вакансий */}
       <div className="vacancies-list">
-        {vacancies.map((vacancy) => (
+      {currentVacancies.map((vacancy) => (
           <div key={vacancy.id} className="vacancy-card">
             <h2>{vacancy.title}</h2>
             <p id="vacancy-salary">
@@ -91,10 +103,38 @@ function VacancyDisplay() {
           </div>
         ))}
       </div>
-    </div>
+    <div className="pagination-container">
+        <div className="pagination">
+            <button 
+            className="pagination-btn" 
+            onClick={() => setCurrentPage(currentPage - 1)} 
+            disabled={currentPage === 1}
+            >
+            &lt;
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+                key={page}
+                onClick={() => paginate(page)}
+                className={`pagination-btn ${currentPage === page ? "active" : ""}`}
+            >
+                {page}
+            </button>
+            ))}
+
+            <button 
+            className="pagination-btn" 
+            onClick={() => setCurrentPage(currentPage + 1)} 
+            disabled={currentPage === totalPages}
+            >
+            &gt;
+            </button>
+         </div>
+     </div>
+</div>
   );
 }
-
 export default VacancyDisplay;
 
 // import React, { useState, useEffect } from "react";
