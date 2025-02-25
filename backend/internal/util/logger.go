@@ -1,7 +1,6 @@
 package util
 
 import (
-	_ "fmt"
 	"log"
 	"os"
 	"strings"
@@ -25,10 +24,30 @@ func (l *Logger) Info(msg string) {
 	}
 }
 
+func (l *Logger) Infof(format string, args ...interface{}) {
+	if l.level == "DEBUG" || l.level == "INFO" {
+		l.logger.Printf("[INFO] "+format, args...)
+	}
+}
+
 func (l *Logger) Debug(msg string) {
 	if l.level == "DEBUG" {
 		l.logger.Printf("[DEBUG] %s", msg)
 	}
+}
+
+func (l *Logger) Debugf(format string, args ...interface{}) {
+	if l.level == "DEBUG" {
+		l.logger.Printf("[DEBUG] "+format, args...)
+	}
+}
+
+func (l *Logger) Warn(msg string) {
+	l.logger.Printf("[WARN] %s", msg)
+}
+
+func (l *Logger) Warnf(format string, args ...interface{}) {
+	l.logger.Printf("[WARN] "+format, args...)
 }
 
 func (l *Logger) Error(msg string) {
@@ -37,6 +56,10 @@ func (l *Logger) Error(msg string) {
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
 	l.logger.Printf("[ERROR] "+format, args...)
+}
+
+func (l *Logger) Fatal(msg string) {
+	l.logger.Fatalf("[FATAL] %s", msg)
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {

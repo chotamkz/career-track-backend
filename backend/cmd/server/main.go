@@ -33,28 +33,31 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	dbConn.SetConnMaxLifetime(3 * time.Minute)
-	dbConn.SetMaxOpenConns(10)
-	dbConn.SetMaxIdleConns(10)
+	dbConn.SetConnMaxLifetime(5 * time.Minute)
+	dbConn.SetMaxOpenConns(5)
+	dbConn.SetMaxIdleConns(5)
 
-	if err := dbConn.Ping(); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := dbConn.PingContext(ctx); err != nil {
 		logger.Fatalf("Failed to ping DB: %v", err)
 	}
 	logger.Info("Successfully connected to the database")
 
-	//migrationFile := "./migrations/0001_create_tables.sql"
-	//if err := db.Migrate(dbConn, migrationFile); err != nil {
-	//	logger.Fatalf("Database migration failed: %v", err)
-	//}
-	//logger.Info("Database migration completed successfully")
+	/*	migrationFile := "./migrations/0001_create_tables.sql"
+		if err := db.Migrate(dbConn, migrationFile); err != nil {
+			logger.Fatalf("Database migration failed: %v", err)
+		}
+		logger.Info("Database migration completed successfully")*/
 
 	///import csv
-	/*		err = transport.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
-			if err != nil {
-				log.Fatalf("CSV import failed: %v", err)
-			}
+	/*	err = transport.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
+		if err != nil {
+			log.Fatalf("CSV import failed: %v", err)
+		}
 
-			log.Println("CSV import completed successfully.")*/
+		log.Println("CSV import completed successfully.")*/
 	////
 
 	server := httpDelivery.NewServer(cfg, dbConn, logger)
@@ -71,8 +74,6 @@ func main() {
 	<-quit
 	logger.Info("Shutdown signal received; shutting down HTTP server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
 		logger.Errorf("HTTP server shutdown error: %v", err)
 	}

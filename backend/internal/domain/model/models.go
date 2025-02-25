@@ -61,6 +61,7 @@ type Vacancy struct {
 	Description    string    `json:"description" db:"description"`
 	Requirements   string    `json:"requirements" db:"requirements"`
 	Conditions     string    `json:"conditions" db:"conditions"`
+	Country        string    `json:"country" db:"country"`
 	Location       string    `json:"location" db:"location"`
 	PostedDate     time.Time `json:"postedDate" db:"posted_date"`
 	EmployerID     uint      `json:"employerId" db:"employer_id"`

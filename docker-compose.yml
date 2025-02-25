@@ -4,7 +4,7 @@ services:
   backend:
     image: career-track-backend
     environment:
-      - DATABASE_URL=postgresql://careertrack_4xw8_user:6lnnX26z4Uo7ZC8k0ORenIn8WWLdKfMG@dpg-cussi0jqf0us739oh6og-a.oregon-postgres.render.com/careertrack_4xw8
+      - DATABASE_URL=postgresql://careertrack_71o1_user:eSwztLvN1xxZymXTx0388a373NG7I7u9@dpg-cuuquot2ng1s73etrgug-a.oregon-postgres.render.com/careertrack_71o1
       - SERVER_ADDRESS=:8080
       - LOG_LEVEL=INFO
     ports:
