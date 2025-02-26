@@ -4,9 +4,14 @@ import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
     const [searchQuery, setSearchQuery] = useState("");   
     const navigate = useNavigate(); 
+
+    const handleSearch = () => {
+        onSearch(searchQuery);
+        navigate("/VacancyPage")
+    }
     return(
         <div className="searchContainer">    
             <div className="search-bar">
@@ -18,8 +23,8 @@ const SearchBar = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button className="search-button" onClick={() => navigate("/VacancyPage") }> Найти</button>
-        </div>
+                    <button className="search-button" onClick={(handleSearch)}> Найти</button>
+            </div>
         </div>
     )
 }

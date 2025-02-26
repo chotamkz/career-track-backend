@@ -2,12 +2,14 @@
     display: flex;
     width: 80%;
     margin: auto;
-    gap: 50px;
+    gap: 30px;
     margin-top: 300px;
   }
   
   .filter-section {
-    width: 20%;
+    max-width: 250px;
+    min-width: 250px;
+    margin-left: 95px;
     height: 90%;
     background: white;
     padding: 15px;
@@ -89,7 +91,7 @@
     margin-bottom: 15px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 765px;
+    width: 650px;
   }
   
   .vacancy-card h2 {
@@ -149,8 +151,8 @@
     display: flex;
     gap: 5px;
     justify-content: center;
-    margin-top: 1300px;
-    margin-left: -800px;
+    margin-top: 1400px;
+    margin-left: -690px;
   }
   
   .pagination-container .pagination {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./VacancyPage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
@@ -7,6 +7,23 @@ import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
 
 
 function VacancyPage() {
+  // const [filterQuery, setFilterQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState({
+    keywords: "", 
+    specialty: "", 
+    skills: "", 
+    locations: []
+  });
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+  
+  const handleFiltersChange = (filters) => {
+    setSearchFilters(filters);
+  }
+
     return (
         <div className="VacancyPage">
           <div className="Navbar">
@@ -14,11 +31,11 @@ function VacancyPage() {
             </div>
 
           <div className="SearchBar">
-          <SearchBar />
+          <SearchBar onSearch={handleSearch}/>
           </div>
           
           <div className="VacancyDisplay">
-          <VacancyDisplay />
+          <VacancyDisplay searchFilters={searchFilters} searchQuery={searchQuery}/>
           </div>
 
           <div className="FooterSection">
