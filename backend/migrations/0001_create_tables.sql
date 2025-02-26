@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS vacancies (
     description TEXT,
     requirements TEXT,
     conditions TEXT,
-    country TEXT,
     location TEXT NOT NULL,
     posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     employer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -86,3 +85,5 @@ CREATE TABLE IF NOT EXISTS resumes (
     file_name TEXT NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url ON vacancies(vacancy_url);

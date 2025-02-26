@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"github.com/chotamkz/career-track-backend/internal/config"
+	"github.com/chotamkz/career-track-backend/internal/db"
+	"github.com/chotamkz/career-track-backend/internal/repository/postgres"
+	"github.com/chotamkz/career-track-backend/internal/scheduler"
 	httpDelivery "github.com/chotamkz/career-track-backend/internal/transport/http"
 	"github.com/chotamkz/career-track-backend/internal/util"
 	"log"
@@ -45,11 +48,11 @@ func main() {
 	}
 	logger.Info("Successfully connected to the database")
 
-	/*	migrationFile := "./migrations/0001_create_tables.sql"
-		if err := db.Migrate(dbConn, migrationFile); err != nil {
-			logger.Fatalf("Database migration failed: %v", err)
-		}
-		logger.Info("Database migration completed successfully")*/
+	migrationFile := "./migrations/0001_create_tables.sql"
+	if err := db.Migrate(dbConn, migrationFile); err != nil {
+		logger.Fatalf("Database migration failed: %v", err)
+	}
+	logger.Info("Database migration completed successfully")
 
 	///import csv
 	/*	err = transport.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
@@ -59,6 +62,14 @@ func main() {
 
 		log.Println("CSV import completed successfully.")*/
 	////
+
+	//---parsing
+	userRepo := postgres.NewUserRepo(dbConn, logger)
+	vacancyRepo := postgres.NewVacancyRepo(dbConn)
+
+	vacancyScheduler := scheduler.NewVacancyScheduler(dbConn, userRepo, vacancyRepo, logger, 50, 4, 1*time.Hour)
+	vacancyScheduler.Start()
+	//---parsing
 
 	server := httpDelivery.NewServer(cfg, dbConn, logger)
 
