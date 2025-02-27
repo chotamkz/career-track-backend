@@ -18,3 +18,7 @@ func NewVacancyUsecase(vacRepo repository.VacancyRepository) *VacancyUsecase {
 func (vu *VacancyUsecase) ListVacancies() ([]model.Vacancy, error) {
 	return vu.vacancyRepo.GetVacancies()
 }
+
+func (vu *VacancyUsecase) GetVacancyById(id uint) (model.Vacancy, error) {
+	return vu.vacancyRepo.GetVacancyById(id)
+}

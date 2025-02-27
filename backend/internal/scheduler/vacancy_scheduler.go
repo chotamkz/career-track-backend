@@ -40,7 +40,7 @@ func (vs *VacancyScheduler) Start() {
 				if err := vs.VacancyUpdater.UpdateVacancies(vs.PerPage, page); err != nil {
 					vs.Logger.Errorf("Error updating vacancies on page %d: %v", page, err)
 				}
-				time.Sleep(2 * time.Second)
+				//time.Sleep(2 * time.Second)
 			}
 			vs.Logger.Info("Vacancy update cycle completed")
 			<-ticker.C

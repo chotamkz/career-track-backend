@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
 )
@@ -60,4 +61,22 @@ func (vr *VacancyRepo) UpsertVacancy(v *model.Vacancy) error {
 		RETURNING id
 	`
 	return vr.DB.QueryRow(query, v.Title, v.Description, v.Requirements, v.Conditions, v.Location, v.PostedDate, v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency, v.SalaryGross, v.VacancyURL).Scan(&v.ID)
+}
+
+func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
+	query := `
+		SELECT id, title, description, requirements, conditions, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url
+		FROM vacancies
+		WHERE id = $1
+    `
+	var v model.Vacancy
+	err := vr.DB.QueryRow(query, id).Scan(
+		&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Conditions, &v.Location,
+		&v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL,
+	)
+
+	if err != nil {
+		return model.Vacancy{}, fmt.Errorf("GetVacancyById: %w", err)
+	}
+	return v, nil
 }

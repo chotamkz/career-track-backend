@@ -33,6 +33,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	vacancyHandler := NewVacancyHandler(vacancyUsecase, logger)
 
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
+	router.GET("/api/v1/vacancies/:id", vacancyHandler.DetailVacancyHandler)
 
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
