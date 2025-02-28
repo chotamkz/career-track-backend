@@ -40,7 +40,7 @@ func (vu *VacancyUpdater) UpdateVacancies(perPage, page int) error {
 			continue
 		}
 
-		vacancy := hh.MapHHVacancyToInternal(hhVac)
+		vacancy := hh.MapHHVacancyToInternal(hhVac, vu.Logger)
 		if err := vu.VacancyRepo.UpsertVacancy(&vacancy); err != nil {
 			vu.Logger.Errorf("Failed to upsert vacancy '%s': %v", vacancy.Title, err)
 			continue

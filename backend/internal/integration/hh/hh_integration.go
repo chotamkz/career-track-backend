@@ -8,32 +8,28 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
 type HHVacancyResponse struct {
-	Items   []HHVacancy `json:"items"`
-	Page    int         `json:"page"`
-	Pages   int         `json:"pages"`
-	PerPage int         `json:"per_page"`
-	Found   int         `json:"found"`
+	Items []HHVacancy `json:"items"`
+	Page  int         `json:"page"`
+	Pages int         `json:"pages"`
+	Found int         `json:"found"`
 }
 
 type HHVacancy struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Area struct {
-		Name string `json:"name"`
-	} `json:"area"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
 	Description struct {
 		Text string `json:"text"`
 	} `json:"description"`
 	Snippet struct {
-		Requirement    string `json:"requirement"`
-		Responsibility string `json:"responsibility"`
+		Requirement string `json:"requirement"`
 	} `json:"snippet"`
-	PublishedAt string `json:"published_at"`
-	Employer    struct {
+	PostedDate string `json:"published_at"` // ISO8601
+	Employer   struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"employer"`
@@ -44,6 +40,27 @@ type HHVacancy struct {
 		Gross    bool    `json:"gross"`
 	} `json:"salary"`
 	AlternateURL string `json:"alternate_url"`
+}
+
+type HHVacancyDetail struct {
+	Description string `json:"description"`
+	Address     struct {
+		City     string `json:"city"`
+		Street   string `json:"street"`
+		Building string `json:"building"`
+		Raw      string `json:"raw"`
+	} `json:"address"`
+	KeySkills []struct {
+		Name string `json:"name"`
+	} `json:"key_skills"`
+	Schedule struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"schedule"`
+	Experience struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"experience"`
 }
 
 func FetchITVacancies(perPage, page int, logger *util.Logger) ([]HHVacancy, error) {
@@ -68,35 +85,77 @@ func FetchITVacancies(perPage, page int, logger *util.Logger) ([]HHVacancy, erro
 	return hhResp.Items, nil
 }
 
-func MapHHVacancyToInternal(vac HHVacancy) model.Vacancy {
-	published, err := time.Parse(time.RFC3339, vac.PublishedAt)
+func FetchVacancyDetail(vacancyID string, logger *util.Logger) (HHVacancyDetail, error) {
+	url := fmt.Sprintf("https://api.hh.ru/vacancies/%s", vacancyID)
+	logger.Info("Fetching vacancy detail from HH API: " + url)
+	resp, err := http.Get(url)
 	if err != nil {
-		published = time.Now()
+		return HHVacancyDetail{}, err
 	}
-	location := vac.Area.Name
-	var salaryFrom, salaryTo float64
-	var salaryCurrency string
-	var salaryGross bool
-	if vac.Salary != nil {
-		salaryFrom = vac.Salary.From
-		salaryTo = vac.Salary.To
-		salaryCurrency = vac.Salary.Currency
-		salaryGross = vac.Salary.Gross
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return HHVacancyDetail{}, fmt.Errorf("HH Detail API returned status: %d", resp.StatusCode)
 	}
-	empID, _ := strconv.ParseUint(vac.Employer.ID, 10, 32)
-	return model.Vacancy{
-		Title:          vac.Name,
-		Description:    vac.Description.Text,
-		Requirements:   vac.Snippet.Requirement,
-		Conditions:     vac.Snippet.Responsibility,
-		Location:       location,
-		PostedDate:     published,
-		EmployerID:     uint(empID),
-		CreatedAt:      time.Now(),
-		SalaryFrom:     salaryFrom,
-		SalaryTo:       salaryTo,
-		SalaryCurrency: salaryCurrency,
-		SalaryGross:    salaryGross,
-		VacancyURL:     vac.AlternateURL,
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return HHVacancyDetail{}, err
 	}
+	var detail HHVacancyDetail
+	if err := json.Unmarshal(body, &detail); err != nil {
+		return HHVacancyDetail{}, err
+	}
+	return detail, nil
+}
+
+func MapHHVacancyToInternal(hhVac HHVacancy, logger *util.Logger) model.Vacancy {
+	var vacancy model.Vacancy
+	vacancy.Title = hhVac.Name
+
+	if strings.TrimSpace(hhVac.Description.Text) == "" {
+		detail, err := FetchVacancyDetail(hhVac.ID, logger)
+		if err != nil {
+			logger.Errorf("Failed to fetch detail for vacancy %s: %v", hhVac.ID, err)
+		} else {
+			vacancy.Description = detail.Description
+			vacancy.Location = detail.Address.Raw
+			vacancy.WorkSchedule = detail.Schedule.Name
+			vacancy.Experience = detail.Experience.Name
+		}
+	} else {
+		vacancy.Description = hhVac.Description.Text
+		detail, err := FetchVacancyDetail(hhVac.ID, logger)
+		if err == nil {
+			vacancy.Location = detail.Address.Raw
+			vacancy.WorkSchedule = detail.Schedule.Name
+			vacancy.Experience = detail.Experience.Name
+		} else {
+			vacancy.Location = "Unknown"
+		}
+	}
+
+	vacancy.Requirements = hhVac.Snippet.Requirement
+
+	posted, err := time.Parse(time.RFC3339, hhVac.PostedDate)
+	if err != nil {
+		vacancy.PostedDate = time.Now()
+	} else {
+		vacancy.PostedDate = posted
+	}
+
+	empID, err := strconv.ParseUint(hhVac.Employer.ID, 10, 32)
+	if err == nil {
+		vacancy.EmployerID = uint(empID)
+	}
+
+	vacancy.CreatedAt = time.Now()
+
+	if hhVac.Salary != nil {
+		vacancy.SalaryFrom = hhVac.Salary.From
+		vacancy.SalaryTo = hhVac.Salary.To
+		vacancy.SalaryCurrency = hhVac.Salary.Currency
+		vacancy.SalaryGross = hhVac.Salary.Gross
+	}
+	vacancy.VacancyURL = hhVac.AlternateURL
+
+	return vacancy
 }

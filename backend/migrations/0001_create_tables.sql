@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS vacancies (
     title TEXT NOT NULL,
     description TEXT,
     requirements TEXT,
-    conditions TEXT,
     location TEXT NOT NULL,
     posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     employer_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -41,8 +40,12 @@ CREATE TABLE IF NOT EXISTS vacancies (
     salary_to NUMERIC,
     salary_currency TEXT,
     salary_gross BOOLEAN,
-    vacancy_url TEXT
+    vacancy_url TEXT,
+    work_schedule TEXT,
+    experience TEXT
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url ON vacancies(vacancy_url);
 
 CREATE TABLE IF NOT EXISTS applications (
     id SERIAL PRIMARY KEY,
@@ -86,4 +89,3 @@ CREATE TABLE IF NOT EXISTS resumes (
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url ON vacancies(vacancy_url);

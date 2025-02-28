@@ -60,7 +60,6 @@ type Vacancy struct {
 	Title          string    `json:"title" db:"title"`
 	Description    string    `json:"description" db:"description"`
 	Requirements   string    `json:"requirements" db:"requirements"`
-	Conditions     string    `json:"conditions" db:"conditions"`
 	Location       string    `json:"location" db:"location"`
 	PostedDate     time.Time `json:"postedDate" db:"posted_date"`
 	EmployerID     uint      `json:"employerId" db:"employer_id"`
@@ -70,6 +69,8 @@ type Vacancy struct {
 	SalaryCurrency string    `json:"salary_currency" db:"salary_currency"`
 	SalaryGross    bool      `json:"salary_gross" db:"salary_gross"`
 	VacancyURL     string    `json:"vacancy_url" db:"vacancy_url"`
+	WorkSchedule   string    `json:"work_schedule" db:"work_schedule"`
+	Experience     string    `json:"experience" db:"experience"`
 }
 
 type Application struct {
