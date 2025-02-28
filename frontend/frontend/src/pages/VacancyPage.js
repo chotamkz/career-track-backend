@@ -7,8 +7,8 @@ import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
 
 
 function VacancyPage() {
-  // const [filterQuery, setFilterQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [vacancies, setVacancies] = useState([]);
   const [searchFilters, setSearchFilters] = useState({
     keywords: "", 
     specialty: "", 
@@ -35,7 +35,10 @@ function VacancyPage() {
           </div>
           
           <div className="VacancyDisplay">
-          <VacancyDisplay searchFilters={searchFilters} searchQuery={searchQuery}/>
+          <VacancyDisplay 
+           searchFilters={searchFilters}
+           searchQuery={searchQuery}
+           onFiltersChange={handleFiltersChange} />
           </div>
 
           <div className="FooterSection">

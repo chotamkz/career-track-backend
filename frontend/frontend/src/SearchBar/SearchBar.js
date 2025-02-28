@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import "./SearchBar.css";
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 
 const SearchBar = ({ onSearch }) => {
     const [searchQuery, setSearchQuery] = useState("");   
-    const navigate = useNavigate(); 
 
     const handleSearch = () => {
         onSearch(searchQuery);
-        navigate("/VacancyPage")
     }
     return(
         <div className="searchContainer">    
