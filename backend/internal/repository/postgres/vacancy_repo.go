@@ -80,3 +80,58 @@ func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
 	}
 	return v, nil
 }
+
+func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model.Vacancy, error) {
+	query := `
+		SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience 
+		FROM vacancies 
+		WHERE 1=1`
+	var args []interface{}
+	argIdx := 1
+
+	if filter.Keywords != "" {
+		query += fmt.Sprintf(" AND (title ILIKE $%d OR description ILIKE $%d)", argIdx, argIdx)
+		args = append(args, "%"+filter.Keywords+"%")
+		argIdx++
+	}
+	if filter.Region != "" {
+		query += fmt.Sprintf(" AND location ILIKE $%d", argIdx)
+		args = append(args, "%"+filter.Region+"%")
+		argIdx++
+	}
+	if filter.Experience != "" {
+		query += fmt.Sprintf(" AND experience = $%d", argIdx)
+		args = append(args, filter.Experience)
+		argIdx++
+	}
+	if filter.SalaryFrom > 0 {
+		query += fmt.Sprintf(" AND salary_from >= $%d", argIdx)
+		args = append(args, filter.SalaryFrom)
+		argIdx++
+	}
+	if filter.Schedule != "" {
+		query += fmt.Sprintf(" AND work_schedule = $%d", argIdx)
+		args = append(args, filter.Schedule)
+		argIdx++
+	}
+
+	rows, err := vr.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var vacancies []model.Vacancy
+	for rows.Next() {
+		var v model.Vacancy
+		err := rows.Scan(&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
+		if err != nil {
+			return nil, err
+		}
+		vacancies = append(vacancies, v)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return vacancies, nil
+}

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
 	"github.com/chotamkz/career-track-backend/internal/util"
 	"net/http"
@@ -46,4 +47,30 @@ func (vh *VacancyHandler) DetailVacancyHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, vacancy)
+}
+
+func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
+	filter := model.VacancyFilter{
+		Keywords:   c.Query("keywords"),
+		Region:     c.Query("region"),
+		Experience: c.Query("experience"),
+		Schedule:   c.Query("schedule"),
+	}
+	if salaryStr := c.Query("salary_from"); salaryStr != "" {
+		salary, err := strconv.ParseFloat(salaryStr, 64)
+		if err != nil {
+			vh.logger.Errorf("Invalid salary_from: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid salary_from"})
+			return
+		}
+		filter.SalaryFrom = salary
+	}
+
+	vacancies, err := vh.vacancyUsecase.FilterVacancies(filter)
+	if err != nil {
+		vh.logger.Errorf("Failed to filter vacancies: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, vacancies)
 }

@@ -22,3 +22,7 @@ func (vu *VacancyUsecase) ListVacancies() ([]model.Vacancy, error) {
 func (vu *VacancyUsecase) GetVacancyById(id uint) (model.Vacancy, error) {
 	return vu.vacancyRepo.GetVacancyById(id)
 }
+
+func (vu *VacancyUsecase) FilterVacancies(filter model.VacancyFilter) ([]model.Vacancy, error) {
+	return vu.vacancyRepo.GetFilteredVacancies(filter)
+}
