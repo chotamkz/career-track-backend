@@ -8,7 +8,7 @@ import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
 
 function VacancyPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [vacancies, setVacancies] = useState([]);
+  const [vacancies, setVacancies] = useState()
   const [searchFilters, setSearchFilters] = useState({
     keywords: "", 
     specialty: "", 

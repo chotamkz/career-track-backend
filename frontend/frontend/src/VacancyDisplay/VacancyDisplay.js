@@ -16,11 +16,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     description: searchFilters.keywordsInDescription || false
   });
 
-  const locationOptions = [
-    "Алматы", "Астана", "Караганда", "Ташкент", "Атырау", "Актау", "Шымкент", 
-    "Павлодар", "Уральск", "Костанай", "Семей", "Талдыкорган", "Кызылорда"
-  ].map((city) => ({ value: city, label: city }));
-
+  const [locationOptions, setLocationOptions] = useState([]);
   const handleLocationChange = (selectedOptions) => {
     const locations = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setSelectedLocations(locations);
@@ -49,16 +45,42 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
         const data = await response.json();
         setVacancies(data);
+
+      const uniqueCities = [
+        ...new Set(
+          data
+            .map((vacancy) => {
+              console.log("Vacancy location:", vacancy.location);
+              if (!vacancy.location) return null;
+
+              let city = vacancy.location.trim().split(",")[0];
+
+
+              city = city.replace(/\d+(\.\d+)?/g, "").trim();
+
+              return city;
+            })
+            .filter((city) => city)
+        ),
+      ];
+
+      console.log("Extracted unique locations:", uniqueCities);
+
+      setLocationOptions(
+        uniqueCities.map((city) => ({ value: city, label: city }))
+        );
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+  
 
     fetchVacancies();
   }, []);
 
+  
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
@@ -67,7 +89,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       const queryParams = new URLSearchParams();
 
       if (searchFilters.keywords) queryParams.append("keywords", searchFilters.keywords);
-      if (searchFilters.location) queryParams.append("region", searchFilters.location);
+      if (selectedLocations.length) queryParams.append("region", selectedLocations.join(","));
       if (searchFilters.experience) queryParams.append("experience", searchFilters.experience);
       if (searchFilters.salary) queryParams.append("salary_from", searchFilters.salary);
       if (searchFilters.schedule) queryParams.append("schedule", searchFilters.schedule);
@@ -86,32 +108,33 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     }
   };
 
+  const isLocationMatch = (vacancy) => {
+    if (!vacancy.location || selectedLocations.length === 0) return true;
+  
+    return selectedLocations.some((selectedCity) =>
+      vacancy.location.toLowerCase().includes(selectedCity.toLowerCase())
+    );
+  };
+  
   const filteredVacancies = vacancies.filter((vacancy) => {
     const isKeywordMatch = (vacancyTitle, vacancyCompany, vacancyDescription) => {
+      if (!keywords) return true;
       const lowerCaseKeywords = keywords.toLowerCase();
-      const matchesTitle = selectedKeywordFilter.title && vacancyTitle.toLowerCase().includes(lowerCaseKeywords);
-      const matchesCompany = selectedKeywordFilter.company && vacancyCompany.toLowerCase().includes(lowerCaseKeywords);
-      const matchesDescription = selectedKeywordFilter.description && vacancyDescription.toLowerCase().includes(lowerCaseKeywords);
-
-      return matchesTitle || matchesCompany || matchesDescription;
-    };
-
-    const isLocationMatch = (vacancyRegion) => {
-      if (selectedLocations.length === 0) return true;
-
-      return selectedLocations.some((location) =>
-        vacancyRegion.toLowerCase().includes(location.toLowerCase())
+      return (
+        (selectedKeywordFilter.title && vacancyTitle?.toLowerCase().includes(lowerCaseKeywords)) ||
+        (selectedKeywordFilter.company && vacancyCompany?.toLowerCase().includes(lowerCaseKeywords)) ||
+        (selectedKeywordFilter.description && vacancyDescription?.toLowerCase().includes(lowerCaseKeywords))
       );
     };
 
+
     return (
-      (keywords ? isKeywordMatch(vacancy.title, vacancy.company, vacancy.description) : true) &&
-      (experience ? vacancy.experience.toLowerCase().includes(experience.toLowerCase()) : true) &&
-      (selectedLocations.length ? selectedLocations.includes(vacancy.region) : true) &&
-      isLocationMatch(vacancy.region) &&
-      (!searchQuery ||
-        vacancy.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vacancy.requirements.toLowerCase().includes(searchQuery.toLowerCase())
+       isKeywordMatch(vacancy.title, vacancy.company, vacancy.description) &&
+    (experience ? vacancy.experience?.toLowerCase().includes(experience.toLowerCase()) : true) &&
+    isLocationMatch(vacancy.location) &&
+    (!searchQuery ||
+      vacancy.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vacancy.requirements?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
   });
