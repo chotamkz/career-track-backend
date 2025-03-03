@@ -1,0 +1,64 @@
+.hackathons-container{
+    display: flex;
+}
+
+.hackathons-container h2{
+    display: inline;
+    margin-left: 100px;
+    height: 0;
+    width: 250px;
+}
+
+.hackathons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 30%;
+    margin-top: 150px;
+  }
+  
+  .hackathon-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .hackathon-image-placeholder {
+    width: 80px;
+    height: 80px;
+    background-color: #ccc;
+    margin-right: 15px;
+    border-radius: 8px;
+  }
+  
+  .top-topics{
+    width: 40%;
+    height: 50%;  
+    margin-top: 99px;
+    margin-left: 150px;
+  }
+
+  .top-topics table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .top-topics th, .top-topics td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .view-all-button {
+    margin-top: 700px;
+    padding: 10px 20px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  

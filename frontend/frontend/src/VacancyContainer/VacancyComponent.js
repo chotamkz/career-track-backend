@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 const FilterComponent = ({ onClose }) => {
     const [keywords, setKeywords] = useState("");
     const [region, setRegion] = useState("");
-    const [specialty, setSpecialty] = useState("");
     const [experience, setExperience] = useState("Не имеет значения");
     const [salary, setSalary] = useState("");
     const [workSchedule, setWorkSchedule] = useState("Полный день");
@@ -44,22 +43,6 @@ const FilterComponent = ({ onClose }) => {
                         placeholder="Профессия или должность"
                         value={keywords}
                         onChange={(e) => setKeywords(e.target.value)} />
-                </div>
-
-                <div className="filter-item">
-                    <label>Специальность</label>
-                    <select 
-                    id="select" 
-                    value={specialty} 
-                    onChange={(e) => setSpecialty(e.target.value)} 
-                    className={!specialty ? "placeholder" : ""} 
-                    >
-                        <option className="optionVacancy" value="IT">IT</option>
-                        <option className="optionVacancy" value="Медицина">Медицина</option>
-                        <option className="optionVacancy" value="Образование">Образование</option>
-                        <option className="optionVacancy" value="">Сбросить</option>
-                    </select>
-                    {!specialty && <span className="select-placeholder">Выбрать</span>}
                 </div>
 
                 <div className="filter-item">

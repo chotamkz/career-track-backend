@@ -1,0 +1,23 @@
+.HackathonsPage {
+    text-align: center;
+    height: 100%;
+  }
+  
+  .HackathonsPage .footer{
+    margin-top: 900px;
+  }
+
+  .HackathonDisplay{
+    margin-top: 300px;
+  }
+
+  .HackaText {
+    margin-top: 150px;
+    margin-left: 200px;
+    width: 350px;
+    text-align: left;
+  }
+  
+  .HackaText p{
+    text-align: left;
+  }

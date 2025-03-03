@@ -1,0 +1,56 @@
+.hackaSearchContainer{
+    position: absolute;
+    top: 45%;
+    left: 15%;
+}
+
+.hackaSearchContainer .hackasearch-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    width: 1000px;
+    height: 50px;
+    border-radius: 7px;
+    padding: 0 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hackaSearchContainer .hackasearch-icon {
+    color: #6b7280; 
+    margin-right: 12px;
+}
+
+.hackaSearchContainer .hackasearch-text {
+    color: #4b5563; 
+    font-size: 18px;
+}
+
+.hackaSearchContainer .hackasearch-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 18px;
+    color: rgb(113, 109, 109);
+    height: 100%;
+}
+
+.hackaSearchContainer .hackasearch-button {
+    position: relative;
+    left: 280px;
+    width: 230px;
+    height: 50px;
+    background-color: #60a5fa;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.hackaSearchContainer .hackasearch-button:hover {
+    background-color: #3b82f6;
+}

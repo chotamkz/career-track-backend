@@ -12,6 +12,7 @@ function NavigationBar() {
                 <li><Link to ="/VacancyPage">Поиск вакансий</Link></li>
                 <li><Link to ="/ProfilePage">Мои заявки</Link></li>
                 <li><Link to ="/">Прогноз востребованных навыков</Link></li>
+                <li><Link to ="/Hackathons">Хакатоны </Link></li>
                 <li><Link to ="/">О нас</Link></li>
                 </ul>
             </nav>
