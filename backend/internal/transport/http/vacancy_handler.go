@@ -84,6 +84,14 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 		return
 	}
 
+	employerID, exists := c.Get("user")
+	if !exists {
+		vh.logger.Errorf("Employer ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	vacancy.EmployerID = employerID.(uint)
+
 	vacancy.PostedDate = time.Now()
 	vacancy.CreatedAt = time.Now()
 

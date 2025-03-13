@@ -3,6 +3,7 @@ package http
 import (
 	"database/sql"
 	"github.com/chotamkz/career-track-backend/internal/config"
+	"github.com/chotamkz/career-track-backend/internal/middleware"
 	"github.com/chotamkz/career-track-backend/internal/repository/postgres"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
 	"github.com/chotamkz/career-track-backend/internal/util"
@@ -31,19 +32,27 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	vacancyRepo := postgres.NewVacancyRepo(db)
 	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo)
 	vacancyHandler := NewVacancyHandler(vacancyUsecase, logger)
-
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
 	router.GET("/api/v1/vacancies/:id", vacancyHandler.DetailVacancyHandler)
 	router.GET("/api/v1/vacancies/filter", vacancyHandler.FilterVacanciesHandler)
-	router.POST("/api/vacancies", vacancyHandler.CreateVacancyHandler)
+	router.POST("/api/v1/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.CreateVacancyHandler)
 
 	userRepo := postgres.NewUserRepo(db, logger)
 	authUsecase := usecase.NewAuthUsecase(userRepo, cfg)
 	authHandler := NewAuthHandler(authUsecase, logger)
-
 	router.POST("/api/v1/auth/register/student", authHandler.RegisterStudentHandler)
 	router.POST("/api/v1/auth/register/employer", authHandler.RegisterEmployerHandler)
 	router.POST("/api/v1/auth/login", authHandler.Login)
+
+	employerProfileUsecase := usecase.NewEmployerProfileUsecase(postgres.NewProfileRepo(db), logger)
+	employerProfileHandler := NewEmployerProfileHandler(employerProfileUsecase, logger)
+	router.GET("/api/v1/employers/:id", employerProfileHandler.GetEmployerProfile)
+	router.PUT("/api/v1/employers/:id", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.UpdateEmployerProfile)
+
+	studentProfileUsecase := usecase.NewStudentProfileUsecase(postgres.NewProfileRepo(db), logger)
+	studentProfileHandler := NewStudentProfileHandler(studentProfileUsecase, logger)
+	router.GET("/api/v1/students/:id", studentProfileHandler.GetStudentProfile)
+	router.PUT("/api/v1/students/:id", studentProfileHandler.UpdateStudentProfile)
 
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
