@@ -44,22 +44,25 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.POST("/api/v1/auth/register/employer", authHandler.RegisterEmployerHandler)
 	router.POST("/api/v1/auth/login", authHandler.Login)
 
-	employerProfileUsecase := usecase.NewEmployerProfileUsecase(postgres.NewProfileRepo(db), logger)
+	profileRepo := postgres.NewProfileRepo(db, logger)
+	employerProfileUsecase := usecase.NewEmployerProfileUsecase(profileRepo, logger)
 	employerProfileHandler := NewEmployerProfileHandler(employerProfileUsecase, logger)
 	router.GET("/api/v1/employers/:id", employerProfileHandler.GetEmployerProfile)
 	router.PUT("/api/v1/employers/:id", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.UpdateEmployerProfile)
+	router.POST("/api/v1/employers/profile", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.CreateEmployerProfileHandler)
 
-	studentProfileUsecase := usecase.NewStudentProfileUsecase(postgres.NewProfileRepo(db), logger)
+	studentProfileUsecase := usecase.NewStudentProfileUsecase(profileRepo, logger)
 	studentProfileHandler := NewStudentProfileHandler(studentProfileUsecase, logger)
 	router.GET("/api/v1/students/:id", studentProfileHandler.GetStudentProfile)
 	router.PUT("/api/v1/students/:id", studentProfileHandler.UpdateStudentProfile)
+	router.POST("/api/v1/students/profile", studentProfileHandler.CreateStudentProfileHandler)
 
 	hackathonRepo := postgres.NewHackathonRepo(db)
 	hackathonUsecase := usecase.NewHackathonUsecase(hackathonRepo)
 	hackathonHandler := NewHackathonHandler(hackathonUsecase, logger)
-	router.POST("/api/hackathons", hackathonHandler.CreateHackathonHandler)
-	router.GET("/api/hackathons", hackathonHandler.GetHackathonsHandler)
-	router.GET("/api/hackathons/:id", hackathonHandler.DetailHackathonHandler)
+	router.POST("/api/v1/hackathons", hackathonHandler.CreateHackathonHandler)
+	router.GET("/api/v1/hackathons", hackathonHandler.GetHackathonsHandler)
+	router.GET("/api/v1/hackathons/:id", hackathonHandler.DetailHackathonHandler)
 
 	return &http.Server{
 		Addr:    cfg.ServerAddress,

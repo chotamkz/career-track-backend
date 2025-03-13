@@ -35,6 +35,21 @@ func (h *StudentProfileHandler) GetStudentProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, profile)
 }
 
+func (h *StudentProfileHandler) CreateStudentProfileHandler(c *gin.Context) {
+	var profile model.StudentProfile
+	if err := c.ShouldBindJSON(&profile); err != nil {
+		h.logger.Errorf("Invalid input for student profile creation: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	if err := h.usecase.CreateProfile(&profile); err != nil {
+		h.logger.Errorf("Failed to create student profile: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create student profile"})
+		return
+	}
+	c.JSON(http.StatusCreated, profile)
+}
+
 func (h *StudentProfileHandler) UpdateStudentProfile(c *gin.Context) {
 	var profile model.StudentProfile
 	if err := c.ShouldBindJSON(&profile); err != nil {

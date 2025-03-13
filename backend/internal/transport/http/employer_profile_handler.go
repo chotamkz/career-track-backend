@@ -35,6 +35,28 @@ func (h *EmployerProfileHandler) GetEmployerProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, profile)
 }
 
+func (h *EmployerProfileHandler) CreateEmployerProfileHandler(c *gin.Context) {
+	var profile model.EmployerProfile
+	if err := c.ShouldBindJSON(&profile); err != nil {
+		h.logger.Errorf("Invalid input for employer profile creation: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+	employerID, exists := c.Get("user")
+	if !exists {
+		h.logger.Errorf("Employer ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	profile.UserID = employerID.(uint)
+	if err := h.usecase.CreateProfile(&profile); err != nil {
+		h.logger.Errorf("Failed to create employer profile: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create employer profile"})
+		return
+	}
+	c.JSON(http.StatusCreated, profile)
+}
+
 func (h *EmployerProfileHandler) UpdateEmployerProfile(c *gin.Context) {
 	var profile model.EmployerProfile
 	if err := c.ShouldBindJSON(&profile); err != nil {
