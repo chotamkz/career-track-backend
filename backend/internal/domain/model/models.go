@@ -112,3 +112,19 @@ type Resume struct {
 	FileName   string    `json:"fileName" db:"file_name"`
 	UploadedAt time.Time `json:"uploadedAt" db:"uploaded_at"`
 }
+
+type Hackathon struct {
+	ID             uint      `json:"id" db:"id"`
+	Name           string    `json:"name" db:"name"`
+	Organizer      string    `json:"organizer" db:"organizer"`
+	StartDate      time.Time `json:"start_date" db:"start_date"`
+	EndDate        time.Time `json:"end_date" db:"end_date"`
+	Format         string    `json:"format" db:"format"`
+	Location       string    `json:"location" db:"location"`
+	Theme          string    `json:"theme" db:"theme"`
+	Prizes         string    `json:"prizes" db:"prizes"`
+	RequiredSkills string    `json:"required_skills" db:"required_skills"`
+	Website        string    `json:"website" db:"website"`
+	CreatedAt      time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at" db:"updated_at"`
+}
