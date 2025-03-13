@@ -1,0 +1,8 @@
+.studentLogContainer{
+    text-align: center;
+    height: 100%;
+}
+
+.studentLogContainer .footer{
+    margin-top: 350px;
+}

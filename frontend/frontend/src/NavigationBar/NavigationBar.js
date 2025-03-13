@@ -18,7 +18,7 @@ function NavigationBar() {
             </nav>
             <div className="authbuttons">
                 <button className="button-city">Город</button>
-                <button className="auth-buttons-log">Войти</button>
+                <button className="auth-buttons-log" onClick={() => navigate("/StudentAuth")}>Войти</button>
             </div>
         </header>
     );

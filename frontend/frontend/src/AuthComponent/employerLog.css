@@ -1,0 +1,98 @@
+.employer-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+  }
+  
+  .employer-login-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 380px;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employer-login-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .employer-login-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cfcfcf;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .employer-forgot-password {
+    align-self: flex-start;
+    font-size: 12px;
+    color: #6c6c6c;
+    margin-bottom: 15px;
+    text-decoration: none;
+  }
+  
+  .employer-login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #6d88ff;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .employer-login-button:hover {
+    background-color: #5b76e8;
+  }
+  
+  .employer-register-link {
+    margin-top: 10px;
+    color: #6d88ff;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .employer-extra-section {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .employer-extra-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .employer-extra-text {
+    font-size: 14px;
+    color: #6c6c6c;
+    margin-bottom: 10px;
+  }
+  
+  .employer-extra-button {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #6d88ff;
+    border-radius: 5px;
+    color: #6d88ff;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .employer-extra-button:hover {
+    background-color: #6d88ff;
+    color: white;
+  }
+  
