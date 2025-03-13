@@ -27,10 +27,10 @@ const (
 )
 
 type User struct {
-	ID        uint      `json:"id" db:"id"`
+	ID        uint      `json:"-" db:"id"`
 	Name      string    `json:"name" db:"name"`
 	Email     string    `json:"email" db:"email"`
-	Password  string    `json:"-" db:"password"`
+	Password  string    `json:"password" db:"password"`
 	UserType  UserType  `json:"userType" db:"user_type"`
 	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`

@@ -9,6 +9,7 @@ type Config struct {
 	DatabaseURL   string
 	ServerAddress string
 	LogLevel      string
+	JWTSecret     string
 }
 
 func LoadConfig() *Config {
@@ -18,11 +19,13 @@ func LoadConfig() *Config {
 	}
 	serverAddress := getEnv("SERVER_ADDRESS", ":8080")
 	logLevel := getEnv("LOG_LEVEL", "INFO")
+	jwtSecret := getEnv("JWT_SECRET", "")
 
 	return &Config{
 		DatabaseURL:   databaseURL,
 		ServerAddress: serverAddress,
 		LogLevel:      logLevel,
+		JWTSecret:     jwtSecret,
 	}
 }
 

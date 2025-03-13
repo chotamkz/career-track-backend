@@ -37,6 +37,14 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.GET("/api/v1/vacancies/filter", vacancyHandler.FilterVacanciesHandler)
 	router.POST("/api/vacancies", vacancyHandler.CreateVacancyHandler)
 
+	userRepo := postgres.NewUserRepo(db, logger)
+	authUsecase := usecase.NewAuthUsecase(userRepo, cfg)
+	authHandler := NewAuthHandler(authUsecase, logger)
+
+	router.POST("/api/v1/auth/register/student", authHandler.RegisterStudentHandler)
+	router.POST("/api/v1/auth/register/employer", authHandler.RegisterEmployerHandler)
+	router.POST("/api/v1/auth/login", authHandler.Login)
+
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: router,
