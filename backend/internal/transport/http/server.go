@@ -54,6 +54,13 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.GET("/api/v1/students/:id", studentProfileHandler.GetStudentProfile)
 	router.PUT("/api/v1/students/:id", studentProfileHandler.UpdateStudentProfile)
 
+	hackathonRepo := postgres.NewHackathonRepo(db)
+	hackathonUsecase := usecase.NewHackathonUsecase(hackathonRepo)
+	hackathonHandler := NewHackathonHandler(hackathonUsecase, logger)
+	router.POST("/api/hackathons", hackathonHandler.CreateHackathonHandler)
+	router.GET("/api/hackathons", hackathonHandler.GetHackathonsHandler)
+	router.GET("/api/hackathons/:id", hackathonHandler.DetailHackathonHandler)
+
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: router,

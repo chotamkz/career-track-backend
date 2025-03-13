@@ -89,3 +89,18 @@ CREATE TABLE IF NOT EXISTS resumes (
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS hackathons (
+                                          id SERIAL PRIMARY KEY,
+                                          name TEXT NOT NULL,
+                                          organizer TEXT NOT NULL,
+                                          start_date TIMESTAMP NOT NULL,
+                                          end_date TIMESTAMP NOT NULL,
+                                          format TEXT NOT NULL,
+                                          location TEXT NOT NULL,
+                                          theme TEXT,
+                                          prizes TEXT,
+                                          required_skills TEXT,
+                                          website TEXT,
+                                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
