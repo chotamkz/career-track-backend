@@ -35,6 +35,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
 	router.GET("/api/v1/vacancies/:id", vacancyHandler.DetailVacancyHandler)
 	router.GET("/api/v1/vacancies/filter", vacancyHandler.FilterVacanciesHandler)
+	router.POST("/api/vacancies", vacancyHandler.CreateVacancyHandler)
 
 	return &http.Server{
 		Addr:    cfg.ServerAddress,

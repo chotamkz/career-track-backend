@@ -7,4 +7,5 @@ type VacancyRepository interface {
 	UpsertVacancy(v *model.Vacancy) error
 	GetVacancyById(id uint) (model.Vacancy, error)
 	GetFilteredVacancies(filter model.VacancyFilter) ([]model.Vacancy, error)
+	CreateVacancy(v *model.Vacancy) error
 }

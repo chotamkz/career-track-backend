@@ -6,6 +6,7 @@ import (
 	"github.com/chotamkz/career-track-backend/internal/util"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -73,4 +74,24 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, vacancies)
+}
+
+func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
+	var vacancy model.Vacancy
+	if err := c.ShouldBindJSON(&vacancy); err != nil {
+		vh.logger.Errorf("Invalid vacancy input: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	vacancy.PostedDate = time.Now()
+	vacancy.CreatedAt = time.Now()
+
+	if err := vh.vacancyUsecase.CreateVacancy(&vacancy); err != nil {
+		vh.logger.Errorf("Failed to create vacancy: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vacancy"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, vacancy)
 }

@@ -135,3 +135,30 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model
 	}
 	return vacancies, nil
 }
+
+func (vr *VacancyRepo) CreateVacancy(v *model.Vacancy) error {
+	query := `
+		INSERT INTO vacancies 
+		(title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+		RETURNING id
+	`
+
+	return vr.DB.QueryRow(
+		query,
+		v.Title,
+		v.Description,
+		v.Requirements,
+		v.Location,
+		v.PostedDate,
+		v.EmployerID,
+		v.CreatedAt,
+		v.SalaryFrom,
+		v.SalaryTo,
+		v.SalaryCurrency,
+		v.SalaryGross,
+		v.VacancyURL,
+		v.WorkSchedule,
+		v.Experience,
+	).Scan(&v.ID)
+}
