@@ -14,7 +14,8 @@
     flex-direction: column;
     gap: 20px;
     width: 30%;
-    margin-top: 150px;
+    margin-top: 50px;
+    margin-left: 295px;
   }
   
   .hackathon-card {
@@ -34,10 +35,9 @@
   }
   
   .top-topics{
-    width: 40%;
+    width: 35%;
     height: 50%;  
-    margin-top: 99px;
-    margin-left: 150px;
+    margin-left: 100px;
   }
 
   .top-topics table {
@@ -53,12 +53,23 @@
   }
   
   .view-all-button {
-    margin-top: 700px;
+    width: 200px;
+    height: 50px;
+    margin-top: 100px;
     padding: 10px 20px;
     background-color: #4a90e2;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+
+  .view-all-button:hover{
+    background-color: #6ba3e2;
   }
   
+  #forYou{
+    margin-left: 0px;
+    margin-right: 1100px;
+  }

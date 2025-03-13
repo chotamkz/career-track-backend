@@ -1,0 +1,141 @@
+.hackaStoreContainer {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.title {
+    font-size: 50px;
+    font-weight: bold;
+    margin-top: 200px;
+    text-align: left;
+    width: 700px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+    width: 400px;
+    text-align: left;
+}
+
+/* Search Bar */
+.searchContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-left: 67px;
+    margin-top: 250px;
+    width: 1000px;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    height: 20px;
+}
+
+.searchButton {
+    background-color: #6b7bff;
+    color: white;
+    border: none;
+    padding: 13px 35px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    width: 200px;
+}
+
+.searchButton:hover {
+    background-color: #5567e8;
+}
+
+.content {
+    display: flex;
+    gap: 20px;
+}
+
+.filters {
+    width: 250px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    margin-top: 200px;
+    height: 450px;
+}
+
+.filters h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.filters label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.hackathonList {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    margin-top: 200px;
+}
+
+.hackathonCard {
+    display: flex;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    gap: 15px;
+    width: 600px;
+    margin-left: 200px;
+}
+
+.hackathonImage {
+    width: 80px;
+    height: 80px;
+    background: #ccc;
+    border-radius: 5px;
+}
+
+.hackathonDetails {
+    flex: 1;
+}
+
+.hackathonDetails h2 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.hackathonDetails p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status {
+    font-size: 12px;
+    color: #4CAF50;
+    font-weight: bold;
+}

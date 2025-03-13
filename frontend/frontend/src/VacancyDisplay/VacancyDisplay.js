@@ -23,6 +23,11 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     onFiltersChange({ ...searchFilters, locations });
   };
 
+  useEffect(() => {
+      if (selectedLocations.length > 0){
+        handleSearch();
+      }
+    }, [selectedLocations]);
 
   const vacanciesPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,4 +1,5 @@
-import React from "react";
+import React from "react"
+import { Link } from "react-router-dom"
 import "./HackaDisplay.css";
 
 const hackathons = [
@@ -41,45 +42,47 @@ const topics = [
 
 const HackaDisplay = () => {
   return (
-    <div className="hackathons-container">
-      <h2>Хакатоны для вас</h2>
-      <div className="hackathons-list">
-        {hackathons.map((hackathon) => (
-          <div key={hackathon.id} className="hackathon-card">
-            <div className="hackathon-image-placeholder"></div>
-            <div className="hackathon-details">
-              <h3>{hackathon.title}</h3>
-              <span className="days-left">{hackathon.daysLeft} дней до начала</span>
-              <span className="status">{hackathon.online ? "🌐 Онлайн" : "🏢 Оффлайн"}</span>
-              <p className="prize">{hackathon.prize}</p>
-              <p className="participants">{hackathon.participants} участников</p>
+    <div className="hackathons">
+      <h2 id="forYou">Хакатоны для вас</h2>
+      <div className="hackathons-container">
+        <div className="hackathons-list">
+          {hackathons.map((hackathon) => (
+            <div key={hackathon.id} className="hackathon-card">
+              <div className="hackathon-image-placeholder"></div>
+              <div className="hackathon-details">
+                <h3>{hackathon.title}</h3>
+                <span className="days-left">{hackathon.daysLeft} дней до начала</span>
+                <span className="status">{hackathon.online ? "🌐 Онлайн" : "🏢 Оффлайн"}</span>
+                <p className="prize">{hackathon.prize}</p>
+                <p className="participants">{hackathon.participants} участников</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-        <div className="top-topics">
-        <h2>Топ тем хакатонов</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Темы</th>
-              <th>Хакатоны</th>
-              <th>Общий приз</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topics.map((topic) => (
-              <tr key={topic.id}>
-                <td>{topic.name}</td>
-                <td>{topic.count}</td>
-                <td>{topic.prize}</td>
+          ))}
+        </div>
+          <div className="top-topics">
+          <h2>Топ тем хакатонов</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Темы</th>
+                <th>Хакатоны</th>
+                <th>Общий приз</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {topics.map((topic) => (
+                <tr key={topic.id}>
+                  <td>{topic.name}</td>
+                  <td>{topic.count}</td>
+                  <td>{topic.prize}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <button className="view-all-button">Все хакатоны</button>
-    </div>
+      <Link style={{ textDecoration: 'none', color: 'white'  }} to ="/HackaStorage"><button className="view-all-button">Все хакатоны</button></Link>
+   </div>
   );
 };
 
