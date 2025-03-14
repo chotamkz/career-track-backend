@@ -21,3 +21,7 @@ func (epu *EmployerProfileUsecase) GetProfile(userID uint) (model.EmployerProfil
 func (epu *EmployerProfileUsecase) UpdateProfile(profile *model.EmployerProfile) error {
 	return epu.repo.UpdateEmployerProfile(profile)
 }
+
+func (epu *EmployerProfileUsecase) CreateProfile(profile *model.EmployerProfile) error {
+	return epu.repo.CreateEmployerProfile(profile)
+}

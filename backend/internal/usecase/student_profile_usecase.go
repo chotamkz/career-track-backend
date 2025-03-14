@@ -21,3 +21,7 @@ func (spu *StudentProfileUsecase) GetProfile(userID uint) (model.StudentProfile,
 func (spu *StudentProfileUsecase) UpdateProfile(profile *model.StudentProfile) error {
 	return spu.repo.UpdateStudentProfile(profile)
 }
+
+func (spu *StudentProfileUsecase) CreateProfile(profile *model.StudentProfile) error {
+	return spu.repo.CreateStudentProfile(profile)
+}

@@ -4,14 +4,37 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
+	"github.com/chotamkz/career-track-backend/internal/util"
 )
 
 type ProfileRepo struct {
-	DB *sql.DB
+	DB     *sql.DB
+	Logger *util.Logger
 }
 
-func NewProfileRepo(db *sql.DB) *ProfileRepo {
-	return &ProfileRepo{DB: db}
+func NewProfileRepo(db *sql.DB, logger *util.Logger) *ProfileRepo {
+	return &ProfileRepo{DB: db, Logger: logger}
+}
+
+func (pr *ProfileRepo) CreateStudentProfile(profile *model.StudentProfile) error {
+	query := `INSERT INTO student_profiles (user_id, education) VALUES ($1, $2)`
+	_, err := pr.DB.Exec(query, profile.UserID, profile.Education)
+	if err != nil {
+		pr.Logger.Errorf("Error creating student profile for user_id %d: %v", profile.UserID, err)
+		return err
+	}
+	return nil
+}
+
+func (pr *ProfileRepo) CreateEmployerProfile(profile *model.EmployerProfile) error {
+	query := `INSERT INTO employer_profiles (user_id, company_name, company_description, contact_info)
+			  VALUES ($1, $2, $3, $4)`
+	_, err := pr.DB.Exec(query, profile.UserID, profile.CompanyName, profile.CompanyDescription, profile.ContactInfo)
+	if err != nil {
+		pr.Logger.Errorf("Error creating employer profile for user_id %d: %v", profile.UserID, err)
+		return err
+	}
+	return nil
 }
 
 func (pr *ProfileRepo) GetEmployerProfile(userID uint) (model.EmployerProfile, error) {
