@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registerStudent } from "../services/authService";
 import "./studentReg.css";
 
 const StudentReg = () => {
+  const [name, setName] = useState("");
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,12 +17,14 @@ const StudentReg = () => {
       return;
     }
 
-    const result = await registerStudent(emailOrPhone, password);
-    if (result.message === "Student registered successfully") {
+    const result = await registerStudent(name, emailOrPhone, password);
+    console.log("Registration response:", result);
+
+    if (result.id) {
       alert("Registration successful!");
-      navigate("/StudentLogin");
+      navigate("/StudentAuth");
     } else {
-      alert("Registration failed: " + result.message);
+      alert("Registration failed: " + (result.message || "Unknown error"));
     }
   };
 
@@ -29,6 +32,12 @@ const StudentReg = () => {
     <div className="student-reg-container">
       <div className="auth-box">
         <h2>Регистрация для поиска стажировок</h2>
+        <input
+          type="text"
+          placeholder="Ваше имя"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <input
           type="text"
           placeholder="Электронная почта или телефон"

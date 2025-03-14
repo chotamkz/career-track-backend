@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { registerEmployer } from "../services/authService";
 import "./employerReg.css";
 
 const EmployerReg = () => {
+  const [companyName, setCompanyName] = useState("");
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -16,12 +17,14 @@ const EmployerReg = () => {
       return;
     }
 
-    const result = await registerEmployer(emailOrPhone, password);
-    if (result.message === "Employer registered successfully") {
+    const result = await registerEmployer(companyName, emailOrPhone, password);
+    console.log("Registration response:", result);
+
+    if (result.id) {
       alert("Registration successful!");
-      navigate("/EmployerLogin"); // Redirect to login
+      navigate("/EmployerLogin");
     } else {
-      alert("Registration failed: " + result.message);
+      alert("Registration failed: " + (result.message || "Unknown error"));
     }
   };
 
@@ -29,6 +32,13 @@ const EmployerReg = () => {
     <div className="employer-register-container">
       <div className="employer-register-box">
         <h2 className="employer-register-title">Регистрация для работодателей</h2>
+        <input
+          type="text"
+          placeholder="Название компании"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+          className="employer-register-input"
+        />
         <input
           type="text"
           placeholder="Электронная почта или телефон"
@@ -50,7 +60,9 @@ const EmployerReg = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="employer-register-input"
         />
-        <button onClick={handleRegister} className="employer-register-button">Зарегистрироваться</button>
+        <button onClick={handleRegister} className="employer-register-button">
+          Зарегистрироваться
+        </button>
       </div>
     </div>
   );
