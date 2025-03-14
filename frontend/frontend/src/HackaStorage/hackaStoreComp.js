@@ -76,7 +76,7 @@ const HackaStoreComp = () => {
         </div>
   
         <div className="content">
-          <aside className="filters">
+          <aside className="hackafilters">
             <h3>Локация</h3>
             <label><input type="checkbox" /> Алматы</label>
             <label><input type="checkbox" /> Нур-Султан</label>

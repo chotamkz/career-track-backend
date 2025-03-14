@@ -34,7 +34,7 @@
   }
   
   .employer-register-button {
-    width: 100%;
+    width: 50%;
     padding: 12px;
     background-color: #6d88ff;
     color: white;
@@ -43,6 +43,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 5px;
   }
   
   .employer-register-button:hover {

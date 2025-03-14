@@ -3,40 +3,103 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
   }
   
-  .auth-box {
-    width: 350px;
-    padding: 20px;
-    background: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    text-align: center;
+  .student-reg-container .auth-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 380px;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
   
-  .auth-box h2 {
+  .student-reg-container .auth-box h2 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 15px;
   }
   
-  input {
+  .student-reg-container input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    border: 1px solid #cfcfcf;
     border-radius: 5px;
+    font-size: 14px;
   }
   
-  button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    background-color: #5c88ff;
+  .student-reg-container button {
+    width: 50%;
+    padding: 12px;
+    background-color: #6d88ff;
     color: white;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 5px;
   }
   
+  .student-reg-container button:hover{
+    background-color: #5b76e8;
+  }
+
+  /*
+.employer-register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+  }
+  
+  .employer-register-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 380px;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employer-register-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .employer-register-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cfcfcf;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .employer-register-button {
+    width: 50%;
+    padding: 12px;
+    background-color: #6d88ff;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+  
+  .employer-register-button:hover {
+    background-color: #5b76e8;
+  }
+  
+  */

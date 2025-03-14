@@ -6,7 +6,7 @@
     color: #333;
 }
 
-.title {
+.hackaStoreContainer .title {
     font-size: 50px;
     font-weight: bold;
     margin-top: 200px;
@@ -14,7 +14,7 @@
     width: 700px;
 }
 
-.subtitle {
+.hackaStoreContainer .subtitle {
     font-size: 16px;
     color: #666;
     margin-bottom: 20px;
@@ -22,8 +22,7 @@
     text-align: left;
 }
 
-/* Search Bar */
-.searchContainer {
+.hackaStoreContainer .searchContainer {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -33,7 +32,7 @@
     width: 1000px;
 }
 
-.searchInput {
+.hackaStoreContainer .searchInput {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -42,7 +41,7 @@
     height: 20px;
 }
 
-.searchButton {
+.hackaStoreContainer .searchButton {
     background-color: #6b7bff;
     color: white;
     border: none;
@@ -57,16 +56,16 @@
     width: 200px;
 }
 
-.searchButton:hover {
+.hackaStoreContainer .searchButton:hover {
     background-color: #5567e8;
 }
 
-.content {
+.hackaStoreContainer .content {
     display: flex;
     gap: 20px;
 }
 
-.filters {
+.hackaStoreContainer .hackafilters {
     width: 250px;
     padding: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -75,12 +74,12 @@
     height: 450px;
 }
 
-.filters h3 {
+.hackaStoreContainer .hackafilters h3 {
     font-size: 16px;
     margin-bottom: 10px;
 }
 
-.filters label {
+.hackaStoreContainer .hackafilters label {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -89,7 +88,7 @@
     cursor: pointer;
 }
 
-.hackathonList {
+.hackaStoreContainer .hackathonList {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -97,7 +96,7 @@
     margin-top: 200px;
 }
 
-.hackathonCard {
+.hackaStoreContainer .hackathonCard {
     display: flex;
     background: white;
     padding: 15px;
@@ -109,23 +108,23 @@
     margin-left: 200px;
 }
 
-.hackathonImage {
+.hackaStoreContainer .hackathonImage {
     width: 80px;
     height: 80px;
     background: #ccc;
     border-radius: 5px;
 }
 
-.hackathonDetails {
+.hackaStoreContainer .hackathonDetails {
     flex: 1;
 }
 
-.hackathonDetails h2 {
+.hackaStoreContainer .hackathonDetails h2 {
     font-size: 16px;
     margin-bottom: 5px;
 }
 
-.hackathonDetails p {
+.hackaStoreContainer .hackathonDetails p {
     font-size: 14px;
     color: #666;
     margin-bottom: 5px;
@@ -134,7 +133,7 @@
     gap: 5px;
 }
 
-.status {
+.hackaStoreContainer .status {
     font-size: 12px;
     color: #4CAF50;
     font-weight: bold;

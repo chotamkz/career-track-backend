@@ -42,9 +42,16 @@ const EmployerLog = () => {
         />
         <a href="#" className="employer-forgot-password">Не помню пароль</a>
         <button onClick={handleLogin} className="employer-login-button">Войти</button>
-        <Link to="/EmployerRegistration" style={{ textDecoration: 'none', color: 'white' }}>
+        <Link to="/EmployerRegistration" style={{ textDecoration: "none" }}>
           <button className="employer-register-button">Зарегистрироваться</button>
         </Link>
+        <div className="internship-section">
+          <h3 className="internship-title">Поиск стажировок</h3>
+          <p className="internship-description">Создавать резюме, искать стажировки и просмотр хакатонов</p>
+          <Link to="/StudentAuth">
+            <button className="internship-button">Начать искать</button>
+          </Link>
+        </div>
       </div>
     </div>
   );
