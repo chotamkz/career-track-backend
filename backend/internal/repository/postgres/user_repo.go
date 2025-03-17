@@ -23,12 +23,12 @@ func (ur *UserRepo) EnsureEmployerExists(employerID uint, companyName string) er
 	dummyPassword := "dummy"
 
 	query := `
-		INSERT INTO users (id, name, email, password, user_type, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, 'EMPLOYER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		INSERT INTO users (id, email, password, user_type, created_at, updated_at)
+		VALUES ($1, $2, $3, 'EMPLOYER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		ON CONFLICT (id) DO NOTHING
 	`
 
-	_, err := ur.DB.Exec(query, employerID, companyName, dummyEmail, dummyPassword)
+	_, err := ur.DB.Exec(query, employerID, dummyEmail, dummyPassword)
 	if err != nil {
 		ur.Logger.Errorf("Error in EnsureEmployerExists: %v", err)
 	}
@@ -42,21 +42,21 @@ func generateDummyEmail(companyName string) string {
 
 func (ur *UserRepo) CreateUser(user *model.User) error {
 	query := `
-		INSERT INTO users (name, email, password, user_type, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		INSERT INTO users (email, password, user_type, created_at, updated_at)
+		VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 		RETURNING id
 	`
-	return ur.DB.QueryRow(query, user.Name, user.Email, user.Password, user.UserType).Scan(&user.ID)
+	return ur.DB.QueryRow(query, user.Email, user.Password, user.UserType).Scan(&user.ID)
 }
 
 func (ur *UserRepo) GetUserByEmail(email string) (model.User, error) {
 	var user model.User
 	query := `
-		SELECT id, name, email, password, user_type, created_at, updated_at
+		SELECT id, email, password, user_type, created_at, updated_at
 		FROM users
 		WHERE email = $1
 	`
-	err := ur.DB.QueryRow(query, email).Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.UserType, &user.CreatedAt, &user.UpdatedAt)
+	err := ur.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.UserType, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return model.User{}, fmt.Errorf("GetUserByEmail: %w", err)
 	}

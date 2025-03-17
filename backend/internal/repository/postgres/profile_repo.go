@@ -17,8 +17,8 @@ func NewProfileRepo(db *sql.DB, logger *util.Logger) *ProfileRepo {
 }
 
 func (pr *ProfileRepo) CreateStudentProfile(profile *model.StudentProfile) error {
-	query := `INSERT INTO student_profiles (user_id, education) VALUES ($1, $2)`
-	_, err := pr.DB.Exec(query, profile.UserID, profile.Education)
+	query := `INSERT INTO student_profiles (user_id, name, education) VALUES ($1, $2, $3)`
+	_, err := pr.DB.Exec(query, profile.UserID, profile.Name, profile.Education)
 	if err != nil {
 		pr.Logger.Errorf("Error creating student profile for user_id %d: %v", profile.UserID, err)
 		return err

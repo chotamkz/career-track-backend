@@ -21,13 +21,28 @@ func NewAuthHandler(authUsecase *usecase.AuthUsecase, logger *util.Logger) *Auth
 }
 
 func (ah *AuthHandler) RegisterStudentHandler(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var input struct {
+		Email     string `json:"email"`
+		Password  string `json:"password"`
+		Name      string `json:"name"`
+		Education string `json:"education"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
 		ah.logger.Errorf("Invalid student registration input: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	if err := ah.authUsecase.RegisterStudent(&user); err != nil {
+
+	user := model.User{
+		Email:    input.Email,
+		Password: input.Password,
+		UserType: model.UserTypeStudent,
+	}
+	profile := model.StudentProfile{
+		Name:      input.Name,
+		Education: input.Education,
+	}
+	if err := ah.authUsecase.RegisterStudent(&user, &profile); err != nil {
 		if err == usecase.ErrAccountExists {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Account already exists"})
 			return
@@ -36,30 +51,32 @@ func (ah *AuthHandler) RegisterStudentHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Registration failed"})
 		return
 	}
-	responseUser := struct {
-		ID       uint   `json:"id"`
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		UserType string `json:"userType"`
-	}{
-		ID:       user.ID,
-		Name:     user.Name,
-		Email:    user.Email,
-		UserType: string(user.UserType),
-	}
-	//user.Password = ""
+	user.Password = ""
 
-	c.JSON(http.StatusCreated, responseUser)
+	c.JSON(http.StatusCreated, gin.H{"user": user, "profile": profile})
 }
 
 func (ah *AuthHandler) RegisterEmployerHandler(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var input struct {
+		Email       string `json:"email"`
+		Password    string `json:"password"`
+		CompanyName string `json:"companyName"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
 		ah.logger.Errorf("Invalid employer  registration input: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	if err := ah.authUsecase.RegisterEmployer(&user); err != nil {
+
+	user := model.User{
+		Email:    input.Email,
+		Password: input.Password,
+		UserType: model.UserTypeEmployer,
+	}
+	profile := model.EmployerProfile{
+		CompanyName: input.CompanyName,
+	}
+	if err := ah.authUsecase.RegisterEmployer(&user, &profile); err != nil {
 		if err == usecase.ErrAccountExists {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Account already exists"})
 			return
@@ -68,20 +85,9 @@ func (ah *AuthHandler) RegisterEmployerHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Registration failed"})
 		return
 	}
-	responseUser := struct {
-		ID       uint   `json:"id"`
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		UserType string `json:"userType"`
-	}{
-		ID:       user.ID,
-		Name:     user.Name,
-		Email:    user.Email,
-		UserType: string(user.UserType),
-	}
-	//user.Password = ""
 
-	c.JSON(http.StatusCreated, responseUser)
+	user.Password = ""
+	c.JSON(http.StatusCreated, gin.H{"user": user, "profile": profile})
 }
 
 func (ah *AuthHandler) Login(c *gin.Context) {

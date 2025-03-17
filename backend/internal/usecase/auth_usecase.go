@@ -15,24 +15,34 @@ var ErrAccountExists = errors.New("account already exists")
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
 type AuthUsecase struct {
-	userRepo repository.UserRepository
-	cfg      *config.Config
+	userRepo            repository.UserRepository
+	studentProfileRepo  repository.StudentProfileRepository
+	employerProfileRepo repository.EmployerProfileRepository
+	cfg                 *config.Config
 }
 
-func NewAuthUsecase(userRepo repository.UserRepository, cfg *config.Config) *AuthUsecase {
+func NewAuthUsecase(
+	userRepo repository.UserRepository,
+	studentRepo repository.StudentProfileRepository,
+	employerRepo repository.EmployerProfileRepository,
+	cfg *config.Config,
+) *AuthUsecase {
 	return &AuthUsecase{
-		userRepo: userRepo,
-		cfg:      cfg,
+		userRepo:            userRepo,
+		studentProfileRepo:  studentRepo,
+		employerProfileRepo: employerRepo,
+		cfg:                 cfg,
 	}
 }
 
-func (a *AuthUsecase) RegisterStudent(user *model.User) error {
+func (a *AuthUsecase) RegisterStudent(user *model.User, profile *model.StudentProfile) error {
+	if user.UserType != model.UserTypeStudent {
+		return errors.New("invalid user type for student registration")
+	}
 	existingUser, err := a.userRepo.GetUserByEmail(user.Email)
 	if err == nil && existingUser.ID != 0 {
 		return ErrAccountExists
 	}
-
-	user.UserType = model.UserTypeStudent
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -40,16 +50,23 @@ func (a *AuthUsecase) RegisterStudent(user *model.User) error {
 	}
 	user.Password = string(hashed)
 
-	return a.userRepo.CreateUser(user)
+	if err := a.userRepo.CreateUser(user); err != nil {
+		return err
+	}
+
+	profile.UserID = user.ID
+	return a.studentProfileRepo.CreateStudentProfile(profile)
+
 }
 
-func (a *AuthUsecase) RegisterEmployer(user *model.User) error {
+func (a *AuthUsecase) RegisterEmployer(user *model.User, profile *model.EmployerProfile) error {
+	if user.UserType != model.UserTypeEmployer {
+		return errors.New("invalid user type for employer registration")
+	}
 	existingUser, err := a.userRepo.GetUserByEmail(user.Email)
 	if err == nil && existingUser.ID != 0 {
 		return ErrAccountExists
 	}
-
-	user.UserType = model.UserTypeEmployer
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -57,7 +74,11 @@ func (a *AuthUsecase) RegisterEmployer(user *model.User) error {
 	}
 	user.Password = string(hashed)
 
-	return a.userRepo.CreateUser(user)
+	if err := a.userRepo.CreateUser(user); err != nil {
+		return err
+	}
+	profile.UserID = user.ID
+	return a.employerProfileRepo.CreateEmployerProfile(profile)
 }
 
 func (a *AuthUsecase) LoginUser(email, password string) (string, error) {

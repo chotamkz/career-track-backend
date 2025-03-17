@@ -27,8 +27,7 @@ const (
 )
 
 type User struct {
-	ID        uint      `json:"-" db:"id"`
-	Name      string    `json:"name" db:"name"`
+	ID        uint      `json:"id" db:"id"`
 	Email     string    `json:"email" db:"email"`
 	Password  string    `json:"password" db:"password"`
 	UserType  UserType  `json:"userType" db:"user_type"`
@@ -38,6 +37,7 @@ type User struct {
 
 type StudentProfile struct {
 	UserID    uint   `json:"userId" db:"user_id"`
+	Name      string `json:"name" db:"name"`
 	Education string `json:"education" db:"education"`
 }
 

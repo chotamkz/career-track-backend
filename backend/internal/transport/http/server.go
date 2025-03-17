@@ -38,13 +38,13 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.POST("/api/v1/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.CreateVacancyHandler)
 
 	userRepo := postgres.NewUserRepo(db, logger)
-	authUsecase := usecase.NewAuthUsecase(userRepo, cfg)
+	profileRepo := postgres.NewProfileRepo(db, logger)
+	authUsecase := usecase.NewAuthUsecase(userRepo, profileRepo, profileRepo, cfg)
 	authHandler := NewAuthHandler(authUsecase, logger)
 	router.POST("/api/v1/auth/register/student", authHandler.RegisterStudentHandler)
 	router.POST("/api/v1/auth/register/employer", authHandler.RegisterEmployerHandler)
 	router.POST("/api/v1/auth/login", authHandler.Login)
 
-	profileRepo := postgres.NewProfileRepo(db, logger)
 	employerProfileUsecase := usecase.NewEmployerProfileUsecase(profileRepo, logger)
 	employerProfileHandler := NewEmployerProfileHandler(employerProfileUsecase, logger)
 	router.GET("/api/v1/employers/:id", employerProfileHandler.GetEmployerProfile)

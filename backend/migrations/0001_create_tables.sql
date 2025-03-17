@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     user_type TEXT NOT NULL CHECK (user_type IN ('STUDENT', 'EMPLOYER', 'ADMIN')),
@@ -10,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS student_profiles (
     user_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
     education TEXT
 );
 
