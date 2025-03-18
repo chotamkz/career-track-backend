@@ -66,11 +66,13 @@ func (h *EmployerProfileHandler) UpdateEmployerProfile(c *gin.Context) {
 	}
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
-	if err != nil || uint(id) != profile.UserID {
-		h.logger.Errorf("Employer id mismatch")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Employer id mismatch"})
+	if err != nil {
+		h.logger.Errorf("Invalid employer id: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid employer id"})
 		return
 	}
+	profile.UserID = uint(id)
+
 	if err := h.usecase.UpdateProfile(&profile); err != nil {
 		h.logger.Errorf("Failed to update employer profile: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employer profile"})
