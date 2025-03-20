@@ -1,0 +1,8 @@
+.studentAccountContainer{
+    text-align: center;
+    height: 100%;
+}
+
+.studentAccountContainer .footer{
+    margin-top: 100px;
+}

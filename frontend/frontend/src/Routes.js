@@ -9,6 +9,8 @@ import StudentAuth from "./pages/StudentAuth";
 import StudentRegistration from "./pages/StudentRegistration";
 import EmployerLogin from "./pages/EmployerLogin";
 import EmployerRegistration from "./pages/EmployerRegistration";
+import StudentAccount from "./pages/StudentAccount";
+import EmployerAccount from "./pages/EmployerAccount";
 
 const AppRoutes = () => {
     return(
@@ -22,6 +24,8 @@ const AppRoutes = () => {
             <Route path="/StudentRegistration" element={<StudentRegistration />} />
             <Route path="/EmployerLogin" element={<EmployerLogin />} />
             <Route path="/EmployerRegistration" element={<EmployerRegistration />} /> 
+            <Route path="/StudentAccount" element={<StudentAccount />} />
+            <Route path="/EmployerAccount" element={<EmployerAccount />} />
         </Routes>
     )
 }

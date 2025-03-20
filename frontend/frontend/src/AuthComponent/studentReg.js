@@ -5,8 +5,9 @@ import "./studentReg.css";
 
 const StudentReg = () => {
   const [name, setName] = useState("");
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [education, setEducation] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ const StudentReg = () => {
       return;
     }
 
-    const result = await registerStudent(name, emailOrPhone, password);
+    const result = await registerStudent(name, email, education, password);
     console.log("Registration response:", result);
 
     if (result.id) {
@@ -41,8 +42,14 @@ const StudentReg = () => {
         <input
           type="text"
           placeholder="Электронная почта или телефон"
-          value={emailOrPhone}
-          onChange={(e) => setEmailOrPhone(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+        type="education"
+        placeholder="Образование"
+        value={education}
+        onChange={(e) => setEducation(e.target.value)}
         />
         <input
           type="password"

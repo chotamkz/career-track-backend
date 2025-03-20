@@ -5,7 +5,7 @@ import "./employerReg.css";
 
 const EmployerReg = () => {
   const [companyName, setCompanyName] = useState("");
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
@@ -17,9 +17,9 @@ const EmployerReg = () => {
       return;
     }
 
-    const result = await registerEmployer(companyName, emailOrPhone, password);
+    const result = await registerEmployer(companyName, email, password);
     console.log("Registration response:", result);
-
+    
     if (result.id) {
       alert("Registration successful!");
       navigate("/EmployerLogin");
@@ -42,8 +42,8 @@ const EmployerReg = () => {
         <input
           type="text"
           placeholder="Электронная почта или телефон"
-          value={emailOrPhone}
-          onChange={(e) => setEmailOrPhone(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="employer-register-input"
         />
         <input

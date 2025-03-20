@@ -1,41 +1,41 @@
 const API_BASE_URL = "http://localhost:8080/api/v1/auth";
 
-export const registerStudent = async (name, emailOrPhone, password) => {
+export const registerStudent = async (name, email, education, password) => {
   const response = await fetch(`${API_BASE_URL}/register/student`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, email: emailOrPhone, password }),
+    body: JSON.stringify({ name, email: email, education, password }),
   });
 
   return response.json();
 };
 
-export const registerEmployer = async (companyName, emailOrPhone, password) => {
+export const registerEmployer = async (companyName, email, password) => {
   const response = await fetch(`${API_BASE_URL}/register/employer`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name: companyName, email: emailOrPhone, password }),
+    body: JSON.stringify({ companyName: companyName, email, password }),
   });
 
   return response.json();
 };
 
 
-export const login = async (emailOrPhone, password) => {
+export const login = async (email, password) => {
   const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: emailOrPhone, password }),
+      body: JSON.stringify({ email: email, password }),
   });
 
   const result = await response.json();
   if (result.id) {
-      localStorage.setItem("token", "some-jwt-token"); // Replace with actual token
-      localStorage.setItem("userEmail", result.email); // Store user email
+      localStorage.setItem("token", "some-jwt-token"); 
+      localStorage.setItem("userEmail", result.email);
       localStorage.setItem("role", result.userType);
   }
   return result;
