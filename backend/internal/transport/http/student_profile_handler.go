@@ -59,11 +59,14 @@ func (h *StudentProfileHandler) UpdateStudentProfile(c *gin.Context) {
 	}
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
-	if err != nil || uint(id) != profile.UserID {
-		h.logger.Errorf("Student id mismatch")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Student id mismatch"})
+	if err != nil {
+		h.logger.Errorf("Invalid student id: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid student id"})
 		return
 	}
+
+	profile.UserID = uint(id)
+
 	if err := h.usecase.UpdateProfile(&profile); err != nil {
 		h.logger.Errorf("Failed to update student profile: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update student profile"})

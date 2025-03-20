@@ -68,9 +68,9 @@ func (pr *ProfileRepo) UpdateEmployerProfile(profile *model.EmployerProfile) err
 
 func (pr *ProfileRepo) GetStudentProfile(userID uint) (model.StudentProfile, error) {
 	var profile model.StudentProfile
-	query := `SELECT user_id, education 
+	query := `SELECT user_id, name, education 
 			  FROM student_profiles WHERE user_id = $1`
-	err := pr.DB.QueryRow(query, userID).Scan(&profile.UserID, &profile.Education)
+	err := pr.DB.QueryRow(query, userID).Scan(&profile.UserID, &profile.Name, &profile.Education)
 	if err != nil {
 		return model.StudentProfile{}, fmt.Errorf("GetStudentProfile: %w", err)
 	}
@@ -79,9 +79,9 @@ func (pr *ProfileRepo) GetStudentProfile(userID uint) (model.StudentProfile, err
 
 func (pr *ProfileRepo) UpdateStudentProfile(profile *model.StudentProfile) error {
 	query := `UPDATE student_profiles 
-			  SET education = $1 
-			  WHERE user_id = $2`
-	res, err := pr.DB.Exec(query, profile.Education, profile.UserID)
+			  SET name = $1, education = $2
+			  WHERE user_id = $3`
+	res, err := pr.DB.Exec(query, profile.Name, profile.Education, profile.UserID)
 	if err != nil {
 		return err
 	}
