@@ -17,8 +17,8 @@ type VacancyScheduler struct {
 	Interval       time.Duration
 }
 
-func NewVacancyScheduler(db *sql.DB, userRepo repository.UserRepository, vacancyRepo repository.VacancyRepository, logger *util.Logger, perPage, totalPages int, interval time.Duration) *VacancyScheduler {
-	updater := usecase.NewVacancyUpdater(userRepo, vacancyRepo, logger)
+func NewVacancyScheduler(db *sql.DB, userRepo repository.UserRepository, vacancyRepo repository.VacancyRepository, vacUsecase *usecase.VacancyUsecase, logger *util.Logger, perPage, totalPages int, interval time.Duration) *VacancyScheduler {
+	updater := usecase.NewVacancyUpdater(userRepo, vacancyRepo, vacUsecase, logger)
 	return &VacancyScheduler{
 		VacancyUpdater: updater,
 		Logger:         logger,

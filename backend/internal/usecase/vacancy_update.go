@@ -9,16 +9,18 @@ import (
 )
 
 type VacancyUpdater struct {
-	UserRepo    repository.UserRepository
-	VacancyRepo repository.VacancyRepository
-	Logger      *util.Logger
+	UserRepo       repository.UserRepository
+	VacancyRepo    repository.VacancyRepository
+	vacancyUsecase *VacancyUsecase
+	Logger         *util.Logger
 }
 
-func NewVacancyUpdater(userRepo repository.UserRepository, vacancyRepo repository.VacancyRepository, logger *util.Logger) *VacancyUpdater {
+func NewVacancyUpdater(userRepo repository.UserRepository, vacancyRepo repository.VacancyRepository, vacUsecase *VacancyUsecase, logger *util.Logger) *VacancyUpdater {
 	return &VacancyUpdater{
-		UserRepo:    userRepo,
-		VacancyRepo: vacancyRepo,
-		Logger:      logger,
+		UserRepo:       userRepo,
+		VacancyRepo:    vacancyRepo,
+		vacancyUsecase: vacUsecase,
+		Logger:         logger,
 	}
 }
 
@@ -44,6 +46,12 @@ func (vu *VacancyUpdater) UpdateVacancies(perPage, page int) error {
 		if err := vu.VacancyRepo.UpsertVacancy(&vacancy); err != nil {
 			vu.Logger.Errorf("Failed to upsert vacancy '%s': %v", vacancy.Title, err)
 			continue
+		}
+
+		if len(vacancy.Skills) > 0 {
+			if err := vu.vacancyUsecase.AddSkillsToVacancy(vacancy.ID, vacancy.Skills); err != nil {
+				vu.Logger.Errorf("Failed to add skills to vacancy '%s': %v", vacancy.Title, err)
+			}
 		}
 
 		vu.Logger.Info("Upserted vacancy: " + vacancy.Title)

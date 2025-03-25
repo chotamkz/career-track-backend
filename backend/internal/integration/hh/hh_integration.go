@@ -120,6 +120,15 @@ func MapHHVacancyToInternal(hhVac HHVacancy, logger *util.Logger) model.Vacancy 
 			vacancy.Location = detail.Address.Raw
 			vacancy.WorkSchedule = detail.Schedule.Name
 			vacancy.Experience = detail.Experience.Name
+
+			var skills []string
+			for _, ks := range detail.KeySkills {
+				skill := strings.TrimSpace(ks.Name)
+				if skill != "" {
+					skills = append(skills, skill)
+				}
+			}
+			vacancy.Skills = skills
 		}
 	} else {
 		vacancy.Description = hhVac.Description.Text
@@ -128,6 +137,14 @@ func MapHHVacancyToInternal(hhVac HHVacancy, logger *util.Logger) model.Vacancy 
 			vacancy.Location = detail.Address.Raw
 			vacancy.WorkSchedule = detail.Schedule.Name
 			vacancy.Experience = detail.Experience.Name
+			var skills []string
+			for _, ks := range detail.KeySkills {
+				skill := strings.TrimSpace(ks.Name)
+				if skill != "" {
+					skills = append(skills, skill)
+				}
+			}
+			vacancy.Skills = skills
 		} else {
 			vacancy.Location = "Unknown"
 		}
@@ -146,7 +163,6 @@ func MapHHVacancyToInternal(hhVac HHVacancy, logger *util.Logger) model.Vacancy 
 	if err == nil {
 		vacancy.EmployerID = uint(empID)
 	}
-
 	vacancy.CreatedAt = time.Now()
 
 	if hhVac.Salary != nil {

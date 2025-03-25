@@ -17,9 +17,7 @@ def preprocess_text(text):
 
 # Function to get DB connection using DATABASE_URL env variable
 def get_db_connection():
-    conn_str = os.environ.get("DATABASE_URL")
-    if not conn_str:
-        raise ValueError("DATABASE_URL environment variable not set")
+    conn_str = "postgresql://careertrack_f38p_user:ib08LVqEQeueQCKGw60SiOHprXg0TQIG@dpg-cvc4okaj1k6c73e50ov0-a.oregon-postgres.render.com/careertrack_f38p"
     return psycopg2.connect(conn_str)
 
 # Load vacancies from DB with aggregated key skills
