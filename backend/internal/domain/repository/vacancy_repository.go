@@ -8,4 +8,5 @@ type VacancyRepository interface {
 	GetVacancyById(id uint) (model.Vacancy, error)
 	GetFilteredVacancies(filter model.VacancyFilter) ([]model.Vacancy, error)
 	CreateVacancy(v *model.Vacancy) error
+	InsertVacancySkill(vacancyID uint, skillName string) error
 }

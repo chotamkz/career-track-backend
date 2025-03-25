@@ -30,9 +30,11 @@ func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
 			&v.ID, &v.Title, &v.Description, &v.Requirements,
 			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
 		)
+		skills, err := vr.getSkillsForVacancy(v.ID)
 		if err != nil {
 			return nil, err
 		}
+		v.Skills = skills
 		vacancies = append(vacancies, v)
 	}
 	if err = rows.Err(); err != nil {
@@ -74,10 +76,11 @@ func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
 		&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location,
 		&v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
 	)
-
+	skills, err := vr.getSkillsForVacancy(v.ID)
 	if err != nil {
 		return model.Vacancy{}, fmt.Errorf("GetVacancyById: %w", err)
 	}
+	v.Skills = skills
 	return v, nil
 }
 
@@ -125,9 +128,11 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model
 	for rows.Next() {
 		var v model.Vacancy
 		err := rows.Scan(&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
+		skills, err := vr.getSkillsForVacancy(v.ID)
 		if err != nil {
 			return nil, err
 		}
+		v.Skills = skills
 		vacancies = append(vacancies, v)
 	}
 	if err = rows.Err(); err != nil {
@@ -146,19 +151,54 @@ func (vr *VacancyRepo) CreateVacancy(v *model.Vacancy) error {
 
 	return vr.DB.QueryRow(
 		query,
-		v.Title,
-		v.Description,
-		v.Requirements,
-		v.Location,
-		v.PostedDate,
-		v.EmployerID,
-		v.CreatedAt,
-		v.SalaryFrom,
-		v.SalaryTo,
-		v.SalaryCurrency,
-		v.SalaryGross,
-		v.VacancyURL,
-		v.WorkSchedule,
-		v.Experience,
+		v.Title, v.Description, v.Requirements, v.Location, v.PostedDate,
+		v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency,
+		v.SalaryGross, v.VacancyURL, v.WorkSchedule, v.Experience,
 	).Scan(&v.ID)
+}
+
+func (vr *VacancyRepo) InsertVacancySkill(vacancyID uint, skillName string) error {
+	var skillID uint
+	querySelect := `SELECT id FROM skills WHERE name = $1`
+	err := vr.DB.QueryRow(querySelect, skillName).Scan(&skillID)
+	if err == sql.ErrNoRows {
+		queryInsert := `INSERT INTO skills (name, created_at, updated_at) VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING id`
+		err = vr.DB.QueryRow(queryInsert, skillName).Scan(&skillID)
+		if err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+	query := `
+		INSERT INTO vacancy_skills (vacancy_id, skill_id, created_at, updated_at)
+		VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		ON CONFLICT DO NOTHING
+	`
+	_, err = vr.DB.Exec(query, vacancyID, skillID)
+	return err
+}
+
+func (vr *VacancyRepo) getSkillsForVacancy(vacancyID uint) ([]string, error) {
+	query := `
+		SELECT s.name 
+		FROM vacancy_skills vs
+		JOIN skills s ON vs.skill_id = s.id
+		WHERE vs.vacancy_id = $1
+	`
+	rows, err := vr.DB.Query(query, vacancyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var skills []string
+	for rows.Next() {
+		var skill string
+		if err := rows.Scan(&skill); err != nil {
+			return nil, err
+		}
+		skills = append(skills, skill)
+	}
+	return skills, nil
 }

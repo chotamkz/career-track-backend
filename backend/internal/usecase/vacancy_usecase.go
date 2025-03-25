@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
+	"strings"
 )
 
 type VacancyUsecase struct {
@@ -29,4 +30,17 @@ func (vu *VacancyUsecase) FilterVacancies(filter model.VacancyFilter) ([]model.V
 
 func (vu *VacancyUsecase) CreateVacancy(v *model.Vacancy) error {
 	return vu.vacancyRepo.CreateVacancy(v)
+}
+
+func (vu *VacancyUsecase) AddSkillsToVacancy(vacancyID uint, skills []string) error {
+	for _, s := range skills {
+		skillName := strings.TrimSpace(s)
+		if skillName == "" {
+			continue
+		}
+		if err := vu.vacancyRepo.InsertVacancySkill(vacancyID, skillName); err != nil {
+			return err
+		}
+	}
+	return nil
 }

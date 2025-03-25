@@ -77,12 +77,40 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 }
 
 func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
-	var vacancy model.Vacancy
-	if err := c.ShouldBindJSON(&vacancy); err != nil {
+	var input struct {
+		Title          string   `json:"title"`
+		Description    string   `json:"description"`
+		Requirements   string   `json:"requirements"`
+		Location       string   `json:"location"`
+		SalaryFrom     float64  `json:"salary_from"`
+		SalaryTo       float64  `json:"salary_to"`
+		SalaryCurrency string   `json:"salary_currency"`
+		SalaryGross    bool     `json:"salary_gross"`
+		VacancyURL     string   `json:"vacancy_url"`
+		WorkSchedule   string   `json:"work_schedule"`
+		Experience     string   `json:"experience"`
+		Skills         []string `json:"skills"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
 		vh.logger.Errorf("Invalid vacancy input: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
+
+	var vacancy model.Vacancy
+	vacancy.Title = input.Title
+	vacancy.Description = input.Description
+	vacancy.Requirements = input.Requirements
+	vacancy.Location = input.Location
+	vacancy.SalaryFrom = input.SalaryFrom
+	vacancy.SalaryTo = input.SalaryTo
+	vacancy.SalaryCurrency = input.SalaryCurrency
+	vacancy.SalaryGross = input.SalaryGross
+	vacancy.VacancyURL = input.VacancyURL
+	vacancy.WorkSchedule = input.WorkSchedule
+	vacancy.Experience = input.Experience
+	vacancy.PostedDate = time.Now()
+	vacancy.CreatedAt = time.Now()
 
 	employerID, exists := c.Get("user")
 	if !exists {
@@ -92,13 +120,19 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	}
 	vacancy.EmployerID = employerID.(uint)
 
-	vacancy.PostedDate = time.Now()
-	vacancy.CreatedAt = time.Now()
-
 	if err := vh.vacancyUsecase.CreateVacancy(&vacancy); err != nil {
 		vh.logger.Errorf("Failed to create vacancy: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vacancy"})
 		return
+	}
+
+	if len(input.Skills) > 0 {
+		if err := vh.vacancyUsecase.AddSkillsToVacancy(vacancy.ID, input.Skills); err != nil {
+			vh.logger.Errorf("Failed to add skills to vacancy: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Vacancy created, but failed to add skills"})
+			return
+		}
+		vacancy.Skills = input.Skills
 	}
 
 	c.JSON(http.StatusCreated, vacancy)
