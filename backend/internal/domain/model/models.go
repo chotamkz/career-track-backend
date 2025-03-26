@@ -56,22 +56,23 @@ type AdminProfile struct {
 }
 
 type Vacancy struct {
-	ID             uint      `json:"id" db:"id"`
-	Title          string    `json:"title" db:"title"`
-	Description    string    `json:"description" db:"description"`
-	Requirements   string    `json:"requirements" db:"requirements"`
-	Location       string    `json:"location" db:"location"`
-	PostedDate     time.Time `json:"postedDate" db:"posted_date"`
-	EmployerID     uint      `json:"employerId" db:"employer_id"`
-	CreatedAt      time.Time `json:"createdAt" db:"created_at"`
-	SalaryFrom     float64   `json:"salary_from" db:"salary_from"`
-	SalaryTo       float64   `json:"salary_to" db:"salary_to"`
-	SalaryCurrency string    `json:"salary_currency" db:"salary_currency"`
-	SalaryGross    bool      `json:"salary_gross" db:"salary_gross"`
-	VacancyURL     string    `json:"vacancy_url" db:"vacancy_url"`
-	WorkSchedule   string    `json:"work_schedule" db:"work_schedule"`
-	Experience     string    `json:"experience" db:"experience"`
-	Skills         []string  `json:"skills,omitempty" db:"-"`
+	ID              uint      `json:"id" db:"id"`
+	Title           string    `json:"title" db:"title"`
+	Description     string    `json:"description" db:"description"`
+	Requirements    string    `json:"requirements" db:"requirements"`
+	Location        string    `json:"location" db:"location"`
+	PostedDate      time.Time `json:"postedDate" db:"posted_date"`
+	EmployerID      uint      `json:"employerId" db:"employer_id"`
+	CreatedAt       time.Time `json:"createdAt" db:"created_at"`
+	SalaryFrom      float64   `json:"salary_from" db:"salary_from"`
+	SalaryTo        float64   `json:"salary_to" db:"salary_to"`
+	SalaryCurrency  string    `json:"salary_currency" db:"salary_currency"`
+	SalaryGross     bool      `json:"salary_gross" db:"salary_gross"`
+	VacancyURL      string    `json:"vacancy_url" db:"vacancy_url"`
+	WorkSchedule    string    `json:"work_schedule" db:"work_schedule"`
+	Experience      string    `json:"experience" db:"experience"`
+	SimilarityScore float64   `json:"similarity_score,omitempty" db:"-"`
+	Skills          []string  `json:"skills,omitempty" db:"-"`
 }
 
 type Application struct {

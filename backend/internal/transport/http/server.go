@@ -31,10 +31,11 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 
 	vacancyRepo := postgres.NewVacancyRepo(db)
 	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo)
-	vacancyHandler := NewVacancyHandler(vacancyUsecase, logger)
+	vacancyHandler := NewVacancyHandler(vacancyUsecase, logger, cfg)
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
 	router.GET("/api/v1/vacancies/:id", vacancyHandler.DetailVacancyHandler)
 	router.GET("/api/v1/vacancies/filter", vacancyHandler.FilterVacanciesHandler)
+	router.GET("/api/v1/vacancies/recommend", vacancyHandler.RecommendVacanciesHandler)
 	router.POST("/api/v1/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.CreateVacancyHandler)
 
 	userRepo := postgres.NewUserRepo(db, logger)

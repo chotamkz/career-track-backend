@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
+	"strings"
 )
 
 type VacancyRepo struct {
@@ -201,4 +202,37 @@ func (vr *VacancyRepo) getSkillsForVacancy(vacancyID uint) ([]string, error) {
 		skills = append(skills, skill)
 	}
 	return skills, nil
+}
+
+func (vr *VacancyRepo) GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error) {
+	if len(ids) == 0 {
+		return []model.Vacancy{}, nil
+	}
+	params := make([]interface{}, len(ids))
+	placeholders := make([]string, len(ids))
+	for i, id := range ids {
+		params[i] = id
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+	}
+	query := fmt.Sprintf(`
+		SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience
+		FROM vacancies
+		WHERE id IN (%s)
+	`, strings.Join(placeholders, ","))
+	rows, err := vr.DB.Query(query, params...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var vacancies []model.Vacancy
+	for rows.Next() {
+		var v model.Vacancy
+		err := rows.Scan(&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
+		if err != nil {
+			return nil, err
+		}
+		vacancies = append(vacancies, v)
+	}
+	return vacancies, nil
 }

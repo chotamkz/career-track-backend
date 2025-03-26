@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/chotamkz/career-track-backend/internal/config"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
 	"github.com/chotamkz/career-track-backend/internal/util"
@@ -14,12 +15,14 @@ import (
 type VacancyHandler struct {
 	vacancyUsecase *usecase.VacancyUsecase
 	logger         *util.Logger
+	cfg            *config.Config
 }
 
-func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, logger *util.Logger) *VacancyHandler {
+func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, logger *util.Logger, cfg *config.Config) *VacancyHandler {
 	return &VacancyHandler{
 		vacancyUsecase: vacUsecase,
 		logger:         logger,
+		cfg:            cfg,
 	}
 }
 
@@ -136,4 +139,29 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, vacancy)
+}
+
+func (vh *VacancyHandler) RecommendVacanciesHandler(c *gin.Context) {
+	studentSkills := c.Query("student_skills")
+	if studentSkills == "" {
+		vh.logger.Errorf("Missing parameter: student_skills")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_skills is required"})
+		return
+	}
+
+	mlServiceURL := vh.cfg.MLServiceURL
+	if mlServiceURL == "" {
+		vh.logger.Errorf("ML_SERVICE_URL is not set in config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ML service URL is not configured"})
+		return
+	}
+
+	recommendations, err := vh.vacancyUsecase.GetRecommendedVacancies(studentSkills, mlServiceURL)
+	if err != nil {
+		vh.logger.Errorf("Failed to get recommended vacancies: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get recommendations"})
+		return
+	}
+
+	c.JSON(http.StatusOK, recommendations)
 }
