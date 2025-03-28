@@ -17,7 +17,7 @@ func NewVacancyRepo(db *sql.DB) repository.VacancyRepository {
 }
 
 func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
-	query := `SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience  FROM vacancies`
+	query := `SELECT id, title, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience  FROM vacancies`
 	rows, err := vr.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -28,14 +28,14 @@ func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
 	for rows.Next() {
 		var v model.Vacancy
 		err := rows.Scan(
-			&v.ID, &v.Title, &v.Description, &v.Requirements,
+			&v.ID, &v.Title /*&v.Description,*/, &v.Requirements,
 			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
 		)
-		skills, err := vr.getSkillsForVacancy(v.ID)
+		//skills, err := vr.getSkillsForVacancy(v.ID)
 		if err != nil {
 			return nil, err
 		}
-		v.Skills = skills
+		//v.Skills = skills
 		vacancies = append(vacancies, v)
 	}
 	if err = rows.Err(); err != nil {
@@ -87,7 +87,7 @@ func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
 
 func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model.Vacancy, error) {
 	query := `
-		SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience 
+		SELECT id, title, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience 
 		FROM vacancies 
 		WHERE 1=1`
 	var args []interface{}
@@ -128,12 +128,12 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model
 	var vacancies []model.Vacancy
 	for rows.Next() {
 		var v model.Vacancy
-		err := rows.Scan(&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
-		skills, err := vr.getSkillsForVacancy(v.ID)
+		err := rows.Scan(&v.ID, &v.Title /*&v.Description,*/, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
+		//skills, err := vr.getSkillsForVacancy(v.ID)
 		if err != nil {
 			return nil, err
 		}
-		v.Skills = skills
+		//v.Skills = skills
 		vacancies = append(vacancies, v)
 	}
 	if err = rows.Err(); err != nil {
@@ -215,7 +215,7 @@ func (vr *VacancyRepo) GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error) {
 		placeholders[i] = fmt.Sprintf("$%d", i+1)
 	}
 	query := fmt.Sprintf(`
-		SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience
+		SELECT id, title, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience
 		FROM vacancies
 		WHERE id IN (%s)
 	`, strings.Join(placeholders, ","))
@@ -228,7 +228,7 @@ func (vr *VacancyRepo) GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error) {
 	var vacancies []model.Vacancy
 	for rows.Next() {
 		var v model.Vacancy
-		err := rows.Scan(&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
+		err := rows.Scan(&v.ID, &v.Title /*&v.Description,*/, &v.Requirements, &v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience)
 		if err != nil {
 			return nil, err
 		}

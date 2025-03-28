@@ -105,15 +105,6 @@ func initializeDB(databaseURL string, logger *util.Logger) (*sql.DB, error) {
 	}
 	logger.Info("Database migration completed successfully")
 
-	///import csv
-	/*	err = transport.ImportVacanciesFromCSV("vacancies.csv", dbConn, logger)
-		if err != nil {
-			log.Fatalf("CSV import failed: %v", err)
-		}
-
-		log.Println("CSV import completed successfully.")*/
-	////
-
 	return dbConn, nil
 }
 

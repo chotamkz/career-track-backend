@@ -21,7 +21,7 @@ func LoadConfig() *Config {
 	serverAddress := getEnv("SERVER_ADDRESS", ":8080")
 	logLevel := getEnv("LOG_LEVEL", "INFO")
 	jwtSecret := getEnv("JWT_SECRET", "")
-	mlServiceURL := getEnv("ML_SERVICE_URL", "http://localhost:5000")
+	mlServiceURL := getEnv("ML_SERVICE_URL", "")
 
 	return &Config{
 		DatabaseURL:   databaseURL,

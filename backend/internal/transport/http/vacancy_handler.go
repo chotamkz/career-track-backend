@@ -61,35 +61,37 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 		Schedule:   c.Query("schedule"),
 	}
 	if salaryStr := c.Query("salary_from"); salaryStr != "" {
-		salary, err := strconv.ParseFloat(salaryStr, 64)
-		if err != nil {
+		if s, err := strconv.ParseFloat(salaryStr, 64); err == nil {
+			filter.SalaryFrom = s
+		} else {
 			vh.logger.Errorf("Invalid salary_from: %v", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid salary_from"})
 			return
 		}
-		filter.SalaryFrom = salary
 	}
 
 	mlSkills := c.Query("ml_skills")
 
+	var response interface{}
+	var err error
+
 	if mlSkills != "" {
-		recs, err := vh.vacancyUsecase.GetRecommendedVacancies(filter, mlSkills)
+		response, err = vh.vacancyUsecase.GetRecommendedVacancies(filter, mlSkills)
 		if err != nil {
 			vh.logger.Errorf("Failed to get recommended vacancies: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get recommendations"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"vacancies": recs})
-		return
+	} else {
+		response, err = vh.vacancyUsecase.FilterVacancies(filter)
+		if err != nil {
+			vh.logger.Errorf("Failed to filter vacancies: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to filter vacancies"})
+			return
+		}
 	}
 
-	vacancies, err := vh.vacancyUsecase.FilterVacancies(filter)
-	if err != nil {
-		vh.logger.Errorf("Failed to filter vacancies: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-		return
-	}
-	c.JSON(http.StatusOK, vacancies)
+	c.JSON(http.StatusOK, gin.H{"vacancies": response})
 }
 
 func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {

@@ -63,57 +63,62 @@ func (vu *VacancyUsecase) AddSkillsToVacancy(vacancyID uint, skills []string) er
 }
 
 func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, mlSkills string) ([]model.VacancyMLResponse, error) {
-	sqlVacancies, err := vu.vacancyRepo.GetFilteredVacancies(filter)
-	if err != nil {
-		return nil, fmt.Errorf("SQL filtering failed: %v", err)
-	}
-
-	if strings.TrimSpace(mlSkills) == "" {
-		var result []model.VacancyMLResponse
-		for _, v := range sqlVacancies {
-			result = append(result, model.VacancyMLResponse{Vacancy: v})
-		}
-		return result, nil
-	}
-
 	mlResp, err := getMLRecommendations(mlSkills, vu.mlServiceURL)
 	if err != nil {
 		return nil, fmt.Errorf("ML service call failed: %v", err)
 	}
 
+	var mlIDs []uint
 	recMap := make(map[uint]MLRecommendation)
 	for _, rec := range mlResp.Recommendations {
+		mlIDs = append(mlIDs, rec.VacancyID)
 		recMap[rec.VacancyID] = rec
 	}
 
+	vacancies, err := vu.vacancyRepo.GetVacanciesByIDs(mlIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch vacancies by IDs: %v", err)
+	}
+
+	lcKeywords := strings.ToLower(filter.Keywords)
+	lcRegion := strings.ToLower(filter.Region)
+	lcExperience := strings.ToLower(filter.Experience)
+	lcSchedule := strings.ToLower(filter.Schedule)
+
+	var filteredVacancies []model.Vacancy
+	for _, v := range vacancies {
+		lcTitle := strings.ToLower(v.Title)
+		lcDesc := strings.ToLower(v.Description)
+		lcLocation := strings.ToLower(v.Location)
+		lcVacExperience := strings.ToLower(v.Experience)
+		lcVacSchedule := strings.ToLower(v.WorkSchedule)
+
+		if lcKeywords != "" && !strings.Contains(lcTitle, lcKeywords) && !strings.Contains(lcDesc, lcKeywords) {
+			continue
+		}
+		if lcRegion != "" && !strings.Contains(lcLocation, lcRegion) {
+			continue
+		}
+		if lcExperience != "" && !strings.Contains(lcVacExperience, lcExperience) {
+			continue
+		}
+		if filter.SalaryFrom > 0 && v.SalaryFrom < filter.SalaryFrom {
+			continue
+		}
+		if lcSchedule != "" && !strings.Contains(lcVacSchedule, lcSchedule) {
+			continue
+		}
+		filteredVacancies = append(filteredVacancies, v)
+	}
+
 	var result []model.VacancyMLResponse
-	for _, v := range sqlVacancies {
+	for _, v := range filteredVacancies {
 		if rec, ok := recMap[v.ID]; ok {
 			result = append(result, model.VacancyMLResponse{
 				Vacancy:         v,
 				SimilarityScore: rec.SimilarityScore,
 				MissingSkills:   rec.MissingSkills,
 			})
-		}
-	}
-
-	if len(result) == 0 && len(recMap) > 0 {
-		var mlIDs []uint
-		for id := range recMap {
-			mlIDs = append(mlIDs, id)
-		}
-		vacancies, err := vu.vacancyRepo.GetVacanciesByIDs(mlIDs)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch vacancies by IDs: %v", err)
-		}
-		for _, v := range vacancies {
-			if rec, ok := recMap[v.ID]; ok {
-				result = append(result, model.VacancyMLResponse{
-					Vacancy:         v,
-					SimilarityScore: rec.SimilarityScore,
-					MissingSkills:   rec.MissingSkills,
-				})
-			}
 		}
 	}
 

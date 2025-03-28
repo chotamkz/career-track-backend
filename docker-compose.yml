@@ -2,11 +2,15 @@ version: "3.8"
 
 services:
   backend:
-    image: career-track-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     environment:
       - DATABASE_URL=postgresql://careertrack_f38p_user:ib08LVqEQeueQCKGw60SiOHprXg0TQIG@dpg-cvc4okaj1k6c73e50ov0-a.oregon-postgres.render.com/careertrack_f38p
       - SERVER_ADDRESS=:8080
       - LOG_LEVEL=INFO
+      - JWT_SECRET=alsdkjhf4lk5j4thy45lyyhl45jh
+      - ML_SERVICE_URL=http://ml_service:5000
     ports:
       - "8080:8080"
     depends_on:
@@ -15,6 +19,7 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:80"
     depends_on:
@@ -34,6 +39,7 @@ services:
   ml_service:
     build:
       context: ./ml
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     depends_on:
