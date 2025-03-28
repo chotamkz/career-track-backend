@@ -22,12 +22,14 @@ type MLResponse struct {
 }
 
 type VacancyUsecase struct {
-	vacancyRepo repository.VacancyRepository
+	vacancyRepo  repository.VacancyRepository
+	mlServiceURL string
 }
 
-func NewVacancyUsecase(vacRepo repository.VacancyRepository) *VacancyUsecase {
+func NewVacancyUsecase(vacRepo repository.VacancyRepository, mlServiceURL string) *VacancyUsecase {
 	return &VacancyUsecase{
-		vacancyRepo: vacRepo,
+		vacancyRepo:  vacRepo,
+		mlServiceURL: mlServiceURL,
 	}
 }
 
@@ -60,7 +62,65 @@ func (vu *VacancyUsecase) AddSkillsToVacancy(vacancyID uint, skills []string) er
 	return nil
 }
 
-func GetMLRecommendations(studentSkills, mlServiceURL string) (MLResponse, error) {
+func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, mlSkills string) ([]model.VacancyMLResponse, error) {
+	sqlVacancies, err := vu.vacancyRepo.GetFilteredVacancies(filter)
+	if err != nil {
+		return nil, fmt.Errorf("SQL filtering failed: %v", err)
+	}
+
+	if strings.TrimSpace(mlSkills) == "" {
+		var result []model.VacancyMLResponse
+		for _, v := range sqlVacancies {
+			result = append(result, model.VacancyMLResponse{Vacancy: v})
+		}
+		return result, nil
+	}
+
+	mlResp, err := getMLRecommendations(mlSkills, vu.mlServiceURL)
+	if err != nil {
+		return nil, fmt.Errorf("ML service call failed: %v", err)
+	}
+
+	recMap := make(map[uint]MLRecommendation)
+	for _, rec := range mlResp.Recommendations {
+		recMap[rec.VacancyID] = rec
+	}
+
+	var result []model.VacancyMLResponse
+	for _, v := range sqlVacancies {
+		if rec, ok := recMap[v.ID]; ok {
+			result = append(result, model.VacancyMLResponse{
+				Vacancy:         v,
+				SimilarityScore: rec.SimilarityScore,
+				MissingSkills:   rec.MissingSkills,
+			})
+		}
+	}
+
+	if len(result) == 0 && len(recMap) > 0 {
+		var mlIDs []uint
+		for id := range recMap {
+			mlIDs = append(mlIDs, id)
+		}
+		vacancies, err := vu.vacancyRepo.GetVacanciesByIDs(mlIDs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch vacancies by IDs: %v", err)
+		}
+		for _, v := range vacancies {
+			if rec, ok := recMap[v.ID]; ok {
+				result = append(result, model.VacancyMLResponse{
+					Vacancy:         v,
+					SimilarityScore: rec.SimilarityScore,
+					MissingSkills:   rec.MissingSkills,
+				})
+			}
+		}
+	}
+
+	return result, nil
+}
+
+func getMLRecommendations(studentSkills, mlServiceURL string) (MLResponse, error) {
 	payload := map[string]string{
 		"student_skills": studentSkills,
 	}
@@ -82,39 +142,4 @@ func GetMLRecommendations(studentSkills, mlServiceURL string) (MLResponse, error
 		return MLResponse{}, fmt.Errorf("failed to unmarshal ML response: %v", err)
 	}
 	return mlResp, nil
-}
-
-func (vu *VacancyUsecase) GetRecommendedVacancies(studentSkills, mlServiceURL string) ([]model.VacancyMLResponse, error) {
-	mlResp, err := GetMLRecommendations(studentSkills, mlServiceURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var ids []uint
-	recMap := make(map[uint]MLRecommendation)
-	for _, rec := range mlResp.Recommendations {
-		ids = append(ids, rec.VacancyID)
-		recMap[rec.VacancyID] = rec
-	}
-
-	vacancies, err := vu.vacancyRepo.GetVacanciesByIDs(ids)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch vacancies by IDs: %v", err)
-	}
-
-	var result []model.VacancyMLResponse
-	for _, v := range vacancies {
-		rec, ok := recMap[v.ID]
-		if !ok {
-			continue
-		}
-		resp := model.VacancyMLResponse{
-			Vacancy:       v,
-			MissingSkills: rec.MissingSkills,
-		}
-		resp.SimilarityScore = rec.SimilarityScore
-		result = append(result, resp)
-	}
-
-	return result, nil
 }

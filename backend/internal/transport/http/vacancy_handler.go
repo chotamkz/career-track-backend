@@ -70,6 +70,19 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 		filter.SalaryFrom = salary
 	}
 
+	mlSkills := c.Query("ml_skills")
+
+	if mlSkills != "" {
+		recs, err := vh.vacancyUsecase.GetRecommendedVacancies(filter, mlSkills)
+		if err != nil {
+			vh.logger.Errorf("Failed to get recommended vacancies: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get recommendations"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"vacancies": recs})
+		return
+	}
+
 	vacancies, err := vh.vacancyUsecase.FilterVacancies(filter)
 	if err != nil {
 		vh.logger.Errorf("Failed to filter vacancies: %v", err)
@@ -139,29 +152,4 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, vacancy)
-}
-
-func (vh *VacancyHandler) RecommendVacanciesHandler(c *gin.Context) {
-	studentSkills := c.Query("student_skills")
-	if studentSkills == "" {
-		vh.logger.Errorf("Missing parameter: student_skills")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_skills is required"})
-		return
-	}
-
-	mlServiceURL := vh.cfg.MLServiceURL
-	if mlServiceURL == "" {
-		vh.logger.Errorf("ML_SERVICE_URL is not set in config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "ML service URL is not configured"})
-		return
-	}
-
-	recommendations, err := vh.vacancyUsecase.GetRecommendedVacancies(studentSkills, mlServiceURL)
-	if err != nil {
-		vh.logger.Errorf("Failed to get recommended vacancies: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get recommendations"})
-		return
-	}
-
-	c.JSON(http.StatusOK, recommendations)
 }

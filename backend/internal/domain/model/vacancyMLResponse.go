@@ -2,5 +2,6 @@ package model
 
 type VacancyMLResponse struct {
 	Vacancy
-	MissingSkills []string `json:"missing_skills"`
+	SimilarityScore float64  `json:"similarity_score,omitempty" db:"-"`
+	MissingSkills   []string `json:"missing_skills"`
 }
