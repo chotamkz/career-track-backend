@@ -10,7 +10,7 @@ const StudentProfile = () => {
           <div>
             <h2>John Doe</h2>
             <p>Алматы</p>
-            <button className="edit-button">Редактировать</button>
+            <button className="student-edit-button">Редактировать</button>
           </div>
         </div>
       </div>

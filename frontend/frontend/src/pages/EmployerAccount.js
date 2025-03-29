@@ -7,7 +7,7 @@ import "./EmployerAccount.css";
 
 function EmployerAccount() {
     return(
-        <div className="studentLogContainer">
+        <div className="employerAccountContainer">
             <div className="Navbar">
                 <NavigationBar />
             </div>

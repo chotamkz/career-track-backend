@@ -10,15 +10,15 @@ const StudentLog = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const result = await login(emailOrPhone, password);
+    const result = await login(emailOrPhone, password, "STUDENT"); // Pass "student" to check role
 
-    if (result.token) {
+    if (result.error) {
+      alert("Login failed: " + result.error);
+    } else {
       localStorage.setItem("token", result.token);
-      localStorage.setItem("role", "student");
+      localStorage.setItem("role", result.userType); // Store the actual userType
       alert("Login successful!");
       navigate("/");
-    } else {
-      alert("Login failed: " + (result.message || "Unknown error"));
     }
   };
 

@@ -3,6 +3,10 @@
     height: 100%;
 }
 
+.employerAccountContainer .employerAccountComponent{
+    margin-top: 200px;
+}
+
 .employerAccountContainer .footer{
     margin-top: 100px;
 }

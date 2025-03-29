@@ -1,5 +1,5 @@
 # Stage 1: Build frontend with Node.js
-FROM node:16 AS frontend-builder
+FROM node:20 AS frontend-builder
 
 WORKDIR /app
 

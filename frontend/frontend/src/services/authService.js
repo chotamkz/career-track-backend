@@ -6,10 +6,16 @@ export const registerStudent = async (name, email, education, password) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, email: email, education, password }),
+    body: JSON.stringify({ name, email, education, password }),
   });
 
-  return response.json();
+  const result = await response.json();
+  if (result.id) {
+    localStorage.setItem("token", "some-jwt-token");
+    localStorage.setItem("userEmail", result.email);
+    localStorage.setItem("role", result.userType);
+  }
+  return result;
 };
 
 export const registerEmployer = async (companyName, email, password) => {
@@ -18,25 +24,44 @@ export const registerEmployer = async (companyName, email, password) => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ companyName: companyName, email, password }),
-  });
-
-  return response.json();
-};
-
-
-export const login = async (email, password) => {
-  const response = await fetch(`${API_BASE_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password }),
+    body: JSON.stringify({ companyName, email, password }),
   });
 
   const result = await response.json();
   if (result.id) {
-      localStorage.setItem("token", "some-jwt-token"); 
-      localStorage.setItem("userEmail", result.email);
-      localStorage.setItem("role", result.userType);
+    localStorage.setItem("token", "some-jwt-token");
+    localStorage.setItem("userEmail", result.email);
+    localStorage.setItem("role", result.userType);
+  }
+  return result;
+};
+
+export const login = async (email, password, page) => {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const result = await response.json();
+  console.log("Login response:", result);
+
+  if (result.token) {
+    const token = result.token;
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const userType = decoded.userType;
+
+    if (
+      (page === "EMPLOYER" && userType !== "EMPLOYER") ||
+      (page === "STUDENT" && userType !== "STUDENT")
+    ) {
+      return { error: "Вы пытаетесь войти на неверную страницу!" };
+    }
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("userEmail", result.email);
+    localStorage.setItem("role", userType);
+    return { token, userType };
   }
   return result;
 };
@@ -44,6 +69,7 @@ export const login = async (email, password) => {
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
+  localStorage.removeItem("userEmail");
 };
 
 export const isAuthenticated = () => {
@@ -51,5 +77,7 @@ export const isAuthenticated = () => {
 };
 
 export const getUserRole = () => {
-  return localStorage.getItem("role");
+  const role = localStorage.getItem("role");
+  console.log("Retrieved role:", role);
+  return role;
 };

@@ -1,5 +1,95 @@
 .employer-account-container {
-    width: 80%;
+    margin-top: 200px;
+    width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employer-profile {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .company-info {
+    flex-grow: 1;
+  }
+  
+  .company-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    object-fit: contain;
+    background-color: #001f72;
+    padding: 10px;
+  }
+  
+  .email {
+    color: #666;
+    margin-top: 5px;
+  }
+  
+  .description {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .tabs {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .tab-button.active {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .company-overview {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .company-overview p {
+    margin: 5px 0;
+  }
+  
+  .company-overview a {
+    color: #0056b3;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+/* .employer-account-component{
+    margin-top: 200px;
+}
+
+.employer-account-container {
+    width: 940px;
     margin: 20px auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -11,6 +101,8 @@
     background-color: white;
     border-radius: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    height: 300px;
+    width: 900px;
 }
 
 .profile-header {
@@ -35,8 +127,8 @@
 .tab-button {
     padding: 10px 15px;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
     border-radius: 5px;
     cursor: pointer;
 }
@@ -51,8 +143,9 @@
     background-color: white;
     border-radius: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 900px;
 }
 
 .company-overview p {
     margin: 5px 0;
-}
+} */

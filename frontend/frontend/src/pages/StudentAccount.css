@@ -3,6 +3,10 @@
     height: 100%;
 }
 
+.studentAccountContainer .studentAccountComponent{
+    margin-top: 200px;
+}
+
 .studentAccountContainer .footer{
     margin-top: 100px;
 }
