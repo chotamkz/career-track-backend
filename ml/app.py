@@ -62,6 +62,7 @@ class JobRecommendationSystem:
         logger.info("Loading vacancies from database...")
         try:
             conn = self.get_db_connection()
+            # Расширенный запрос для получения дополнительной информации о вакансиях
             query = """
             SELECT 
               v.id, 
@@ -158,7 +159,7 @@ class JobRecommendationSystem:
         return str(skills_text)
 
     def recommend_jobs(self, student_skills, top_n=5):
-        """Рекомендация вакансий с сохранением оригинального формата ответа"""
+        """Рекомендация вакансий с расширенной информацией о соответствии"""
         try:
             start_time = datetime.now()
             logger.info(f"Processing recommendation request for skills: {student_skills[:100]}...")
@@ -183,12 +184,12 @@ class JobRecommendationSystem:
             n_neighbors = min(top_n, len(self.vacancies_df), self.knn_model.n_neighbors)
             distances, indices = self.knn_model.kneighbors(student_vector, n_neighbors=n_neighbors)
 
-            # Формирование рекомендаций в оригинальном формате
+            # Формирование рекомендаций в расширенном формате
             recommendations = []
             for idx, dist in zip(indices[0], distances[0]):
                 row = self.vacancies_df.iloc[idx]
                 vac_id = int(row["id"])
-                sim_score = float((1 - dist).round(2))
+                sim_score = float((1 - dist).round(4))  # Повышаем точность
 
                 # Если сходство слишком низкое, пропускаем
                 if sim_score < 0.1:
@@ -198,11 +199,27 @@ class JobRecommendationSystem:
                 vacancy_skills = set(row["key_skills"].split())
                 missing = list(vacancy_skills - processed_skills)
 
+                # Получаем имеющиеся навыки для этой вакансии
+                matching_skills = list(vacancy_skills.intersection(processed_skills))
+
+                # Вычисляем процент соответствия на основе имеющихся навыков
+                match_percentage = 0
+                if vacancy_skills:
+                    match_percentage = round(len(matching_skills) / len(vacancy_skills) * 100)
+
+                # Создаем объект рекомендации с расширенной информацией
                 recommendations.append({
                     "vacancy_id": vac_id,
                     "similarity_score": sim_score,
-                    "missing_skills": missing
+                    "match_percentage": match_percentage,  # Процент соответствия
+                    "missing_skills": missing,
+                    "matching_skills": matching_skills,
+                    "total_skills_required": len(vacancy_skills),
+                    "skills_matched": len(matching_skills)
                 })
+
+            # Сортируем по проценту соответствия
+            recommendations.sort(key=lambda x: x["match_percentage"], reverse=True)
 
             logger.info(f"Recommendation completed in {(datetime.now() - start_time).total_seconds():.2f} seconds")
             return recommendations
@@ -223,16 +240,19 @@ def recommend():
             return jsonify({"error": "No input data provided"}), 400
 
         student_skills = data.get("student_skills", "")
+        top_n = data.get("top_n", 5)  # Добавляем параметр для количества рекомендаций
 
         # Проверка входных данных
         if not student_skills:
             return jsonify({"error": "No skills provided"}), 400
 
-        # Получение рекомендаций в оригинальном формате
-        recommendations = recommendation_system.recommend_jobs(student_skills)
+        # Получение рекомендаций в расширенном формате
+        recommendations = recommendation_system.recommend_jobs(student_skills, top_n)
 
-        # Возвращаем в оригинальном формате
-        return jsonify({"recommendations": recommendations})
+        # Возвращаем в расширенном формате
+        return jsonify({
+            "recommendations": recommendations,
+        })
     except Exception as e:
         logger.error(f"API error: {e}")
         return jsonify({"error": str(e)}), 500

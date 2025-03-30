@@ -12,9 +12,13 @@ import (
 )
 
 type MLRecommendation struct {
-	VacancyID       uint     `json:"vacancy_id"`
-	SimilarityScore float64  `json:"similarity_score"`
-	MissingSkills   []string `json:"missing_skills"`
+	VacancyID           uint     `json:"vacancy_id"`
+	SimilarityScore     float64  `json:"similarity_score"`
+	MatchPercentage     int      `json:"match_percentage"`
+	MatchingSkills      []string `json:"matching_skills"`
+	MissingSkills       []string `json:"missing_skills"`
+	SkillsMatched       int      `json:"skills_matched"`
+	TotalSkillsRequired int      `json:"total_skills_required"`
 }
 
 type MLResponse struct {
@@ -115,9 +119,13 @@ func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, ml
 	for _, v := range filteredVacancies {
 		if rec, ok := recMap[v.ID]; ok {
 			result = append(result, model.VacancyMLResponse{
-				Vacancy:         v,
-				SimilarityScore: rec.SimilarityScore,
-				MissingSkills:   rec.MissingSkills,
+				Vacancy:             v,
+				SimilarityScore:     rec.SimilarityScore,
+				MatchPercentage:     rec.MatchPercentage,
+				MatchingSkills:      rec.MatchingSkills,
+				MissingSkills:       rec.MissingSkills,
+				SkillsMatched:       rec.SkillsMatched,
+				TotalSkillsRequired: rec.TotalSkillsRequired,
 			})
 		}
 	}
