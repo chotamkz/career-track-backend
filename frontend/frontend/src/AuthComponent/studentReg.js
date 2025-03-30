@@ -21,7 +21,7 @@ const StudentReg = () => {
     const result = await registerStudent(name, email, education, password);
     console.log("Registration response:", result);
 
-    if (result.id) {
+    if (result.name !== '') {
       alert("Registration successful!");
       navigate("/StudentAuth");
     } else {
