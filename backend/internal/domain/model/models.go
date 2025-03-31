@@ -20,10 +20,13 @@ const (
 type ApplicationStatus string
 
 const (
-	StatusPending   ApplicationStatus = "PENDING"
-	StatusInterview ApplicationStatus = "INTERVIEW"
-	StatusRejected  ApplicationStatus = "REJECTED"
-	StatusAccepted  ApplicationStatus = "ACCEPTED"
+	StatusApplied            ApplicationStatus = "APPLIED"
+	StatusCVScreening        ApplicationStatus = "CV_SCREENING"
+	StatusInterviewScheduled ApplicationStatus = "INTERVIEW_SCHEDULED"
+	StatusInterviewCompleted ApplicationStatus = "INTERVIEW_COMPLETED"
+	StatusOfferExtended      ApplicationStatus = "OFFER_EXTENDED"
+	StatusAccepted           ApplicationStatus = "ACCEPTED"
+	StatusRejected           ApplicationStatus = "REJECTED"
 )
 
 type User struct {
@@ -78,11 +81,10 @@ type Application struct {
 	ID            uint              `json:"id" db:"id"`
 	StudentID     uint              `json:"studentId" db:"student_id"`
 	VacancyID     uint              `json:"vacancyId" db:"vacancy_id"`
-	CoverLetter   string            `json:"coverLetter" db:"cover_letter"`
+	CoverLetter   string            `json:"coverLetter,omitempty" db:"cover_letter"`
 	SubmittedDate time.Time         `json:"submittedDate" db:"submitted_date"`
 	Status        ApplicationStatus `json:"status" db:"status"`
-	CreatedAt     time.Time         `json:"createdAt" db:"created_at"`
-	UpdatedAt     time.Time         `json:"updatedAt" db:"updated_at"`
+	UpdatedDate   time.Time         `json:"updatedDate" db:"updated_date"`
 }
 
 type Skill struct {

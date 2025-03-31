@@ -64,6 +64,12 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.GET("/api/v1/hackathons", hackathonHandler.GetHackathonsHandler)
 	router.GET("/api/v1/hackathons/:id", hackathonHandler.DetailHackathonHandler)
 
+	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db))
+	applicationHandler := NewApplicationHandler(appUsecase, logger)
+	router.POST("/api/v1/vacancies/:id/apply", middleware.RequireStudent(cfg.JWTSecret), applicationHandler.SubmitApplicationHandler)
+	router.PATCH("/api/v1/vacancies/applications/:id", middleware.RequireEmployer(cfg.JWTSecret), applicationHandler.UpdateApplicationStatusHandler)
+	router.GET("/api/v1/students/:id/applications", middleware.RequireStudent(cfg.JWTSecret), applicationHandler.GetStudentApplicationsHandler)
+
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: router,
