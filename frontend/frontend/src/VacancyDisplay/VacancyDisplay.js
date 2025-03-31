@@ -18,6 +18,10 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   });
 
   const [locationOptions, setLocationOptions] = useState([]);
+  const [debouncedMlSkills, setDebouncedMlSkills] = useState("");
+  const debounceDelay = 800; // задержка в миллисекундах
+  let debounceTimer;
+
   const handleLocationChange = (selectedOptions) => {
     const locations = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setSelectedLocations(locations);
@@ -25,16 +29,26 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   };
 
   useEffect(() => {
-    if (mlSkills.trim()) {
+    if (selectedLocations.length > 0){
       handleSearch();
     }
-  }, [mlSkills]);
+  }, [selectedLocations]);
 
   useEffect(() => {
-      if (selectedLocations.length > 0){
-        handleSearch();
-      }
-    }, [selectedLocations]);
+    if (mlSkills.trim() !== debouncedMlSkills) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        setDebouncedMlSkills(mlSkills);
+        if (mlSkills.trim()) {
+          handleSearch();
+        }
+      }, debounceDelay);
+    }
+    
+    return () => {
+      clearTimeout(debounceTimer);
+    };
+  }, [mlSkills]);
 
   const vacanciesPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
@@ -235,16 +249,25 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         </label>
 
         <h3>Навыки</h3> 
-        <input
-          type="text"
-          placeholder="Введите навыки (например: Python, TensorFlow)"
-          value={mlSkills}
-          onChange={(e) => {
-            const value = e.target.value;
-            setMlSkills(value);
-            onFiltersChange({ ...searchFilters, ml_skills: value });
-          }}
-        />
+        <div className="skills-filter">
+          <input
+            type="text"
+            placeholder="Введите навыки (например: Python, TensorFlow)"
+            value={mlSkills}
+            onChange={(e) => {
+              const value = e.target.value;
+              setMlSkills(value);
+              onFiltersChange({ ...searchFilters, ml_skills: value });
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                clearTimeout(debounceTimer);
+                setDebouncedMlSkills(mlSkills);
+                handleSearch();
+              }
+            }}
+          />
+        </div>
         <h3>Опыт работы</h3>
         <input
           type="text"
@@ -326,7 +349,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   );
 }
 export default VacancyDisplay;
-
 
 
 
@@ -643,3 +665,4 @@ export default VacancyDisplay;
 // }
 
 // export default VacancyDisplay;
+
