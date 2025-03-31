@@ -1,35 +1,17 @@
 .App {
     text-align: center;
     height: 100%;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-    box-sizing: border-box;
-  }
-  
-  .Welcome-Text{
+}
+
+.Welcome-Text{
     position: absolute;
     top: 200px;
     left: 35%;
     line-break: strict;
     width: 30%;
-    text-align: center;
-    padding: 20px 10px;
-  }
-  
-  .Welcome-Text h1 {
-    font-size: 28px;
-    line-height: 1.3;
-    margin-bottom: 15px;
-  }
-  
-  .Welcome-Text h2 {
-    font-size: 18px;
-    line-height: 1.4;
-  }
-  
-  #Vacancies{
+}
+
+#Vacancies{
     position: absolute;
     top: 450px;
     left: 8%;
@@ -41,59 +23,6 @@
     top: 600px;
 }
 
-  .FooterSection .footer{
+.FooterSection .footer{
     margin-top: 400px;
-  }
-
-  .VacancySearching {
-    padding: 20px 10px;
-  }
-
-  /* Планшеты (от 768px до 1023px) */
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
-    .Welcome-Text h1 {
-      font-size: 32px;
-    }
-    
-    .Welcome-Text h2 {
-      font-size: 20px;
-    }
-    
-    .hireImg img {
-      max-width: 80%;
-    }
-  }
-
-  /* Десктопы (от 1024px и выше) */
-  @media screen and (min-width: 1024px) {
-    .Welcome-Text h1 {
-      font-size: 36px;
-    }
-    
-    .Welcome-Text h2 {
-      font-size: 22px;
-    }
-    
-    .hireImg img {
-      max-width: 500px;
-    }
-    
-    .VacancySearching {
-      padding: 30px 20px;
-    }
-  }
-
-  /* Мобильные телефоны (до 767px) */
-  @media screen and (max-width: 767px) {
-    .Welcome-Text h1 {
-      font-size: 24px;
-    }
-    
-    .Welcome-Text h2 {
-      font-size: 16px;
-    }
-    
-    #Vacancies {
-      font-size: 24px;
-    }
-  }
+}
