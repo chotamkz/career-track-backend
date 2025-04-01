@@ -9,6 +9,8 @@ COPY ./frontend/package.json ./frontend/package-lock.json ./
 # Install dependencies
 RUN npm install
 
+RUN npm install axios --save
+
 # Copy the rest of the frontend files
 COPY ./frontend ./
 
