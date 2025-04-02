@@ -59,12 +59,21 @@ const HackaDisplay = () => {
             hackathons.map((hackathon) => (
               <div key={hackathon.id} className="hackathon-card">
                 <div className="hackathon-image-placeholder"></div>
-                <div className="hackathon-details">
-                  <h3>{hackathon.name}</h3>
-                  <span className="days-left">{calculateDaysLeft(hackathon.start_date)} дней до начала</span>
-                  <span className="status">{hackathon.format.toLowerCase() === "online" ? "🌐 Онлайн" : "🏢 Оффлайн"}</span>
-                  <p className="prize">{hackathon.prizes}</p>
-                  <p className="organizer">{hackathon.organizer}</p>
+                <div className="hackathon-content">
+                  <h3 className="hackathon-title">{hackathon.name}</h3>
+                  <div className="hackathon-meta">
+                    <div className="days-tag">{calculateDaysLeft(hackathon.start_date)} дней до начала</div>
+                    <div className="format-tag">
+                      <span className="format-icon">
+                        {hackathon.format.toLowerCase() === "online" ? "🌐" : "🏢"}
+                      </span> 
+                      {hackathon.format.toLowerCase() === "online" ? "Онлайн" : "Оффлайн"}
+                    </div>
+                  </div>
+                  <div className="hackathon-footer">
+                    <div className="prize-info">₸ {hackathon.prizes}</div>
+                    <div className="participants-info">2000 участников</div>
+                  </div>
                 </div>
               </div>
             ))
