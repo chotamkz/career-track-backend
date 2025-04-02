@@ -23,6 +23,9 @@ FROM nginx:alpine
 # Copy built frontend files from the previous stage
 COPY --from=frontend-builder /app/build /usr/share/nginx/html
 
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose port 80 (Nginx default port)
 EXPOSE 80
 

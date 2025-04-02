@@ -19,7 +19,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
   const [locationOptions, setLocationOptions] = useState([]);
   const [debouncedMlSkills, setDebouncedMlSkills] = useState("");
-  const debounceDelay = 800; // задержка в миллисекундах
+  const debounceDelay = 1000;
   let debounceTimer;
 
   const handleLocationChange = (selectedOptions) => {
@@ -107,7 +107,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   }, []);
 
   const isSkillMatch = (vacancySkills) => {
-    if (!mlSkills.trim()) return true;  // If no skill is entered, return true for all
+    if (!mlSkills.trim()) return true;
     return vacancySkills?.toLowerCase().includes(mlSkills.toLowerCase());
   };
   
@@ -258,13 +258,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
               const value = e.target.value;
               setMlSkills(value);
               onFiltersChange({ ...searchFilters, ml_skills: value });
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                clearTimeout(debounceTimer);
-                setDebouncedMlSkills(mlSkills);
-                handleSearch();
-              }
             }}
           />
         </div>

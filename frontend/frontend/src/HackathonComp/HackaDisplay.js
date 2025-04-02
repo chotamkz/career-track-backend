@@ -37,7 +37,6 @@ const HackaDisplay = () => {
     fetchHackathons();
   }, []);
 
-  // Функция для расчета дней до начала хакатона
   const calculateDaysLeft = (startDate) => {
     const today = new Date();
     const hackathonStart = new Date(startDate);
