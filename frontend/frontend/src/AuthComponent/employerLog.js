@@ -10,13 +10,13 @@ const EmployerLog = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const result = await login(emailOrPhone, password, "EMPLOYER"); // Pass "employer" to check role
+    const result = await login(emailOrPhone, password, "EMPLOYER");
 
     if (result.error) {
       alert("Login failed: " + result.error);
     } else {
       localStorage.setItem("token", result.token);
-      localStorage.setItem("role", result.userType); // Store the actual userType
+      localStorage.setItem("role", result.userType);
       alert("Login successful!");
       navigate("/");
     }
@@ -42,13 +42,13 @@ const EmployerLog = () => {
         />
         <a href="#" className="employer-forgot-password">Не помню пароль</a>
         <button onClick={handleLogin} className="employer-login-button">Войти</button>
-        <Link to="/EmployerRegistration" style={{ textDecoration: "none" }}>
+        <Link to="/auth/employer/register" style={{ textDecoration: "none" }}>
           <button className="employer-register-button">Зарегистрироваться</button>
         </Link>
         <div className="internship-section">
           <h3 className="internship-title">Поиск стажировок</h3>
           <p className="internship-description">Создавать резюме, искать стажировки и просмотр хакатонов</p>
-          <Link to="/StudentAuth">
+          <Link to="/auth/student">
             <button className="internship-button">Начать искать</button>
           </Link>
         </div>

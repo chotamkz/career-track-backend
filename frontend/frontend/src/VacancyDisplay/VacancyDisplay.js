@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import makeAnimated from 'react-select/animated';
 import "./VacancyDisplay.css";
+import { API_ENDPOINTS, apiClient, handleApiError, vacancyService } from '../services/api';
 
 function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const [vacancies, setVacancies] = useState([]);
@@ -59,44 +60,38 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       setError(null);
 
       try {
-        const queryParams = new URLSearchParams();
-        if (keywords) queryParams.append("keywords", keywords);
-        if (selectedLocations.length) queryParams.append("region", selectedLocations.join(","));
-        if (experience) queryParams.append("experience", experience);
+        const data = await vacancyService.getAllVacancies();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        const vacanciesData = Array.isArray(data) ? data : 
+                             (data.vacancies ? data.vacancies : []);
+        
+        setVacancies(vacanciesData);
 
-        if (searchQuery) queryParams.append("query", searchQuery);
+        const uniqueCities = [
+          ...new Set(
+            vacanciesData
+              .map((vacancy) => {
+                if (!vacancy.location) return null;
 
-        const response = await fetch("http://localhost:8080/api/v1/vacancies");
-        if (!response.ok) throw new Error("Ошибка загрузки вакансий");
+                let city = vacancy.location.trim().split(",")[0];
+                city = city.replace(/\d+(\.\d+)?/g, "").trim();
 
-        const data = await response.json();
-        setVacancies(Array.isArray(data) ? data : []);
+                return city;
+              })
+              .filter((city) => city)
+          ),
+        ];
 
-      const uniqueCities = [
-        ...new Set(
-          data
-            .map((vacancy) => {
-              console.log("Vacancy location:", vacancy.location);
-              if (!vacancy.location) return null;
-
-              let city = vacancy.location.trim().split(",")[0];
-
-
-              city = city.replace(/\d+(\.\d+)?/g, "").trim();
-
-              return city;
-            })
-            .filter((city) => city)
-        ),
-      ];
-
-      console.log("Extracted unique locations:", uniqueCities);
-
-      setLocationOptions(
-        uniqueCities.map((city) => ({ value: city, label: city }))
+        setLocationOptions(
+          uniqueCities.map((city) => ({ value: city, label: city }))
         );
       } catch (err) {
-        setError(err.message);
+        console.error("Ошибка загрузки вакансий:", err);
+        setError(err.message || "Ошибка загрузки вакансий");
       } finally {
         setLoading(false);
       }
@@ -116,24 +111,29 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     setError(null);
 
     try {
-      const queryParams = new URLSearchParams();
+      const searchParams = {
+        keywords: searchFilters.keywords,
+        region: selectedLocations.length ? selectedLocations.join(",") : undefined,
+        experience: searchFilters.experience,
+        salary_from: searchFilters.salary,
+        schedule: searchFilters.schedule,
+        ml_skills: mlSkills,
+        query: searchQuery
+      };
 
-      if (searchFilters.keywords) queryParams.append("keywords", searchFilters.keywords);
-      if (selectedLocations.length) queryParams.append("region", selectedLocations.join(","));
-      if (searchFilters.experience) queryParams.append("experience", searchFilters.experience);
-      if (searchFilters.salary) queryParams.append("salary_from", searchFilters.salary);
-      if (searchFilters.schedule) queryParams.append("schedule", searchFilters.schedule);
-      if (mlSkills) queryParams.append("ml_skills", mlSkills);
-
-      if (searchQuery) queryParams.append("query", searchQuery);
-
-      const response = await fetch(`http://localhost:8080/api/v1/vacancies/search?${queryParams.toString()}`);
-      if (!response.ok) throw new Error("Ошибка загрузки вакансий");
-
-      const data = await response.json();
-      setVacancies(Array.isArray(data.vacancies) ? data.vacancies : []);
+      const data = await vacancyService.searchVacancies(searchParams);
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      const vacanciesData = Array.isArray(data) ? data : 
+                           (data.vacancies ? data.vacancies : []);
+      
+      setVacancies(vacanciesData);
     } catch (err) {
-      setError(err.message);
+      console.error("Ошибка поиска вакансий:", err);
+      setError(err.message || "Ошибка загрузки вакансий");
     } finally {
       setLoading(false);
     }

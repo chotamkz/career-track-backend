@@ -17,7 +17,7 @@ function NavigationBar() {
     const handleLogout = () => {
         logout();
         setUserRole(null);
-        navigate("/StudentAuth");
+        navigate("/auth/student");
     };
 
     return (
@@ -25,10 +25,10 @@ function NavigationBar() {
             <div className="logo" onClick={() => navigate("/")}>Logo</div>
             <nav>
                 <ul className="nav-links">
-                    <li><Link to="/VacancyPage">Поиск вакансий</Link></li>
-                    <li><Link to="/ProfilePage">Мои заявки</Link></li>
+                    <li><Link to="/vacancies">Поиск вакансий</Link></li>
+                    <li><Link to="/profile">Мои заявки</Link></li>
                     <li><Link to="/">Прогноз востребованных навыков</Link></li>
-                    <li><Link to="/Hackathons">Хакатоны</Link></li>
+                    <li><Link to="/hackathons">Хакатоны</Link></li>
                     <li><Link to="/">О нас</Link></li>
                 </ul>
             </nav>
@@ -43,9 +43,9 @@ function NavigationBar() {
                         {dropdownOpen && (
                             <div className="dropdown-menu">
                                 {userRole === "STUDENT" ? (
-                                    <Link to="/StudentAccount" className="dropdown-item">Профиль студента</Link>
+                                    <Link to="/account/student" className="dropdown-item">Профиль студента</Link>
                                 ) : userRole === "EMPLOYER" ? (
-                                    <Link to="/EmployerAccount" className="dropdown-item">Профиль работодателя</Link>
+                                    <Link to="/account/employer" className="dropdown-item">Профиль работодателя</Link>
                                 ) : (
                                     <p className="dropdown-item">Неизвестный профиль</p>
                                 )}
@@ -54,7 +54,7 @@ function NavigationBar() {
                         )}
                     </div>
                 ) : (
-                    <button className="auth-buttons-log" onClick={() => navigate("/StudentAuth")}>Войти</button>
+                    <button className="auth-buttons-log" onClick={() => navigate("/auth/student")}>Войти</button>
                 )}
             </div>
         </header>

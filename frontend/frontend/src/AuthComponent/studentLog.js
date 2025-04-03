@@ -42,13 +42,13 @@ const StudentLog = () => {
         />
         <a href="#" className="student-forgot-password">Не помню пароль</a>
         <button onClick={handleLogin} className="student-login-button">Войти</button>
-        <Link to="/StudentRegistration" style={{ textDecoration: "none" }}>
+        <Link to="/auth/student/register" style={{ textDecoration: "none" }}>
           <button className="student-register-button">Зарегистрироваться</button>
         </Link>
         <div className="employer-section">
           <h3 className="employer-title">Для работодателей</h3>
           <p className="employer-description">Размещение вакансий и стажировок</p>
-          <Link to="/EmployerLogin">
+          <Link to="/auth/employer">
             <button className="employer-button">Начать искать</button>
           </Link>
         </div>

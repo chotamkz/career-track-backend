@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./HackaDisplay.css";
-import axios from "axios";
+import { hackathonService } from '../services/api';
 
 const topics = [
   { id: 1, name: "Для новичков", count: 92, prize: "$1,000,000" },
@@ -23,8 +23,16 @@ const HackaDisplay = () => {
     const fetchHackathons = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:8080/api/v1/hackathons');
-        setHackathons(response.data);
+        
+        // Используем сервисную функцию для получения хакатонов
+        const data = await hackathonService.getAllHackathons();
+        
+        // Проверяем на ошибки
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        setHackathons(data);
         setError(null);
       } catch (err) {
         setError('Не удалось загрузить данные хакатонов');
@@ -101,7 +109,7 @@ const HackaDisplay = () => {
           </table>
         </div>
       </div>
-      <Link style={{ textDecoration: 'none', color: 'white' }} to="/HackaStorage">
+      <Link style={{ textDecoration: 'none', color: 'white' }} to="/hackatons-storage">
         <button className="view-all-button">Все хакатоны</button>
       </Link>
     </div>
