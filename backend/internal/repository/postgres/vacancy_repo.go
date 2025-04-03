@@ -99,9 +99,19 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter) ([]model
 		argIdx++
 	}
 	if filter.Region != "" {
-		query += fmt.Sprintf(" AND location ILIKE $%d", argIdx)
-		args = append(args, "%"+filter.Region+"%")
-		argIdx++
+		regions := strings.Split(filter.Region, ",")
+		var regionConds []string
+		for _, region := range regions {
+			region = strings.TrimSpace(region)
+			if region != "" {
+				regionConds = append(regionConds, fmt.Sprintf("location ILIKE $%d", argIdx))
+				args = append(args, "%"+region+"%")
+				argIdx++
+			}
+		}
+		if len(regionConds) > 0 {
+			query += " AND (" + strings.Join(regionConds, " OR ") + ")"
+		}
 	}
 	if filter.Experience != "" {
 		query += fmt.Sprintf(" AND experience = $%d", argIdx)
