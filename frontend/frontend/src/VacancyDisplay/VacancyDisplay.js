@@ -11,12 +11,10 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const [currentPage, setCurrentPage] = useState(1);
   const vacanciesPerPage = 5;
 
-  // Загружаем начальные вакансии
   useEffect(() => {
     fetchVacancies();
   }, []);
 
-  // Функция загрузки вакансий без фильтров
   const fetchVacancies = async () => {
     setLoading(true);
     try {
@@ -25,7 +23,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       setVacancies(Array.isArray(data) ? data : 
                   (data.vacancies ? data.vacancies : []));
       
-      // Получаем уникальные города для выпадающего списка
       const uniqueCities = [
         ...new Set(
           (Array.isArray(data) ? data : (data.vacancies ? data.vacancies : []))
@@ -49,11 +46,9 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     }
   };
 
-  // Функция для поиска вакансий по фильтрам
   const handleSearch = useCallback(async (filters) => {
     setLoading(true);
     try {
-      // Обновляем глобальные фильтры
       const updatedFilters = {
         ...searchFilters,
         keywords: filters.keywords,
@@ -67,7 +62,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       
       onFiltersChange(updatedFilters);
 
-      // Если есть ключевые слова, но не выбран ни один чекбокс, не показываем вакансии
       const hasKeywords = filters.keywords?.trim() !== "";
       const hasKeywordFilter = filters.keywordFilter.title || 
                               filters.keywordFilter.company || 
@@ -79,7 +73,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         return;
       }
 
-      // Проверяем, есть ли активные фильтры
       const hasActiveFilters = 
         filters.keywords?.trim() ||
         filters.locations.length > 0 ||
@@ -101,7 +94,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           query: searchQuery?.trim() || undefined
         };
 
-        // Удаляем пустые параметры
         Object.keys(searchParams).forEach(key => {
           if (
             searchParams[key] === undefined || 
@@ -114,21 +106,17 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
         console.log("Поисковый запрос:", searchParams);
 
-        // Только если остались параметры, используем эндпоинт /search
         if (Object.keys(searchParams).length > 0) {
           data = await vacancyService.searchVacancies(searchParams);
         } else {
-          // Если все параметры пустые, используем обычный эндпоинт
           data = await vacancyService.getAllVacancies();
         }
       } else {
-        // Если нет активных фильтров, загружаем все вакансии
         data = await vacancyService.getAllVacancies();
       }
       
       let filteredData = Array.isArray(data) ? data : (data.vacancies ? data.vacancies : []);
 
-      // Фильтруем по чекбоксам на фронтенде
       if (hasKeywords && hasKeywordFilter) {
         const keywords = filters.keywords.toLowerCase().trim();
         console.log("Пример вакансии:", filteredData[0]);
@@ -144,9 +132,22 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         });
       }
       
+      if (filters.mlSkills?.trim()) {
+        const mlSkills = filters.mlSkills.toLowerCase().trim().split(',').map(skill => skill.trim());
+        filteredData = filteredData.filter(vacancy => {
+          const requirements = vacancy.requirements?.toLowerCase() || '';
+          const hasMlSkills = mlSkills.some(skill => requirements.includes(skill));
+          
+          if (vacancy.match_percentage !== undefined) {
+            return vacancy.match_percentage > 0 && hasMlSkills;
+          }
+          
+          return hasMlSkills;
+        });
+      }
+      
       setVacancies(filteredData);
 
-      // Сбрасываем на первую страницу при новом поиске
       setCurrentPage(1);
     } catch (err) {
       console.error("Ошибка поиска вакансий:", err);
@@ -162,10 +163,8 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     return 'low';
   };
 
-  // Фильтрация вакансий
   const filteredVacancies = vacancies;
 
-  // Пагинация
   const indexOfLastVacancy = currentPage * vacanciesPerPage;
   const indexOfFirstVacancy = indexOfLastVacancy - vacanciesPerPage;
   const currentVacancies = filteredVacancies.slice(indexOfFirstVacancy, indexOfLastVacancy);
