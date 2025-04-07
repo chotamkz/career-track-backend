@@ -15,6 +15,10 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     fetchVacancies();
   }, []);
 
+  useEffect(() => {
+    handleSearch(searchFilters);
+  }, [searchQuery]);
+
   const fetchVacancies = async () => {
     setLoading(true);
     try {
@@ -55,17 +59,17 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         ml_skills: filters.mlSkills,
         experience: filters.experience,
         locations: filters.locations,
-        keywordsInTitle: filters.keywordFilter.title,
-        keywordsInCompany: filters.keywordFilter.company,
-        keywordsInDescription: filters.keywordFilter.description
+        keywordsInTitle: filters.keywordFilter?.title,
+        keywordsInCompany: filters.keywordFilter?.company,
+        keywordsInDescription: filters.keywordFilter?.description
       };
       
       onFiltersChange(updatedFilters);
 
       const hasKeywords = filters.keywords?.trim() !== "";
-      const hasKeywordFilter = filters.keywordFilter.title || 
-                              filters.keywordFilter.company || 
-                              filters.keywordFilter.description;
+      const hasKeywordFilter = filters.keywordFilter?.title || 
+                              filters.keywordFilter?.company || 
+                              filters.keywordFilter?.description;
 
       if (hasKeywords && !hasKeywordFilter) {
         setVacancies([]);
@@ -75,23 +79,23 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
       const hasActiveFilters = 
         filters.keywords?.trim() ||
-        filters.locations.length > 0 ||
+        (filters.locations && filters.locations.length > 0) ||
         filters.experience?.trim() ||
         filters.mlSkills?.trim() ||
         searchFilters.salary ||
         searchFilters.schedule ||
-        searchQuery?.trim();
+        (searchQuery && searchQuery.trim() !== "");
 
       let data;
       if (hasActiveFilters) {
         const searchParams = {
           keywords: filters.keywords?.trim() || undefined,
-          region: filters.locations.length ? filters.locations.join(",") : undefined,
+          region: filters.locations && filters.locations.length ? filters.locations.join(",") : undefined,
           experience: filters.experience?.trim() || undefined,
           salary_from: searchFilters.salary || undefined,
           schedule: searchFilters.schedule || undefined,
           ml_skills: filters.mlSkills?.trim() || undefined,
-          query: searchQuery?.trim() || undefined
+          query: searchQuery || undefined
         };
 
         Object.keys(searchParams).forEach(key => {
@@ -121,29 +125,26 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         const keywords = filters.keywords.toLowerCase().trim();
         console.log("Пример вакансии:", filteredData[0]);
         filteredData = filteredData.filter(vacancy => {
-          const matchesTitle = filters.keywordFilter.title && 
-                             vacancy.title.toLowerCase().includes(keywords);
-          const matchesCompany = filters.keywordFilter.company && 
+          const matchesTitle = filters.keywordFilter?.title && 
+                             vacancy.title?.toLowerCase().includes(keywords);
+          const matchesCompany = filters.keywordFilter?.company && 
                                vacancy.company_name?.toLowerCase().includes(keywords);
-          const matchesDescription = filters.keywordFilter.description && 
-                                   (vacancy.requirements?.toLowerCase().includes(keywords));
+          const matchesDescription = filters.keywordFilter?.description && 
+                                   ((vacancy.requirements?.toLowerCase() || '').includes(keywords) ||
+                                    (vacancy.description?.toLowerCase() || '').includes(keywords));
           
           return matchesTitle || matchesCompany || matchesDescription;
         });
       }
       
-      if (filters.mlSkills?.trim()) {
-        const mlSkills = filters.mlSkills.toLowerCase().trim().split(',').map(skill => skill.trim());
-        filteredData = filteredData.filter(vacancy => {
-          const requirements = vacancy.requirements?.toLowerCase() || '';
-          const hasMlSkills = mlSkills.some(skill => requirements.includes(skill));
-          
-          if (vacancy.match_percentage !== undefined) {
-            return vacancy.match_percentage > 0 && hasMlSkills;
-          }
-          
-          return hasMlSkills;
-        });
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase().trim();
+        filteredData = filteredData.filter(vacancy => 
+          vacancy.title?.toLowerCase().includes(query) || 
+          vacancy.company_name?.toLowerCase().includes(query) || 
+          vacancy.description?.toLowerCase().includes(query) || 
+          vacancy.requirements?.toLowerCase().includes(query)
+        );
       }
       
       setVacancies(filteredData);

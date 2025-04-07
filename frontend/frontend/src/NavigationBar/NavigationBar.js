@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated, logout, getUserRole } from "../services/authService";
 import "./NavigationBar.css";
+import logo from "../assets/images/talentbridge-logo.png";
 
 function NavigationBar() {
     const navigate = useNavigate();
@@ -22,7 +23,9 @@ function NavigationBar() {
 
     return (
         <header className="navigationbar">
-            <div className="logo" onClick={() => navigate("/")}>Logo</div>
+            <div className="logo" onClick={() => navigate("/")}>
+                <img src={logo} alt="TalentBridge" className="logo-image" />
+            </div>
             <nav>
                 <ul className="nav-links">
                     <li><Link to="/vacancies">Поиск вакансий</Link></li>
