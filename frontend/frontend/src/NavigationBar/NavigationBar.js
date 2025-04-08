@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated, logout, getUserRole } from "../services/authService";
 import "./NavigationBar.css";
-import logo from "../assets/images/talentbridge-logo.png";
+
 
 function NavigationBar() {
     const navigate = useNavigate();
@@ -23,20 +23,19 @@ function NavigationBar() {
 
     return (
         <header className="navigationbar">
-            <div className="logo" onClick={() => navigate("/")}>
-                <img src={logo} alt="TalentBridge" className="logo-image" />
-            </div>
+
+            <div className="footer-logo">
+                      <h2>TalentBridge</h2>
+                    </div>
             <nav>
                 <ul className="nav-links">
                     <li><Link to="/vacancies">Поиск вакансий</Link></li>
                     <li><Link to="/profile">Мои заявки</Link></li>
-                    <li><Link to="/">Прогноз востребованных навыков</Link></li>
                     <li><Link to="/hackathons">Хакатоны</Link></li>
                     <li><Link to="/">О нас</Link></li>
                 </ul>
             </nav>
             <div className="authbuttons">
-                <button className="button-city">Город</button>
 
                 {isAuthenticated() ? (
                     <div className="nav-dropdown">

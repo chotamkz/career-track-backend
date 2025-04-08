@@ -1,15 +1,17 @@
+/* Updated Filter Box Styling */
 .filter-box {
-    position: absolute;
-    top: 50px;
-    right: 332px;
     width: 500px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     z-index: 2;
+    margin-top: 20px; /* Space from top */
+    margin-right: 20px; /* Adjust margin from the right */
+    position: relative; /* Use relative positioning for natural flow */
 }
 
+/* Adjust filter item layout */
 .filter-item {
     margin-bottom: 15px;
     display: flex;
@@ -19,12 +21,14 @@
     position: relative;
 }
 
+/* Styling for filter item labels */
 .filter-item label {
     font-size: 16px;
     color: #333;
     font-weight: 500;
 }
 
+/* Filter input and select box styling */
 .filter-item input,
 .filter-item select {
     width: 60%;
@@ -38,6 +42,7 @@
     color: #ABB7C2;
 }
 
+/* Select box placeholder styling */
 .select-placeholder {
     position: absolute;
     top: 50%;
@@ -48,8 +53,9 @@
     font-size: 15px;
 }
 
+/* Select styling */
 select { 
-    appearance: none;/* Remove default styles */
+    appearance: none; /* Remove default styles */
     background-color: transparent;
     color: black;
     padding: 8px 12px;
@@ -58,43 +64,43 @@ select {
     border-radius: 5px;
 }
 
+/* Invisible placeholder for select */
 select.placeholder {
     color: transparent;
 }
 
-.optionVacancy{
-    color: black;
-}
-
+/* Radio button group styling */
 .radio-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     margin: 0;
-    margin-right: 34%;
     flex-wrap: wrap;
 }
 
+/* Radio group label styling */
 .radio-group label {
     font-size: 14px;
     color: #333;
     display: flex;
     align-items: center;
     margin-bottom: 3px;
-
 }
 
+/* Radio button input styling */
 .radio-group input {
     margin-right: 8px;
     width: 10px;
 }
 
+/* Filter actions styling */
 .filter-actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 10px;
 }
 
+/* Filter action button styling */
 .filter-actions button {
     padding: 8px 12px;
     border-radius: 5px;
@@ -103,21 +109,24 @@ select.placeholder {
     border: none;
 }
 
+/* Apply button styling */
 .apply-btn {
     background-color: #007bff;
     color: white;
     font-weight: bold;
 }
 
+/* Hover effect for apply button */
 .apply-btn:hover {
     background-color: #0056b3;
 }
 
-#select{
+/* Adjust width for select and radio groups */
+#select {
     width: 63.5%;
 }
 
-#radioGroup2{
+#radioGroup2 {
     position: relative;
     left: 10.5px;
 }

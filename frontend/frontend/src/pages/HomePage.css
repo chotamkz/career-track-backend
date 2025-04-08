@@ -1,28 +1,308 @@
+/* App Wrapper */
 .App {
-    text-align: center;
-    height: 100%;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background: #f4f7fb; /* Light background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  padding-top: 120px; /* Added space to prevent navbar overlap */
 }
 
-.Welcome-Text{
-    position: absolute;
-    top: 200px;
-    left: 35%;
-    line-break: strict;
-    width: 30%;
+/* Navbar */
+.Navbar {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
-#Vacancies{
-    position: absolute;
-    top: 450px;
-    left: 8%;
-    font-size: 40px;
+/* Fixed Search Bar */
+.SearchBar {
+  position: fixed;
+  top: 80px;
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
 }
 
-.hireImg img{
+.SearchBar input {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background: #f9fafb;
+}
+
+/* Welcome Section */
+.Welcome-Text {
+  text-align: center;
+  padding: 20px;
+  animation: fadeIn 2s ease-out;
+  margin-top: 20px; /* Adjusted margin for better spacing */
+}
+
+
+.Welcome-Text h1 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1d4ed8; /* Blue color */
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  animation: slideIn 1.5s ease-in-out;
+}
+
+.Welcome-Text h2 {
+  font-size: 24px;
+  color: #4b5563; /* Subtle dark color */
+  margin-top: 0;
+  animation: fadeIn 2s ease-out 0.5s;
+}
+
+/* Project Advantages Section */
+.ProjectAdvantages {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  background: #e2e8f0; /* Light background */
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 2s ease-out 1s;
+}
+
+.ProjectAdvantages h3 {
+  font-size: 28px;
+  color: #1d4ed8;
+  margin-bottom: 10px;
+}
+
+.ProjectAdvantages ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.ProjectAdvantages li {
+  font-size: 18px;
+  color: #4b5563;
+  margin: 10px 0;
+}
+
+/* Additional Content Section */
+.AdditionalContent {
+  text-align: center;
+  padding: 40px;
+  background: #f9fafb;
+  border-radius: 10px;
+  margin-top: 40px;
+}
+
+.AdditionalContent h3 {
+  font-size: 30px;
+  color: #1d4ed8;
+}
+
+.AdditionalContent p {
+  font-size: 18px;
+  color: #4b5563;
+  margin-top: 20px;
+}
+
+.AdditionalContent .image-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.AdditionalContent .image-gallery img {
+  width: 200px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Vacancy Searching Section */
+.VacancySearching {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 40px;
+  width: 100%; /* Ensure it takes full width */
+  background: #f1f5f9; /* Light background for the vacancy bar */
+  padding: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for separation */
+  border-radius: 10px;
+}
+
+#Vacancies {
+  font-size: 40px;
+  color: #3b82f6; /* Blue */
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* VacancyComponent Section */
+.VacancyContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  animation: fadeIn 2s ease-out;
+}
+
+/* Footer Section */
+.FooterSection {
+  width: 100%;
+  background: #1d4ed8; /* Blue */
+  color: white;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  animation: slideUp 1.5s ease-out;
+}
+
+/* Styling for the Footer Text */
+.FooterSection p {
+  font-size: 16px;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Image Section for Hire Image */
+.hireImg {
+  margin-top: 80px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 2s ease-out 0.5s;
+}
+
+.hireImg img {
+  width: 70%;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .Welcome-Text h1 {
+    font-size: 28px;
+  }
+  .Welcome-Text h2 {
+    font-size: 20px;
+  }
+  .ProjectAdvantages h3 {
+    font-size: 22px;
+  }
+  .ProjectAdvantages li {
+    font-size: 16px;
+  }
+  .VacancySearching h1 {
+    font-size: 32px;
+  }
+  .VacancySearching {
+    padding: 15px 0;
+  }
+}
+
+.FullWidthSliderWrapper {
     position: relative;
-    top: 600px;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.FooterSection .footer{
-    margin-top: 400px;
+.FullWidthSlider {
+    display: flex;
+    transition: transform 1s ease;
+}
+
+.slide {
+    flex: 0 0 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.slide-content {
+    max-width: 800px;
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.slide h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.slide h2 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.slide ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.slide li {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.slide li:before {
+    content: "•";
+    color: #007bff;
+    margin-right: 10px;
 }

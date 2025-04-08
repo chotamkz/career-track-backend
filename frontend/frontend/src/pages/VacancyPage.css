@@ -1,8 +1,141 @@
+/* Main container for the vacancy page */
 .VacancyPage {
-    text-align: center;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f7fa;
+}
+
+/* Navbar styling */
+.Navbar {
+  background-color: #222;
+  padding: 15px;
+  margin: 0; /* Ensure no extra space from navbar */
+}
+
+.ContentWrapper {
+  margin-top: 2cm;
+  padding: 10px; /* Optional: Add padding for spacing */
+}
+
+
+/* Vacancy details section */
+.VacancyDetail {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px; /* Add spacing below navbar */
+}
+
+/* Vacancy title */
+.vacancy-detail h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Company name and other details */
+.company,
+.salary,
+.location {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* Description and requirements styling */
+.description,
+.requirements {
+  margin-top: 20px;
+}
+
+.description h3,
+.requirements h3 {
+  font-size: 1.2rem;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.description p,
+.requirements p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Apply button styling */
+.vacancy-actions {
+  margin-top: 30px;
+}
+
+.apply-btn {
+  background-color: #0069d9;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.apply-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Search section styling */
+.SearchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.SearchBar {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Loading and error messages */
+.loading-text,
+.error-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #e74c3c;
+}
+
+.error-text {
+  color: #c0392b;
+}
+
+/* Footer styling */
+.FooterSection {
+  margin-top: 30px;
+  background-color: #222;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Media query for responsive design */
+@media (max-width: 768px) {
+  .vacancy-detail h1 {
+    font-size: 1.6rem;
   }
-  
-  .VacancyPage .footer{
-    margin-top: 500px;
+
+  .company,
+  .salary,
+  .location {
+    font-size: 0.9rem;
   }
+
+  .description p,
+  .requirements p {
+    font-size: 0.9rem;
+  }
+
+  .apply-btn {
+    width: 100%;
+  }
+}

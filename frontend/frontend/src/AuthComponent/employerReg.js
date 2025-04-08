@@ -8,23 +8,54 @@ const EmployerReg = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!companyName) {
+      newErrors.companyName = "Название компании обязательно";
+    }
+    if (!email) {
+      newErrors.email = "Электронная почта обязательна";
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Введите правильный формат электронной почты";
+    }
+    if (!password) {
+      newErrors.password = "Пароль обязателен";
+    } else if (password.length < 6) {
+      newErrors.password = "Пароль должен быть не менее 6 символов";
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Пароли не совпадают";
+    }
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Подтверждение пароля обязательно";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0; // If there are no errors, return true
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Пароли не совпадают");
+
+    // Validate form before submitting
+    if (!validateForm()) {
       return;
     }
 
     const result = await registerEmployer(companyName, email, password);
     console.log("Registration response:", result);
-    
+
     if (result.id) {
-      alert("Registration successful!");
+      alert("Регистрация прошла успешно!");
       navigate("/EmployerLogin");
     } else {
-      alert("Registration failed: " + (result.message || "Unknown error"));
+      alert("Ошибка регистрации: " + (result.message || "Неизвестная ошибка"));
     }
   };
 
@@ -32,6 +63,7 @@ const EmployerReg = () => {
     <div className="employer-register-container">
       <div className="employer-register-box">
         <h2 className="employer-register-title">Регистрация для работодателей</h2>
+
         <input
           type="text"
           placeholder="Название компании"
@@ -39,6 +71,8 @@ const EmployerReg = () => {
           onChange={(e) => setCompanyName(e.target.value)}
           className="employer-register-input"
         />
+        {errors.companyName && <p className="error">{errors.companyName}</p>}
+
         <input
           type="text"
           placeholder="Электронная почта или телефон"
@@ -46,6 +80,8 @@ const EmployerReg = () => {
           onChange={(e) => setEmail(e.target.value)}
           className="employer-register-input"
         />
+        {errors.email && <p className="error">{errors.email}</p>}
+
         <input
           type="password"
           placeholder="Пароль"
@@ -53,6 +89,8 @@ const EmployerReg = () => {
           onChange={(e) => setPassword(e.target.value)}
           className="employer-register-input"
         />
+        {errors.password && <p className="error">{errors.password}</p>}
+
         <input
           type="password"
           placeholder="Подтвердите пароль"
@@ -60,6 +98,8 @@ const EmployerReg = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="employer-register-input"
         />
+        {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+
         <button onClick={handleRegister} className="employer-register-button">
           Зарегистрироваться
         </button>

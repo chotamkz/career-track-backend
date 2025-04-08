@@ -6,12 +6,14 @@ const FooterComp = () => {
   return (
     <footer className="footer">
       <div className="footer-top">
-        <div className="logo">Logo</div>
+        <div className="footer-logo">
+          <h2>TalentBridge</h2>
+        </div>
         <div className="footer-columns">
           <div className="footer-column">
-            <h4>Brand Name</h4>
+            <h4>О компании</h4>
             <p>Почему Мы?</p>
-            <p>Что нового</p>
+            <p>Что нового?</p>
           </div>
           <div className="footer-column">
             <h4>Помощь</h4>
@@ -38,7 +40,7 @@ const FooterComp = () => {
       <div className="footer-bottom">
         <p>Terms of Use</p>
         <p>Privacy Statement</p>
-        <p id="rights">@2025  All Rights Reserved. </p>
+        <p id="rights">@2025 All Rights Reserved.</p>
       </div>
     </footer>
   );

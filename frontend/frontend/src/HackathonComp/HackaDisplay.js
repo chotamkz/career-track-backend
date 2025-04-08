@@ -24,14 +24,12 @@ const HackaDisplay = () => {
       try {
         setLoading(true);
         
-        // Используем сервисную функцию для получения хакатонов
         const data = await hackathonService.getAllHackathons();
-        
-        // Проверяем на ошибки
+
         if (data.error) {
           throw new Error(data.error);
         }
-        
+
         setHackathons(data);
         setError(null);
       } catch (err) {
@@ -41,7 +39,7 @@ const HackaDisplay = () => {
         setLoading(false);
       }
     };
-    
+
     fetchHackathons();
   }, []);
 
@@ -69,26 +67,28 @@ const HackaDisplay = () => {
                 <div className="hackathon-content">
                   <h3 className="hackathon-title">{hackathon.name}</h3>
                   <div className="hackathon-meta">
-                    <div className="days-tag">{calculateDaysLeft(hackathon.start_date)} дней до начала</div>
+                    <div className="days-left">
+                      <span className="days-tag">{calculateDaysLeft(hackathon.start_date)} дней до начала</span>
+                    </div>
                     <div className="format-tag">
                       <span className="format-icon">
                         {hackathon.format.toLowerCase() === "online" ? "🌐" : "🏢"}
-                      </span> 
+                      </span>
                       {hackathon.format.toLowerCase() === "online" ? "Онлайн" : "Оффлайн"}
                     </div>
                   </div>
                   <div className="hackathon-footer">
                     <div className="prize-info">₸ {hackathon.prizes}</div>
-                    <div className="participants-info">2000 участников</div>
+                    <div className="participants-info">{hackathon.participants} участников</div>
                   </div>
                 </div>
               </div>
             ))
           )}
         </div>
-        
+
         <div className="top-topics">
-          <h2>Топ тем хакатонов</h2>
+          <h2>Топ темы хакатонов</h2>
           <table>
             <thead>
               <tr>

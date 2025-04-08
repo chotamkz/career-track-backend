@@ -1,56 +1,79 @@
-.searchContainer{
-    position: absolute;
-    top: 20%;
-    left: 15%;
+/* Search container */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
-.searchContainer .search-bar {
+/* Styling the search bar */
+.search-bar {
     display: flex;
     align-items: center;
-    background-color: #f9f9f9;
-    width: 1000px;
-    height: 50px;
-    border-radius: 7px;
-    padding: 0 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px; /* max-width for a better layout */
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
-.searchContainer .search-icon {
-    color: #6b7280; 
-    margin-right: 12px;
+/* Add hover effect */
+.search-bar:hover {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.searchContainer .search-text {
-    color: #4b5563; 
-    font-size: 18px;
+/* Search icon */
+.search-icon {
+    font-size: 20px;
+    color: #1d4ed8; /* Blue color */
+    margin-right: 10px;
 }
 
-.searchContainer .search-input {
-    flex-grow: 1;
+/* Input field */
+.search-input {
+    flex-grow: 1; /* Takes remaining space */
     border: none;
     outline: none;
-    background: transparent;
-    font-size: 18px;
-    color: rgb(113, 109, 109);
-    height: 100%;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 25px;
+    margin-right: 10px;
+    color: #333;
+    background-color: #f7f7f7;
+    transition: background-color 0.3s ease;
 }
 
-.searchContainer .search-button {
-    position: relative;
-    left: 280px;
-    width: 230px;
-    height: 50px;
-    background-color: #60a5fa;
-    color: white;
+/* Input field focus effect */
+.search-input:focus {
+    background-color: #e0e7ff; /* Light blue background on focus */
+}
+
+/* Placeholder color */
+.search-input::placeholder {
+    color: #888;
+}
+
+/* Button styling */
+.search-button {
+    padding: 10px 20px;
+    background-color: #1d4ed8; /* Blue */
+    color: #fff;
     border: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.searchContainer .search-button:hover {
-    background-color: #3b82f6;
+.search-button:hover {
+    background-color: #2563eb; /* Darker blue on hover */
+}
+
+.search-button:focus {
+    outline: none;
 }

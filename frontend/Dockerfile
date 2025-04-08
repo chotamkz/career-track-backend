@@ -3,16 +3,17 @@ FROM node:20 AS frontend-builder
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy only the necessary files first to leverage cache (package.json and package-lock.json)
 COPY ./frontend/package.json ./frontend/package-lock.json ./
 
-# Install dependencies
+# Install dependencies (npm install is cached unless package.json changes)
 RUN npm install
 
+# Install axios and other global dependencies here, rather than installing separately
 RUN npm install axios --save
 
-# Copy the rest of the frontend files
-COPY ./frontend ./
+# Copy only the necessary source files after installing dependencies
+COPY ./frontend /app
 
 # Build the frontend
 RUN npm run build

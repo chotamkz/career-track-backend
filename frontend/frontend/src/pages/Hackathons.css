@@ -1,23 +1,124 @@
+/* Main page container */
 .HackathonsPage {
-    text-align: center;
-    height: 100%;
-  }
-  
-  .HackathonsPage .footer{
-    margin-top: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 30px 20px;
+  min-height: 100vh;
+}
+
+/* Navigation Bar */
+.Navbar {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Heading and description section */
+.HackaText {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.HackaText h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.HackaText p {
+  font-size: 1.2rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Search Section */
+.HackaSearch {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+/* Display Section for Hackathons */
+.HackathonDisplay {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Card Style for Hackathons */
+.hackathon-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hackathon-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Image */
+.hackathon-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Card Title and Details */
+.hackathon-card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.hackathon-card p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+
+.hackathon-card .date {
+  font-size: 1rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Footer Section */
+.FooterSection {
+  width: 100%;
+  margin-top: 40px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .HackaText h1 {
+    font-size: 2rem;
   }
 
-  .HackathonDisplay{
-    margin-top: 300px;
+  .HackaText p {
+    font-size: 1rem;
   }
 
-  .HackaText {
-    margin-top: 150px;
-    margin-left: 200px;
-    width: 350px;
-    text-align: left;
+  .HackathonDisplay {
+    flex-direction: column;
+    align-items: center;
   }
-  
-  .HackaText p{
-    text-align: left;
+
+  .hackathon-card {
+    width: 90%;
+    margin-bottom: 20px;
   }
+}

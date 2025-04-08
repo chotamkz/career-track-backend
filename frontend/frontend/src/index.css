@@ -1,16 +1,91 @@
-body {
-  height: 100%;
-  width: 100%;
+/* Reset default margin, padding, and box-sizing */
+* {
   margin: 0;
-  overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Ensure the HTML and body take up the full height of the page */
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif; /* Basic font */
+  background-color: #e0e0e0;  /* Light gray background color */
+  display: flex;
+  flex-direction: column; /* Align content in a column layout */
+}
+
+/* Flexbox container for centering content */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Take full height */
+  text-align: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Make sure cards scale properly */
+.card {
+  width: 100%;
+  max-width: 600px; /* Max width for large screens */
+  padding: 2rem;
+  background-color: white; /* Keep card background white */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  border-radius: 8px;
+}
+
+/* Header - Font size scales based on screen width */
+.header {
+  font-size: 5vw; /* Font size scales with viewport width */
+}
+
+/* Button styling */
+.button {
+  padding: 1rem 2rem;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Button Hover state */
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design - Media Queries */
+@media (max-width: 768px) {
+  .header {
+    font-size: 8vw; /* Increase font size on tablets */
+  }
+
+  .button {
+    padding: 1.5rem 3rem; /* Increase button size for touch devices */
+  }
+
+  .card {
+    padding: 1.5rem; /* Adjust card padding for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    font-size: 10vw; /* Larger font size on small screens */
+  }
+
+  .button {
+    padding: 2rem 4rem; /* Larger buttons for small screens */
+  }
+
+  .card {
+    padding: 1rem; /* Reduce padding on small screens */
+  }
 }

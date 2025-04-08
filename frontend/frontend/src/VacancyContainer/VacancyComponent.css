@@ -1,17 +1,13 @@
-.vacancy-container{
-    position:absolute;
-    top: 60%;
-    left: 8%;
+.vacancy-container {
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-top: 20px; /* Add space from the navbar */
+    padding: 20px; /* Ensure padding around the container */
     transition: min-height 0.3s ease-in-out;
 }
 
-::placeholder{
-    color: #ABB7C2;
-}
-
+/* Adjust the search bar */
 .search-bar {
     display: flex;
     align-items: center;
@@ -23,16 +19,19 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Search icon styling */
 .search-icon {
-    color: #6b7280; 
+    color: #6b7280;
     margin-right: 12px;
 }
 
+/* Search text styling */
 .search-text {
-    color: #4b5563; 
+    color: #4b5563;
     font-size: 18px;
 }
 
+/* Search input styling */
 .search-input {
     flex-grow: 1;
     border: none;
@@ -42,6 +41,7 @@
     color: rgb(113, 109, 109); /* Dark Gray */
 }
 
+/* Filter button styling */
 .filter-button {
     margin-left: auto;
     background: none;
@@ -49,12 +49,13 @@
     cursor: pointer;
 }
 
+/* Filter icon styling */
 .filter-icon {
     color: #4b5563;
     font-size: 20px;
 }
 
-
+/* Search button styling */
 .search-button {
     width: 300px;
     height: 60px;
@@ -69,6 +70,27 @@
     transition: background-color 0.3s ease;
 }
 
+/* Hover effect for search button */
 .search-button:hover {
     background-color: #3b82f6;
+}
+
+/* Ensure the container is placed correctly without the large space */
+.VacancyPage .ContentWrapper {
+    padding-top: 0; /* Remove extra padding */
+}
+
+/* Media query for responsive design */
+@media (max-width: 768px) {
+    .vacancy-container {
+        margin-top: 10px;
+    }
+
+    .search-bar {
+        width: 100%; /* Make search bar full width on mobile */
+    }
+
+    .search-button {
+        width: 100%; /* Make search button full width on mobile */
+    }
 }
