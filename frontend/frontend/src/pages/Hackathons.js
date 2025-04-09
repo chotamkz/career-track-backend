@@ -21,11 +21,8 @@ function Hackathons() {
             
             <div className="HackathonDisplay">
                 <HackaDisplay />
-            </div>
-  
-            <div className="FooterSection">
+            </div>  
                 <FooterComp />
-            </div>
           </div>
         );
   }

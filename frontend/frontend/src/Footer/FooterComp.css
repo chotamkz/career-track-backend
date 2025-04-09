@@ -9,9 +9,10 @@ body {
 /* Footer styles */
 .footer {
   background-color: #ffffff; /* White background */
-  color: #333333; /* Dark text color */
-  padding: 2rem;
-  border-top: 3px solid #4a90e2; /* Blue accent color */
+  color: #333333; 
+  padding: 2rem 0;
+  border-top: 3px solid #4a90e2;
+  width: 100%;
 }
 
 /* Top section of the footer */
@@ -20,6 +21,7 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
+  padding: 0 15%;
 }
 
 .footer-logo h2 {
@@ -51,6 +53,7 @@ body {
   color: #333333;
   cursor: pointer;
   transition: color 0.3s;
+  font-weight: 500;
 }
 
 .footer-column p:hover {
@@ -79,13 +82,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid #e0e0e0; /* Light separator line */
-  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  padding: 1rem 15% 0;
 }
 
 .footer-bottom p {
   font-size: 0.9rem;
   color: #777777;
+  font-weight: 500;
 }
 
 .footer-bottom #rights {
@@ -98,16 +102,19 @@ body {
   .footer-top {
     flex-direction: column;
     align-items: flex-start;
+    padding: 0 5%;
   }
 
   .footer-columns {
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
   }
 
   .footer-bottom {
     flex-direction: column;
     text-align: center;
+    padding: 1rem 5% 0;
   }
 }
 

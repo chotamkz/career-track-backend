@@ -11,7 +11,6 @@ const FilterSection = memo(({
   locationOptions,
   onSearch
 }) => {
-  // Локальные состояния для фильтров
   const [keywords, setKeywords] = useState(initialKeywords || "");
   const [mlSkills, setMlSkills] = useState(initialMlSkills || "");
   const [experience, setExperience] = useState(initialExperience || "");
@@ -22,7 +21,6 @@ const FilterSection = memo(({
     description: false
   });
 
-  // Обновляем локальное состояние при изменении пропсов
   useEffect(() => {
     setKeywords(initialKeywords || "");
     setMlSkills(initialMlSkills || "");
@@ -52,7 +50,6 @@ const FilterSection = memo(({
     };
     setSelectedKeywordFilter(newFilters);
     
-    // Отложенный вызов поиска, чтобы состояние успело обновиться
     setTimeout(() => {
       onSearch({
         keywords,
@@ -65,13 +62,11 @@ const FilterSection = memo(({
   };
 
   const handleInputKeyDown = (e) => {
-    // Отправляем поиск при нажатии Enter
     if (e.key === 'Enter') {
       triggerSearch();
     }
   };
 
-  // Подготавливаем опции для компонента Select (локации)
   const selectedLocationOptions = locationOptions.filter(option => 
     selectedLocations.includes(option.value)
   );
@@ -147,13 +142,12 @@ const FilterSection = memo(({
           const locations = selectedOptions ? selectedOptions.map(option => option.value) : [];
           setSelectedLocations(locations);
           
-          // Отложенный вызов поиска, чтобы состояние успело обновиться
           setTimeout(() => {
             onSearch({
               keywords,
-              mlSkills,
+              mlSkills, 
               experience,
-              locations: locations,
+              locations: locations.join(','), 
               keywordFilter: selectedKeywordFilter
             });
           }, 0);

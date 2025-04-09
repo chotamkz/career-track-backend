@@ -35,9 +35,7 @@ function ProfilePage() {
           <h3>Рекомендации</h3>
         </div>
       </div>
-          <div className="FooterSection">
             <FooterComp />
-          </div>
         </div>
       );
 }
