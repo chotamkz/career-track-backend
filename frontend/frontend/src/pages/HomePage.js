@@ -134,14 +134,9 @@ function HomePage() {
                 </div>
             </div>
 
-
                 <h1 id="Vacancies">Найди подходящую вакансию</h1>
 
-
-
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     );
 }

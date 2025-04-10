@@ -2,10 +2,9 @@
 .HackathonsPage {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #f8f9fa;
-  padding: 30px 20px;
   min-height: 100vh;
+  background-color: #f8f9fa;
+  position: relative;
 }
 
 /* Navigation Bar */
@@ -17,7 +16,9 @@
 /* Heading and description section */
 .HackaText {
   text-align: center;
+  margin-top: 80px;
   margin-bottom: 40px;
+  padding: 0 20px;
 }
 
 .HackaText h1 {
@@ -49,6 +50,7 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  padding: 0 20px;
 }
 
 /* Card Style for Hackathons */
@@ -99,7 +101,10 @@
 /* Footer Section */
 .FooterSection {
   width: 100%;
-  margin-top: 40px;
+  margin-top: auto;
+  background-color: #ffffff;
+  color: #333;
+  text-align: center;
 }
 
 /* Responsive Design */

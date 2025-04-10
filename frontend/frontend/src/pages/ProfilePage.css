@@ -3,9 +3,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #f4f7fc;
+  background-color: #f4f7fa;
   min-height: 100vh;
+  text-align: center;
+  position: relative;
 }
 
 .Navbar {
@@ -20,15 +21,17 @@
   gap: 20px;
   max-width: 1200px;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 30px;
+  padding: 30px;
 }
 
 /* Profile card */
 .card {
-  background-color: #ffffff;
+  background-color: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .profile-card {
@@ -137,7 +140,10 @@
 /* Footer section */
 .FooterSection {
   width: 100%;
-  margin-top: 2rem;
+  margin-top: auto;
+  background-color: #ffffff;
+  color: #333;
+  text-align: center;
 }
 
 /* Responsive Design */
