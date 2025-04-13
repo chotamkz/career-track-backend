@@ -10,10 +10,14 @@ export const registerStudent = async (name, email, education, password) => {
     });
 
     const result = await response.json();
-    if (result.id) {
-        localStorage.setItem("token", "some-jwt-token");
+    if (result.token) {
+        const token = result.token;
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const userType = decoded.userType;
+        
+        localStorage.setItem("token", token);
         localStorage.setItem("userEmail", result.email);
-        localStorage.setItem("role", result.userType);
+        localStorage.setItem("role", userType);
     }
     return result;
 };
@@ -28,10 +32,14 @@ export const registerEmployer = async (companyName, email, password) => {
     });
 
     const result = await response.json();
-    if (result.user.id) {
-        localStorage.setItem("token", "some-jwt-token");
-        localStorage.setItem("userEmail", result.user.email);
-        localStorage.setItem("role", result.user.userType);
+    if (result.token) {
+        const token = result.token;
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const userType = decoded.userType;
+        
+        localStorage.setItem("token", token);
+        localStorage.setItem("userEmail", result.email);
+        localStorage.setItem("role", userType);
     }
     return result;
 };

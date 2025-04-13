@@ -19,19 +19,27 @@ func NewEmployerProfileHandler(usecase *usecase.EmployerProfileUsecase, logger *
 }
 
 func (h *EmployerProfileHandler) GetEmployerProfile(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 32)
-	if err != nil {
-		h.logger.Errorf("Invalid employer id: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid employer id"})
+	userIDVal, exists := c.Get("user")
+	if !exists {
+		h.logger.Error("User ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	profile, err := h.usecase.GetProfile(uint(id))
+
+	employerID, ok := userIDVal.(uint)
+	if !ok {
+		h.logger.Error("Invalid user ID type")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return
+	}
+
+	profile, err := h.usecase.GetProfile(employerID)
 	if err != nil {
 		h.logger.Errorf("Failed to get employer profile: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get employer profile"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get profile"})
 		return
 	}
+
 	c.JSON(http.StatusOK, profile)
 }
 
