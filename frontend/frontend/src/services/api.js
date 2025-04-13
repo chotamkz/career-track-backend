@@ -44,12 +44,12 @@ export const API_ENDPOINTS = {
     LOGIN: '/auth/login',
   },
   STUDENTS: {
-    PROFILE: '/students/profile',
-    UPDATE: '/students/update',
+    PROFILE: '/students/me',
+    UPDATE: '/students/me',
   },
   EMPLOYERS: {
-    PROFILE: '/employers/profile',
-    UPDATE: '/employers/update',
+    PROFILE: '/employers/me',
+    UPDATE: '/employers/me',
   },
   VACANCIES: {
     GET_ALL: '/vacancies',

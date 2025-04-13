@@ -36,6 +36,20 @@
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
+}
+
+.student-edit-button:hover {
+    background-color: #0056b3;
+}
+
+.profile-input {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 .resume-section, .saved-jobs, .application-history, .recommendations {
@@ -68,10 +82,68 @@
     padding: 10px;
     background-color: #f1f1f1;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.history-box, .recommendation-box {
+.application-status {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+.history-box, .recommendation-box, .empty-list {
     padding: 10px;
     text-align: center;
     color: gray;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.resume-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resume-link {
+    color: #007bff;
+    text-decoration: none;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.resume-link:hover {
+    text-decoration: underline;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.cancel-button:hover {
+    background-color: #5a6268;
 }
