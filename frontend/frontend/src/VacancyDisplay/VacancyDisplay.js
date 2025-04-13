@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import "./VacancyDisplay.css";
 import { API_ENDPOINTS, apiClient, handleApiError, vacancyService } from '../services/api';
 import FilterSection from './FilterSection';
 
 function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
+  const navigate = useNavigate();
   const [vacancies, setVacancies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -178,6 +180,11 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
+  // Функция для перехода на страницу детализации вакансии
+  const handleVacancyClick = (vacancyId) => {
+    navigate(`/vacancies/${vacancyId}`);
+  };
+
   return (
     <div className="vacancy-display">
       <FilterSection
@@ -203,23 +210,65 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           <p id="resultErr">Вакансии не найдены</p>
         ) : (
           currentVacancies.map((vacancy) => (
-            <div key={vacancy.id} className="vacancy-card">
+            <div key={vacancy.id} className="vacancy-card" onClick={() => handleVacancyClick(vacancy.id)}>
               {searchFilters.ml_skills && vacancy.match_percentage !== undefined && (
                 <div className={`match-circle ${getMatchClass(vacancy.match_percentage)}`}>
                   {vacancy.match_percentage}%
                 </div>
               )}
               <h2>{vacancy.title}</h2>
-              <p>{vacancy.salary_from && vacancy.salary_to
-                  ? `${vacancy.salary_from} - ${vacancy.salary_to} ${vacancy.salary_currency}`
-                  : "Зарплата не указана"}
-              </p>
-              <p>{vacancy.location}</p>
+              
+              <div className="vacancy-details">
+                <p className="salary">
+                  {vacancy.salary_from && vacancy.salary_to
+                    ? `${vacancy.salary_from} - ${vacancy.salary_to} ${vacancy.salary_currency}`
+                    : "Зарплата не указана"}
+                </p>
+                
+                <div className="vacancy-meta-info">
+                  {vacancy.location && (
+                    <p className="location">{vacancy.location}</p>
+                  )}
+                  
+                  {vacancy.work_schedule && (
+                    <p className="schedule">{vacancy.work_schedule}</p>
+                  )}
+                  
+                  {vacancy.experience && (
+                    <div className="experience">{vacancy.experience}</div>
+                  )}
+                </div>
+              </div>
+              
+              {vacancy.skills && vacancy.skills.length > 0 && (
+                <div className="vacancy-skills">
+                  {vacancy.skills.slice(0, 3).map((skill, index) => (
+                    <div key={index} className="vacancy-skill-tag">{skill}</div>
+                  ))}
+                  {vacancy.skills.length > 3 && (
+                    <div className="vacancy-skill-more">+{vacancy.skills.length - 3}</div>
+                  )}
+                </div>
+              )}
+              
               <div className="vacancy-actions">
-                <a href={vacancy.vacancy_url} target="_blank" rel="noopener noreferrer">
+                <a 
+                  href={vacancy.vacancy_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button className="apply-btn">Откликнуться</button>
                 </a>
-                <button className="contact-btn">Контакты</button>
+                <button 
+                  className="contact-btn" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVacancyClick(vacancy.id);
+                  }}
+                >
+                  Подробнее
+                </button>
               </div>
             </div>
           ))
