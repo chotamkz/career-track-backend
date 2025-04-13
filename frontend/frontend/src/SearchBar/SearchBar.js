@@ -20,7 +20,7 @@ const SearchBar = ({ onSearch, initialQuery = "" }) => {
     }
 
     return (
-        <div className="search-container">
+        <div className="searchContainer">
             <div className="search-bar">
                 <FaSearch className="search-icon" />
                 <input

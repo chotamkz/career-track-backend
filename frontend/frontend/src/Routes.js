@@ -18,12 +18,10 @@ const AppRoutes = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage/>} />
             
-            {/* Маршруты для страницы вакансий */}
             <Route path="/vacancies" element={<VacancyPage/>} />
             <Route path="/vacancies/search" element={<VacancyPage/>} />
             <Route path="/vacancies/:id" element={<VacancyPage/>} />
             
-            {/* Маршруты для страницы хакатонов */}
             <Route path="/hackathons" element={<Hackathons />} />
             <Route path="/hackathons/:id" element={<Hackathons />} />
             

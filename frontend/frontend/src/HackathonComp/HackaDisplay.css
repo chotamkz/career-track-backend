@@ -1,6 +1,6 @@
 .hackathons {
   padding: 20px;
-  background-color: #f0f8ff; /* Light blue background */
+  background-color: #f0f8ff;
 }
 
 #forYou {
@@ -8,7 +8,7 @@
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
-  color: #1e3a8a; /* Dark blue text */
+  color: #1e3a8a;
 }
 
 .hackathons-container {
@@ -53,7 +53,7 @@
 .hackathon-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1e3a8a; /* Dark blue title */
+  color: #1e3a8a;
 }
 
 .hackathon-meta {
@@ -62,7 +62,7 @@
 }
 
 .days-tag {
-  background-color: #3b82f6; /* Blue background for days left */
+  background-color: #3b82f6; 
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
@@ -86,12 +86,12 @@
 }
 
 .prize-info {
-  color: #1e3a8a; /* Dark blue for prize info */
+  color: #1e3a8a;
   font-weight: bold;
 }
 
 .participants-info {
-  color: #2d3436; /* Neutral color for participants info */
+  color: #2d3436; 
 }
 
 .top-topics {
@@ -101,7 +101,7 @@
 .top-topics h2 {
   margin-bottom: 20px;
   font-size: 1.5rem;
-  color: #1e3a8a; /* Dark blue for the heading */
+  color: #1e3a8a;
 }
 
 table {
@@ -115,16 +115,16 @@ th, td {
 }
 
 th {
-  background-color: #e2e8f0; /* Light blue background for table headers */
-  color: #1e3a8a; /* Dark blue text in header */
+  background-color: #e2e8f0; 
+  color: #1e3a8a;
 }
 
 tr:nth-child(even) {
-  background-color: #f9fafb; /* Slightly lighter background for even rows */
+  background-color: #f9fafb; 
 }
 
 .view-all-button {
-  background-color: #3b82f6; /* Blue button */
+  background-color: #3b82f6; 
   color: white;
   padding: 10px 20px;
   font-size: 1rem;
@@ -135,5 +135,5 @@ tr:nth-child(even) {
 }
 
 .view-all-button:hover {
-  background-color: #2563eb; /* Darker blue on hover */
+  background-color: #2563eb;
 }

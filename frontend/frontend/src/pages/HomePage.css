@@ -2,17 +2,17 @@
 .App {
   font-family: 'Arial', sans-serif;
   color: #333;
-  background: #f4f7fb; /* Light background */
+  background: #f4f7fb; 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  padding-top: 120px; /* Added space to prevent navbar overlap */
+  padding-top: 120px; 
 }
 
-/* Navbar */
+
 .Navbar {
   width: 100%;
   position: fixed;
@@ -21,40 +21,17 @@
   z-index: 1000;
 }
 
-/* Fixed Search Bar */
-.SearchBar {
-  position: fixed;
-  top: 80px;
-  width: 100%;
-  padding: 10px;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 999;
-}
-
-.SearchBar input {
-  width: 100%;
-  padding: 12px;
-  font-size: 18px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  outline: none;
-  background: #f9fafb;
-}
-
-/* Welcome Section */
 .Welcome-Text {
   text-align: center;
   padding: 20px;
   animation: fadeIn 2s ease-out;
-  margin-top: 20px; /* Adjusted margin for better spacing */
+  margin-top: 20px; 
 }
-
 
 .Welcome-Text h1 {
   font-size: 36px;
   font-weight: bold;
-  color: #1d4ed8; /* Blue color */
+  color: #1d4ed8; 
   margin-bottom: 10px;
   text-transform: uppercase;
   animation: slideIn 1.5s ease-in-out;
@@ -62,17 +39,17 @@
 
 .Welcome-Text h2 {
   font-size: 24px;
-  color: #4b5563; /* Subtle dark color */
+  color: #4b5563; 
   margin-top: 0;
   animation: fadeIn 2s ease-out 0.5s;
 }
 
-/* Project Advantages Section */
+
 .ProjectAdvantages {
   text-align: center;
   margin-top: 40px;
   padding: 20px;
-  background: #e2e8f0; /* Light background */
+  background: #e2e8f0; 
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: fadeIn 2s ease-out 1s;
@@ -95,7 +72,6 @@
   margin: 10px 0;
 }
 
-/* Additional Content Section */
 .AdditionalContent {
   text-align: center;
   padding: 40px;
@@ -129,29 +105,27 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Vacancy Searching Section */
 .VacancySearching {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   margin-top: 40px;
-  width: 100%; /* Ensure it takes full width */
-  background: #f1f5f9; /* Light background for the vacancy bar */
+  width: 100%; 
+  background: #f1f5f9; 
   padding: 20px 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for separation */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
   border-radius: 10px;
 }
 
 #Vacancies {
   font-size: 40px;
-  color: #3b82f6; /* Blue */
+  color: #3b82f6; 
   font-weight: bold;
   margin-bottom: 20px;
   text-transform: uppercase;
 }
 
-/* VacancyComponent Section */
 .VacancyContainer {
   display: flex;
   flex-wrap: wrap;
@@ -161,10 +135,10 @@
   animation: fadeIn 2s ease-out;
 }
 
-/* Footer Section */
+
 .FooterSection {
   width: 100%;
-  background: #1d4ed8; /* Blue */
+  background: #1d4ed8; 
   color: white;
   padding: 30px;
   text-align: center;
@@ -172,14 +146,14 @@
   animation: slideUp 1.5s ease-out;
 }
 
-/* Styling for the Footer Text */
+
 .FooterSection p {
   font-size: 16px;
   margin: 0;
   font-weight: bold;
 }
 
-/* Image Section for Hire Image */
+
 .hireImg {
   margin-top: 80px;
   width: 100%;
@@ -196,7 +170,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Animations */
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -226,7 +200,7 @@
   }
 }
 
-/* Mobile Responsiveness */
+
 @media (max-width: 768px) {
   .Welcome-Text h1 {
     font-size: 28px;

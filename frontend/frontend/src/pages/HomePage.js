@@ -9,8 +9,6 @@ import hackathonImage from "../assets/images/hackathon.png";
 import logo from "../assets/images/talentbridge-logo.png";
 import {useEffect, useRef } from "react";
 
-
-
 function HomePage() {
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -18,11 +16,10 @@ function HomePage() {
         setSearchQuery(event.target.value);
     };
 
-   const sliderRef = useRef(null);  // Reference to the slider
+   const sliderRef = useRef(null);  
      const [currentIndex, setCurrentIndex] = useState(0);
-     const slideCount = 4; // Number of slides
+     const slideCount = 4; 
 
-     // Function to automatically scroll to the next slide
      const autoScroll = () => {
          const nextIndex = (currentIndex + 1) % slideCount;
          setCurrentIndex(nextIndex);
@@ -32,11 +29,9 @@ function HomePage() {
          });
      };
 
-     // Set interval to scroll automatically every 2 seconds
      useEffect(() => {
          const interval = setInterval(autoScroll, 2000);
 
-         // Cleanup the interval on component unmount
          return () => clearInterval(interval);
      }, [currentIndex]);
 
@@ -56,7 +51,6 @@ function HomePage() {
                                 ref={sliderRef}
                                 style={{ display: "flex", overflowX: "hidden", scrollBehavior: "smooth" }}
                             >
-                                {/* Slide 1 */}
                                 <div className="slide" style={{ flex: "0 0 100%" }}>
                                     <div className="slide-content">
                                         <h1>Платформа для поиска возможностей стажировок, хакатонов и работы для студентов IT-сферы</h1>
@@ -64,7 +58,6 @@ function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Slide 2 */}
                                 <div className="slide" style={{ flex: "0 0 100%" }}>
                                     <div className="slide-content">
                                         <h2>Основные преимущества:</h2>
@@ -78,7 +71,6 @@ function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Slide 3 */}
                                 <div className="slide" style={{ flex: "0 0 100%" }}>
                                     <div className="slide-content">
                                         <h2>Мы предлагаем:</h2>
@@ -91,7 +83,6 @@ function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Slide 4 */}
                                 <div className="slide" style={{ flex: "0 0 100%" }}>
                                     <div className="slide-content">
                                         <h2>Преимущества нашей платформы:</h2>
@@ -123,7 +114,6 @@ function HomePage() {
                 </ul>
             </div>
 
-            {/* Add more content to extend the page */}
             <div className="AdditionalContent">
                 <h3>Что еще мы предлагаем?</h3>
                 <p>На нашей платформе вы найдете </p>

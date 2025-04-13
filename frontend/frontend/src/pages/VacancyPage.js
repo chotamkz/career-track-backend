@@ -80,6 +80,9 @@ function VacancyPage() {
     <div className="VacancyPage">
       <NavigationBar />
       <div className="ContentWrapper">
+      <div className="SearchBar">
+        <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
+      </div>
         {id ? (
           <div className="VacancyDetail">
             {loading ? (
@@ -124,7 +127,6 @@ function VacancyPage() {
           </div>
         )}
       </div>
-
       <FooterComp />
     </div>
   );

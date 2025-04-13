@@ -1,12 +1,12 @@
 body {
-  background-color: #f9f9f9; /* Light gray background */
-  color: #333333;            /* Dark text for contrast */
+  background-color: #f9f9f9; 
+  color: #333333;            
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
 }
 
 
-/* General navigation bar styling */
+
 .navigationbar {
     display: flex;
     justify-content: space-between;
@@ -19,29 +19,27 @@ body {
     z-index: 1000;
 }
 
-/* Styling for the logo container */
+
 .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px;  /* Adjust height of the nav bar */
+    height: 50px;
 }
 
-/* Logo image styling to ensure it fits well */
 .logo-image {
-    max-height: 100%; /* Makes the logo scale according to the height of the container */
-    max-width: 150px; /* Ensures the logo doesn't grow too large */
-    object-fit: contain; /* Prevents the logo from being stretched or distorted */
+    max-height: 100%; 
+    max-width: 150px; 
+    object-fit: contain;
 }
 
-/* Navigation links container */
+
 nav {
-    flex-grow: 1;  /* Ensures the navigation bar items take up the available space */
+    flex-grow: 1;  
     display: flex;
     justify-content: center;
 }
 
-/* Navigation links styling */
 .nav-links {
     list-style: none;
     display: flex;
@@ -58,18 +56,15 @@ nav {
     color: #333;
 }
 
-/* Hover effect for navigation links */
 .nav-links a:hover {
     color: #007bff;
 }
 
-/* Authentication buttons container */
 .authbuttons {
     display: flex;
     align-items: center;
 }
 
-/* Styling for the dropdown button */
 .auth-buttons-log {
     background-color: #007bff;
     color: white;
@@ -85,7 +80,6 @@ nav {
     background-color: #0056b3;
 }
 
-/* Dropdown menu styling */
 .dropdown-menu {
     position: absolute;
     top: 50px;
@@ -108,14 +102,13 @@ nav {
     background-color: #f0f0f0;
 }
 
-/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     .logo {
-        height: 40px;  /* Smaller logo height on mobile */
+        height: 40px;  
     }
 
     .logo-image {
-        max-width: 120px;  /* Scale logo size down further on mobile */
+        max-width: 120px;  
     }
 
     .nav-links {
