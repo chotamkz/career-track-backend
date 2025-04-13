@@ -37,13 +37,12 @@ const EmployerReg = () => {
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0; // If there are no errors, return true
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Validate form before submitting
     if (!validateForm()) {
       return;
     }
@@ -53,7 +52,7 @@ const EmployerReg = () => {
 
     if (result.id) {
       alert("Регистрация прошла успешно!");
-      navigate("/EmployerLogin");
+      navigate("/");
     } else {
       alert("Ошибка регистрации: " + (result.message || "Неизвестная ошибка"));
     }

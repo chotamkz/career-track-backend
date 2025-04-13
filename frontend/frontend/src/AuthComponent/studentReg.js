@@ -23,7 +23,7 @@ const StudentReg = () => {
 
     if (result.name !== '') {
       alert("Registration successful!");
-      navigate("/StudentAuth");
+      navigate("/");
     } else {
       alert("Registration failed: " + (result.message || "Unknown error"));
     }

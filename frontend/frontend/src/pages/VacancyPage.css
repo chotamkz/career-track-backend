@@ -196,11 +196,6 @@
   font-size: 18px;
 }
 
-<<<<<<< HEAD
-.SearchBar {
-  max-width: 1200px;
-  margin: 0 auto;
-=======
 .save-btn {
   background-color: transparent;
   color: #3182ce;
@@ -211,7 +206,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
->>>>>>> 047bef6053d5d6e23969a1813288804f3b071a72
 }
 
 .save-btn:hover {

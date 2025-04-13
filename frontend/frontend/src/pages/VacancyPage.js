@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "./VacancyPage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
+import SearchBar from "../SearchBar/SearchBar";
 import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
 import VacancyDetails from "../VacancyDetails/VacancyDetails";
 

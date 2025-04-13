@@ -180,7 +180,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // Функция для перехода на страницу детализации вакансии
   const handleVacancyClick = (vacancyId) => {
     navigate(`/vacancies/${vacancyId}`);
   };
