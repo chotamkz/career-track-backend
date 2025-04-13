@@ -1,16 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./SearchBar.css";
 import { FaSearch } from "react-icons/fa";
 
 const SearchBar = ({ onSearch, initialQuery = "" }) => {
     const [searchQuery, setSearchQuery] = useState(initialQuery);
+    const [isFocused, setIsFocused] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 576);
+    const buttonRef = useRef(null);
 
     useEffect(() => {
         setSearchQuery(initialQuery);
     }, [initialQuery]);
+    
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 576);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleSearch = () => {
-        onSearch(searchQuery);
+        if (searchQuery.trim()) {
+            onSearch(searchQuery);
+        }
     }
 
     const handleKeyPress = (e) => {
@@ -21,17 +35,26 @@ const SearchBar = ({ onSearch, initialQuery = "" }) => {
 
     return (
         <div className="searchContainer">
-            <div className="search-bar">
+            <div className={`search-bar ${isFocused ? 'focused' : ''}`}>
                 <FaSearch className="search-icon" />
                 <input
                     type="text"
                     className="search-input"
-                    placeholder="Поиск вакансии"
+                    placeholder="Поиск вакансии..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyPress={handleKeyPress}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                 />
-                <button className="search-button" onClick={handleSearch}>Найти</button>
+                <button 
+                    ref={buttonRef}
+                    className="search-button" 
+                    onClick={handleSearch}
+                    aria-label="Поиск"
+                >
+                    {isMobile ? 'Поиск' : 'Найти'}
+                </button>
             </div>
         </div>
     );

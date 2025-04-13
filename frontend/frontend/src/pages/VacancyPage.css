@@ -8,303 +8,46 @@
 .ContentWrapper {
   padding: 30px;
   flex: 1;
-}
-
-.VacancyDetail {
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
 }
 
-.vacancy-detail {
-  display: flex;
-  flex-direction: column;
-}
-
-.vacancy-header {
-  padding: 30px;
-  border-bottom: 1px solid #eaeaea;
-  position: relative;
-}
-
-.back-button {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  color: #1976d2;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-  margin-bottom: 24px;
-  font-weight: 500;
-}
-
-.back-button:hover {
-  color: #0d47a1;
-}
-
-.back-button::before {
-  content: "←";
-  font-size: 18px;
-}
-
-.vacancy-detail h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 16px;
-  line-height: 1.3;
-}
-
-.employer-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.employer-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background-color: #f0f4f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  color: #718096;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.employer-name {
-  font-size: 16px;
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.vacancy-meta {
-  background-color: #f8fafc;
-  padding: 24px 30px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.vacancy-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 24px;
-}
-
-.info-block {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.info-label {
-  font-weight: 500;
-  color: #718096;
-  font-size: 14px;
-}
-
-.info-value {
-  font-size: 16px;
-  color: #1a202c;
-  font-weight: 500;
-}
-
-.salary-value {
-  font-size: 20px;
-  color: #2d3748;
-  font-weight: 700;
-}
-
-.vacancy-content {
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-.description, .requirements {
-  line-height: 1.7;
-}
-
-.description h3, .requirements h3 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #2d3748;
-  margin-bottom: 20px;
-  position: relative;
-  padding-bottom: 12px;
-}
-
-.description h3::after, .requirements h3::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 3px;
-  background-color: #3182ce;
-  border-radius: 3px;
-}
-
-.description div, .requirements p {
-  color: #4a5568;
-  font-size: 16px;
-}
-
-.vacancy-actions {
-  padding: 24px 30px;
-  background-color: #f8fafc;
-  border-top: 1px solid #eaeaea;
-  display: flex;
-  gap: 16px;
-}
-
-.apply-btn {
-  background-color: #3182ce;
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.apply-btn:hover {
-  background-color: #2c5282;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(49, 130, 206, 0.3);
-}
-
-.apply-btn::after {
-  content: "→";
-  font-size: 18px;
-}
-
-.save-btn {
-  background-color: transparent;
-  color: #3182ce;
-  border: 2px solid #3182ce;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.save-btn:hover {
-  background-color: rgba(49, 130, 206, 0.1);
-}
-
-.loading-text, .error-text {
-  text-align: center;
-  padding: 60px 0;
-  color: #718096;
-  font-size: 16px;
-}
-
-.error-text {
-  color: #e53e3e;
-}
-
-.job-tag {
-  display: inline-block;
-  background-color: #ebf4ff;
-  color: #3182ce;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  margin-right: 8px;
-}
-
-/* Для корректного отображения HTML в описании */
-.description div {
-  max-width: 100%;
-  overflow-wrap: break-word;
-}
-
-.description div p {
-  margin-bottom: 16px;
-}
-
-.description div ul, .description div ol {
-  padding-left: 24px;
-  margin: 16px 0;
-}
-
-.description div li {
-  margin-bottom: 8px;
-}
-
-.description div strong {
-  font-weight: 600;
-  color: #2d3748;
-}
-
-.description div a {
-  color: #3182ce;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.description div a:hover {
-  text-decoration: underline;
+.SearchBarContainer {
+  margin-bottom: 30px;
+  max-width: 920px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Адаптивность */
+@media (max-width: 992px) {
+  .ContentWrapper {
+    padding: 20px;
+  }
+  
+  .SearchBarContainer {
+    margin-bottom: 25px;
+  }
+}
+
 @media (max-width: 768px) {
   .ContentWrapper {
     padding: 15px;
   }
   
-  .VacancyDetail {
-    border-radius: 0;
-    box-shadow: none;
-  }
-  
-  .vacancy-header,
-  .vacancy-meta,
-  .vacancy-content,
-  .vacancy-actions {
-    padding: 20px;
-  }
-  
-  .vacancy-detail h1 {
-    font-size: 22px;
-  }
-  
-  .salary-value {
-    font-size: 18px;
-  }
-  
-  .vacancy-info {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .apply-btn, .save-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .vacancy-actions {
-    flex-direction: column;
+  .SearchBarContainer {
+    margin-bottom: 20px;
   }
 }
+
+@media (max-width: 576px) {
+  .ContentWrapper {
+    padding: 12px;
+  }
+  
+  .SearchBarContainer {
+    margin-bottom: 15px;
+  }
+} 
