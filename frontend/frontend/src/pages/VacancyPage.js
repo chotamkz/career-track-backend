@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./VacancyPage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
 import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
-import VacancyDetails from "../VacancyDetails/VacancyDetails";
+import SearchBar from "../SearchBar/SearchBar";
 
 function VacancyPage() {
-  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -41,6 +40,11 @@ function VacancyPage() {
       search: params.toString()
     });
   };
+  
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    updateUrlParams(searchFilters, query);
+  };
 
   const handleFiltersChange = (filters) => {
     setSearchFilters(filters);
@@ -51,22 +55,14 @@ function VacancyPage() {
     <div className="VacancyPage">
       <NavigationBar />
       <div className="ContentWrapper">
-      <div className="SearchBar">
-        <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
-      </div>
-        {id ? (
-          <div className="VacancyDetail">
-            <VacancyDetails />
-          </div>
-        ) : (
-          <div>
-            <VacancyDisplay
-              searchFilters={searchFilters}
-              searchQuery={searchQuery}
-              onFiltersChange={handleFiltersChange}
-            />
-          </div>
-        )}
+        <div className="SearchBarContainer">
+          <SearchBar onSearch={handleSearch} initialQuery={searchQuery} />
+        </div>
+        <VacancyDisplay
+          searchFilters={searchFilters}
+          searchQuery={searchQuery}
+          onFiltersChange={handleFiltersChange}
+        />
       </div>
       <FooterComp />
     </div>

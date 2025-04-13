@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage"
 import Hackathons from "./pages/Hackathons";
 import VacancyPage from "./pages/VacancyPage"
+import VacancyDetailsPage from "./pages/VacancyDetailsPage";
 import HackaStorage from "./pages/HackaStorage";
 import StudentAuth from "./pages/StudentAuth";
 import StudentRegistration from "./pages/StudentRegistration";
@@ -20,7 +21,7 @@ const AppRoutes = () => {
             
             <Route path="/vacancies" element={<VacancyPage/>} />
             <Route path="/vacancies/search" element={<VacancyPage/>} />
-            <Route path="/vacancies/:id" element={<VacancyPage/>} />
+            <Route path="/vacancies/:id" element={<VacancyDetailsPage/>} />
             
             <Route path="/hackathons" element={<Hackathons />} />
             <Route path="/hackathons/:id" element={<Hackathons />} />
