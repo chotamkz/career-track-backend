@@ -50,7 +50,7 @@ const EmployerReg = () => {
     const result = await registerEmployer(companyName, email, password);
     console.log("Registration response:", result);
 
-    if (result.id) {
+    if (result.user.id) {
       alert("Регистрация прошла успешно!");
       navigate("/");
     } else {

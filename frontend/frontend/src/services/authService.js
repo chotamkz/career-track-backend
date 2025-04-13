@@ -28,10 +28,10 @@ export const registerEmployer = async (companyName, email, password) => {
     });
 
     const result = await response.json();
-    if (result.id) {
+    if (result.user.id) {
         localStorage.setItem("token", "some-jwt-token");
-        localStorage.setItem("userEmail", result.email);
-        localStorage.setItem("role", result.userType);
+        localStorage.setItem("userEmail", result.user.email);
+        localStorage.setItem("role", result.user.userType);
     }
     return result;
 };

@@ -5,7 +5,6 @@ import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
 import SearchBar from "../SearchBar/SearchBar";
 import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
-import SearchBar from "../SearchBar/SearchBar";
 
 function VacancyPage() {
   const location = useLocation();
