@@ -1,16 +1,18 @@
 .vacancy-display {
     display: flex;
-    width: 80%;
+    width: 90%;
+    max-width: 1100px;
     margin: auto;
-    gap: 30px;
+    gap: 24px;
     margin-top: 30px;
+    flex-wrap: wrap;
   }
   
   .filter-section {
     max-width: 250px;
     min-width: 250px;
-    margin-left: 95px;
-    height: 90%;
+    margin-left: 0;
+    height: fit-content;
     background: white;
     padding: 15px;
     border-radius: 5px;
@@ -85,38 +87,98 @@
     width: 48.8%;
   }
   
+  .vacancies-list {
+    flex: 1;
+    min-width: 300px;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+  }
+  
   .vacancy-card {
-    background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 650px;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    cursor: pointer;
     position: relative;
+    border: 1px solid #edf2f7;
+    width: 100%;
+  }
+  
+  .vacancy-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: #e2e8f0;
   }
   
   .vacancy-card h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #2d3748;
     margin-bottom: 10px;
-    margin-top: 5px;
-    display: flex;
-    padding-right: 60px;
+    margin-top: 0;
+    line-height: 1.4;
+    padding-right: 45px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
   
   .vacancy-card p {
-    margin: 3px 0;
-    display: flex;
-    font-size: 15px;
+    margin: 6px 0;
+    color: #4a5568;
+    font-size: 14px;
+    max-width: 95%;
   }
   
-  #vacancy-salary{
-    font-size: 17px;
-    margin-bottom: 15px;
+  .vacancy-card .salary {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 4px 0;
+  }
+
+  .vacancy-card .location,
+  .vacancy-card .schedule {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: #718096;
+    font-size: 13px;
+  }
+
+  .vacancy-card .location::before {
+    content: "📍";
+    margin-right: 6px;
+    font-size: 14px;
+  }
+
+  .vacancy-card .schedule::before {
+    content: "🕒";
+    margin-right: 6px;
+    font-size: 14px;
+  }
+
+  .vacancy-card .experience {
+    display: inline-block;
+    background-color: #ebf4ff;
+    color: #3182ce;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin: 0;
   }
 
   .vacancy-actions {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 16px;
   }
 
   .skills-filter {
@@ -143,48 +205,57 @@
   }
   
   .apply-btn {
-    background: #6b8afd;
+    background-color: #0075E1;
     color: white;
     border: none;
-    padding: 13px 15px;
-    border-radius: 5px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    }
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    box-shadow: none;
+    outline: none;
+    border-bottom: none;
+  }
   
-  .apply-btn:hover{
-    background: #5376f4;
+  .apply-btn:hover {
+    background-color: #0062bb;
+    transform: translateY(-1px);
+    box-shadow: none;
   }
 
   .contact-btn {
-    background: white;
-    color: #6b8afd;
-    border: 1px solid #6b8afd;
-    padding: 13px 31.53px;
-    border-radius: 5px;
+    background-color: transparent;
+    color: #0075E1;
+    border: 1px solid #0075E1;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
   }
 
-  .contact-btn:hover{
-    background: #f9f6f6;
-    color: #4d74ff;
+  .contact-btn:hover {
+    background-color: rgba(0, 117, 225, 0.1);
   }
 
-  .pagination-container{
+  .pagination-container {
     display: flex;
-    gap: 5px;
     justify-content: center;
-    margin-top: 1000px;
-    margin-left: -690px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 40px;
   }
   
   .pagination-container .pagination {
     display: flex;
     justify-content: center;
     gap: 5px;
-    z-index: 11;
   }
   
   .pagination-container .pagination-btn {
@@ -193,6 +264,7 @@
     padding: 8px 12px;
     cursor: pointer;
     transition: background 0.3s;
+    border-radius: 4px;
   }
   
   .pagination-container .pagination-btn:hover {
@@ -200,9 +272,9 @@
   }
   
   .pagination-container .pagination-btn.active {
-    background-color: #007bff;
+    background-color: #0075E1;
     color: white;
-    border-color: #007bff;
+    border-color: #0075E1;
   }
   
   .pagination-container .pagination-btn:disabled {
@@ -210,34 +282,146 @@
     opacity: 0.5;
   }
   
+  .dots {
+    margin: 0 5px;
+    align-self: center;
+  }
+  
   .match-circle {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 14px;
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: transparent;
-    border: 3px solid;
+    top: 16px;
+    right: 16px;
+    background-color: #fff;
+    border: 2px solid;
   }
 
   .match-circle.high {
-    border-color: #4CAF50;
-    color: #4CAF50;
+    border-color: #48bb78;
+    color: #48bb78;
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.2);
   }
 
   .match-circle.medium {
-    border-color: #FFC107;
-    color: #FFC107;
+    border-color: #ecc94b;
+    color: #ecc94b;
+    box-shadow: 0 2px 8px rgba(236, 201, 75, 0.2);
   }
 
   .match-circle.low {
-    border-color: #F44336;
-    color: #F44336;
+    border-color: #f56565;
+    color: #f56565;
+    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.2);
+  }
+
+  .vacancy-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .vacancy-skill-tag {
+    background-color: #ebf8ff;
+    color: #2b6cb0;
+    border: 1px solid #bee3f8;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .vacancy-skill-more {
+    background-color: #e6e8eb;
+    color: #4a5568;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  #loadingErr, #resultErr {
+    text-align: center;
+    padding: 40px 0;
+    color: #718096;
+    font-size: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 1200px) {
+    .vacancy-display {
+      width: 95%;
+    }
+    
+    .vacancies-list {
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .vacancy-display {
+      flex-direction: column;
+      align-items: center;
+      width: 96%;
+    }
+    
+    .filter-section {
+      max-width: 100%;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .vacancies-list {
+      width: 100%;
+    }
+    
+    .vacancy-card {
+      padding: 16px;
+    }
+    
+    .vacancy-card h2 {
+      font-size: 16px;
+      padding-right: 36px;
+    }
+    
+    .match-circle {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+      top: 14px;
+      right: 14px;
+    }
+  }
+  
+  .vacancy-details {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+
+  .vacancy-meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .vacancy-actions a {
+    text-decoration: none;
+    box-shadow: none;
+    outline: none;
+    border: none;
   }
   

@@ -3,9 +3,8 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "./VacancyPage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
-import SearchBar from "../SearchBar/SearchBar";
 import VacancyDisplay from "../VacancyDisplay/VacancyDisplay";
-import { vacancyService } from "../services/api";
+import VacancyDetails from "../VacancyDetails/VacancyDetails";
 
 function VacancyPage() {
   const { id } = useParams();
@@ -15,10 +14,6 @@ function VacancyPage() {
   const queryParams = new URLSearchParams(location.search);
 
   const [searchQuery, setSearchQuery] = useState(queryParams.get("query") || "");
-  const [vacancy, setVacancy] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const [searchFilters, setSearchFilters] = useState({
     keywords: queryParams.get("keywords") || "",
     experience: queryParams.get("experience") || "",
@@ -28,25 +23,6 @@ function VacancyPage() {
     keywordsInCompany: queryParams.get("in_company") === "true",
     keywordsInDescription: queryParams.get("in_description") === "true"
   });
-
-  useEffect(() => {
-    if (id) {
-      const fetchVacancy = async () => {
-        setLoading(true);
-        try {
-          const data = await vacancyService.getVacancyById(id);
-          if (data.error) throw new Error(data.error);
-          setVacancy(data);
-        } catch (err) {
-          setError(err.message || "Ошибка загрузки вакансии");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchVacancy();
-    }
-  }, [id]);
 
   const updateUrlParams = (filters, query) => {
     const params = new URLSearchParams();
@@ -66,11 +42,6 @@ function VacancyPage() {
     });
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    updateUrlParams(searchFilters, query);
-  };
-
   const handleFiltersChange = (filters) => {
     setSearchFilters(filters);
     updateUrlParams(filters, searchQuery);
@@ -82,37 +53,7 @@ function VacancyPage() {
       <div className="ContentWrapper">
         {id ? (
           <div className="VacancyDetail">
-            {loading ? (
-              <p className="loading-text">Загрузка вакансии...</p>
-            ) : error ? (
-              <p className="error-text">Ошибка: {error}</p>
-            ) : vacancy ? (
-              <div className="vacancy-detail">
-                <h1>{vacancy.title}</h1>
-                <p className="company">{vacancy.company}</p>
-                <p className="salary">
-                  {vacancy.salary_from && vacancy.salary_to
-                    ? `${vacancy.salary_from} - ${vacancy.salary_to} ${vacancy.salary_currency}`
-                    : "Зарплата не указана"}
-                </p>
-                <p className="location">{vacancy.location}</p>
-                <div className="description">
-                  <h3>Описание</h3>
-                  <p>{vacancy.description}</p>
-                </div>
-                <div className="requirements">
-                  <h3>Требования</h3>
-                  <p>{vacancy.requirements}</p>
-                </div>
-                <div className="vacancy-actions">
-                  <a href={vacancy.vacancy_url} target="_blank" rel="noopener noreferrer">
-                    <button className="apply-btn">Откликнуться</button>
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <p>Вакансия не найдена</p>
-            )}
+            <VacancyDetails />
           </div>
         ) : (
           <div>
@@ -124,7 +65,6 @@ function VacancyPage() {
           </div>
         )}
       </div>
-
       <FooterComp />
     </div>
   );
