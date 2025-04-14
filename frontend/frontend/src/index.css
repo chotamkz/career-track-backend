@@ -5,6 +5,127 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Основные цвета */
+  --primary-color: #3182ce;
+  --primary-dark: #2c5282;
+  --primary-light: #63b3ed;
+  
+  /* Нейтральные цвета */
+  --text-dark: #1a202c;
+  --text-medium: #2d3748;
+  --text-light: #4a5568;
+  --text-muted: #718096;
+  
+  /* Фоновые цвета */
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
+  --bg-container: #ffffff;
+  
+  /* Границы */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e0;
+  
+  /* Тени */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  
+  /* Размеры шрифтов */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  
+  /* Размеры контейнеров */
+  --container-padding: 10%;
+  --container-sm-padding: 5%;
+  --container-xs-padding: 4%;
+  
+  /* Радиусы */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  
+  /* Размеры экранов */
+  --mobile: 480px;
+  --tablet: 768px;
+  --desktop: 1200px;
+  
+  /* Анимации */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* Глобальные стили для изоляции компонентов */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-medium);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Стили для отдельных страниц не должны переопределять компоненты */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Главный контент должен занимать всю доступную высоту */
+.main-content {
+  flex: 1;
+  padding-bottom: 2rem;
+}
+
+/* Навбар и футер всегда должны быть на одном уровне вложенности */
+header.navigationbar,
+footer.footer {
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Избегаем вложенных селекторов, которые могут переопределять компоненты из других файлов */
+/* По возможности используйте только класс компонента как основной селектор */
+
+/* Изолирующие классы для предотвращения наследования стилей */
+.isolated {
+  all: initial;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Стили для контейнеров компонентов */
+.component-container {
+  width: 100%;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: var(--container-sm-padding);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: var(--container-xs-padding);
+  }
+}
+
+/* Стили темной темы */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--bg-light) !important;
+    color: var(--text-medium) !important;
+  }
+}
+
 /* Ensure the HTML and body take up the full height of the page */
 html, body {
   height: 100%;

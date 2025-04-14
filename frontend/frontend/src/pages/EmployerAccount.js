@@ -14,9 +14,7 @@ function EmployerAccount() {
             <div className="employerAccountComponent">
                 <EmployerProfile />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }

@@ -3,7 +3,6 @@ import re
 import pickle
 import logging
 import psycopg2
-import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -155,59 +154,66 @@ class JobRecommendationSystem:
         """Парсинг входных навыков с обработкой различных форматов"""
         # Обработка списка навыков в различных форматах
         if isinstance(skills_text, list):
-            return " ".join(str(skill) for skill in skills_text)
+            return " ".join(str(skill).strip() for skill in skills_text)
+        elif isinstance(skills_text, str):
+            return " ".join(skill.strip() for skill in skills_text.split(","))
         return str(skills_text)
 
     def recommend_jobs(self, student_skills, top_n=5):
-        """Рекомендация вакансий с расширенной информацией о соответствии"""
         try:
             start_time = datetime.now()
             logger.info(f"Processing recommendation request for skills: {student_skills[:100]}...")
 
-            # Обработка входных навыков
+        # Обработка входных навыков
             skills_text = self.parse_skills(student_skills)
             processed_skills = set(self.preprocess_text(skills_text).split())
+
+            logger.info(f"Processed skills: {processed_skills}")  # Отладочный лог
 
             if not processed_skills:
                 logger.warning("Empty skills provided, returning empty recommendations")
                 return []
 
-            # Проверяем наличие вакансий
+        # Проверяем наличие вакансий
             if self.vacancies_df is None or self.vacancies_df.empty:
-                logger.warning("No vacancies data available")
+                logg
+                er.warning("No vacancies data available")
                 return []
 
-            # Векторизация навыков пользователя
+        # Векторизация навыков пользователя
             student_vector = self.vectorizer.transform([" ".join(processed_skills)])
 
-            # Получение ближайших соседей с учетом минимального количества
+        # Получение ближайших соседей с учетом минимального количества
             n_neighbors = min(top_n, len(self.vacancies_df), self.knn_model.n_neighbors)
             distances, indices = self.knn_model.kneighbors(student_vector, n_neighbors=n_neighbors)
 
-            # Формирование рекомендаций в расширенном формате
+        # Формирование рекомендаций в расширенном формате
             recommendations = []
             for idx, dist in zip(indices[0], distances[0]):
                 row = self.vacancies_df.iloc[idx]
                 vac_id = int(row["id"])
                 sim_score = float((1 - dist).round(4))  # Повышаем точность
 
-                # Если сходство слишком низкое, пропускаем
+            # Если сходство слишком низкое, пропускаем
                 if sim_score < 0.1:
                     continue
 
-                # Вычисляем недостающие навыки для конкретной вакансии
-                vacancy_skills = set(row["key_skills"].split())
+            # Важно: vacancy_skills должны быть предобработаны так же, как и processed_skills
+                vacancy_skills_text = row["key_skills"]
+                vacancy_skills = set(self.preprocess_text(vacancy_skills_text).split())
+
+            # Теперь сравнение будет корректным
+                matching_skills = list(vacancy_skills.intersection(processed_skills))
                 missing = list(vacancy_skills - processed_skills)
 
-                # Получаем имеющиеся навыки для этой вакансии
-                matching_skills = list(vacancy_skills.intersection(processed_skills))
-
-                # Вычисляем процент соответствия на основе имеющихся навыков
+            # Вычисляем процент соответствия на основе имеющихся навыков
                 match_percentage = 0
                 if vacancy_skills:
                     match_percentage = round(len(matching_skills) / len(vacancy_skills) * 100)
 
-                # Создаем объект рекомендации с расширенной информацией
+                logger.info(f"Vacancy {vac_id} - Found matches: {matching_skills}")  # Отладка
+
+            # Создаем объект рекомендации с расширенной информацией
                 recommendations.append({
                     "vacancy_id": vac_id,
                     "similarity_score": sim_score,
@@ -218,7 +224,7 @@ class JobRecommendationSystem:
                     "skills_matched": len(matching_skills)
                 })
 
-            # Сортируем по проценту соответствия
+        # Сортируем по проценту соответствия
             recommendations.sort(key=lambda x: x["match_percentage"], reverse=True)
 
             logger.info(f"Recommendation completed in {(datetime.now() - start_time).total_seconds():.2f} seconds")
@@ -226,6 +232,7 @@ class JobRecommendationSystem:
         except Exception as e:
             logger.error(f"Error in recommendation process: {e}")
             return []
+
 
 # Инициализация Flask и системы рекомендаций
 app = Flask(__name__)

@@ -13,9 +13,7 @@ function EmployerLogin() {
             <div className="employerLogComponent">
                 <EmployerLog />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }

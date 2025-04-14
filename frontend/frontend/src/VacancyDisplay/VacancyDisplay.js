@@ -11,7 +11,19 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const [error, setError] = useState(null);
   const [locationOptions, setLocationOptions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const vacanciesPerPage = 5;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     fetchVacancies();
@@ -161,9 +173,15 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   }, [searchFilters, searchQuery, onFiltersChange]);
 
   const getMatchClass = (percentage) => {
-    if (percentage >= 70) return 'high';
+    if (percentage >= 75) return 'high';
     if (percentage >= 40) return 'medium';
     return 'low';
+  };
+
+  const getMatchText = (percentage) => {
+    if (percentage >= 75) return 'Отличное соответствие';
+    if (percentage >= 40) return 'Среднее соответствие';
+    return 'Низкое соответствие';
   };
 
   const filteredVacancies = vacancies;
@@ -211,8 +229,13 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           currentVacancies.map((vacancy) => (
             <div key={vacancy.id} className="vacancy-card" onClick={() => handleVacancyClick(vacancy.id)}>
               {searchFilters.ml_skills && vacancy.match_percentage !== undefined && (
-                <div className={`match-circle ${getMatchClass(vacancy.match_percentage)}`}>
-                  {vacancy.match_percentage}%
+                <div className="match-indicator">
+                  <div className={`match-circle ${getMatchClass(vacancy.match_percentage)}`}>
+                    {vacancy.match_percentage}%
+                  </div>
+                  <span className={`match-text ${getMatchClass(vacancy.match_percentage)}`}>
+                    {getMatchText(vacancy.match_percentage)}
+                  </span>
                 </div>
               )}
               <h2>{vacancy.title}</h2>
@@ -239,7 +262,46 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
                 </div>
               </div>
               
-              {vacancy.skills && vacancy.skills.length > 0 && (
+              {searchFilters.ml_skills && vacancy.matching_skills && vacancy.missing_skills && (
+                <div className="skills-match-container">
+                  <div className="match-info">
+                    <div className="match-score">
+                      <div className="match-label">Соответствие навыков</div>
+                      <div className="match-value">{vacancy.skills_matched} из {vacancy.total_skills_required}</div>
+                    </div>
+                    <div className="similarity-score">
+                      <div className="similarity-label">Индекс схожести</div>
+                      <div className="similarity-value">{(vacancy.similarity_score * 100).toFixed(1)}%</div>
+                    </div>
+                  </div>
+                  
+                  <div className="skills-lists">
+                    {vacancy.matching_skills.length > 0 && (
+                      <div className="matching-skills">
+                        <div className="skills-title">Совпадающие навыки:</div>
+                        <div className="skills-tags">
+                          {vacancy.matching_skills.map((skill, index) => (
+                            <div key={index} className="skill-tag matching">{skill}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {vacancy.missing_skills.length > 0 && (
+                      <div className="missing-skills">
+                        <div className="skills-title">Недостающие навыки:</div>
+                        <div className="skills-tags">
+                          {vacancy.missing_skills.map((skill, index) => (
+                            <div key={index} className="skill-tag missing">{skill}</div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {vacancy.skills && vacancy.skills.length > 0 && !searchFilters.ml_skills && (
                 <div className="vacancy-skills">
                   {vacancy.skills.slice(0, 3).map((skill, index) => (
                     <div key={index} className="vacancy-skill-tag">{skill}</div>
@@ -289,11 +351,27 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
             </>
           )}
 
-          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
-            <button key={page} onClick={() => goToPage(page)} className={`pagination-btn ${currentPage === page ? "active" : ""}`}>
-              {page}
-            </button>
-          ))}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => {
+            const isMobileHidden = (
+              windowWidth <= 480 && 
+              page !== currentPage && 
+              page !== startPage && 
+              page !== endPage && 
+              page !== 1 && 
+              page !== totalPages &&
+              Math.abs(page - currentPage) > 1
+            );
+            
+            return (
+              <button 
+                key={page} 
+                onClick={() => goToPage(page)} 
+                className={`pagination-btn ${currentPage === page ? "active" : ""} ${isMobileHidden ? "mobile-hide" : ""}`}
+              >
+                {page}
+              </button>
+            );
+          })}
 
           {endPage < totalPages && (
             <>

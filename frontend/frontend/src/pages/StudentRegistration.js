@@ -13,9 +13,7 @@ function StudentRegistration() {
             <div className="studentRegComponent">
                 <StudentReg />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }

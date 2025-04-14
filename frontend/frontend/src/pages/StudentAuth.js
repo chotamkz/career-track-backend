@@ -14,9 +14,7 @@ function StudentAuth() {
             <div className="studentLogComponent">
                 <StudentLog />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }

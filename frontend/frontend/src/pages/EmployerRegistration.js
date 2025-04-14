@@ -13,9 +13,7 @@ function EmployerRegistration() {
             <div className="employerRegComponent">
                 <EmployerReg />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }
