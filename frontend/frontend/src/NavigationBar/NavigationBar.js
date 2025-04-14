@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAuthenticated, logout, getUserRole } from "../services/authService";
 import "./NavigationBar.css";
+import smallLogo from "../assets/images/small-logo.png";
 
 
 function NavigationBar() {
@@ -17,19 +18,26 @@ function NavigationBar() {
         }
     }, []);
     
-    // Обработчик прокрутки для изменения стиля навбара
+    // Оптимизированный обработчик прокрутки для изменения стиля навбара
     useEffect(() => {
+        let ticking = false;
         const handleScroll = () => {
-            if (window.scrollY > 50) {
-                setScrolled(true);
-            } else {
-                setScrolled(false);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const shouldBeScrolled = window.scrollY > 20;
+                    setScrolled(prev => {
+                        if (prev !== shouldBeScrolled) return shouldBeScrolled;
+                        return prev;
+                    });
+                    ticking = false;
+                });
+                ticking = true;
             }
         };
-        
+
         window.addEventListener('scroll', handleScroll);
-        
-        // Очистка слушателя события при размонтировании
+        // Проверяем начальное состояние при монтировании
+        handleScroll();
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
@@ -90,8 +98,10 @@ function NavigationBar() {
 
     return (
         <header className={`navigationbar ${scrolled ? 'scrolled' : ''}`}>
-            <div className="footer-logo">
-                <h2>TalentBridge</h2>
+            <div className="nav-logo">
+                <Link to="/">
+                    <img src={smallLogo} alt="TalentBridge Logo" className="logo-image" />
+                </Link>
             </div>
             
             {/* Кнопка мобильного меню */}

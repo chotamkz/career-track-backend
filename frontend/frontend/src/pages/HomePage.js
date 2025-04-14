@@ -1,89 +1,123 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import "./HomePage.css";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import FooterComp from "../Footer/FooterComp";
 
+// Оптимизированный компонент слайда (мемоизирован)
+const Slide = memo(({ content, isActive }) => {
+    return (
+        <div className={`slide ${isActive ? 'active' : 'inactive'}`}>
+            <div className="slide-content">
+                <h1>{content.title}</h1>
+                <h2>{content.subtitle}</h2>
+                <ul>
+                    {content.items.map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+});
 
 function HomePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentSlide, setCurrentSlide] = useState(0);
     const sliderRef = useRef(null);
+    const slideAnimationTimers = useRef([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-    // Обработчик изменения размера окна
+    // Очистка всех таймеров при размонтировании
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
+        return () => {
+            slideAnimationTimers.current.forEach(timer => clearTimeout(timer));
         };
-        
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Автоматическая прокрутка слайдов
+    // Оптимизированный обработчик изменения размера окна (throttle + проверка)
+    useEffect(() => {
+        let lastIsMobile = window.innerWidth <= 768;
+        let timeout = null;
+        const handleResize = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const nowIsMobile = window.innerWidth <= 768;
+                if (lastIsMobile !== nowIsMobile) {
+                    setIsMobile(nowIsMobile);
+                    lastIsMobile = nowIsMobile;
+                }
+            }, 100);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(timeout);
+        };
+    }, []);
+
+    // Автоматическая прокрутка слайдов - мемоизированная для уменьшения нагрузки
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % 3);
+            setCurrentSlide(prev => {
+                const next = (prev + 1) % 3;
+                return prev === next ? prev : next;
+            });
         }, 5000);
-        
         return () => clearInterval(interval);
     }, []);
 
-    // Обработчик смены слайда с улучшенной анимацией
-    const handleSlideChange = (index) => {
-        // Добавляем класс для анимации исчезновения
+    // Упрощенный обработчик смены слайда для большей производительности
+    const handleSlideChange = useCallback((index) => {
+        if (index === currentSlide) return;
+        
+        // На мобильных устройствах используем простую смену состояния без анимаций
+        if (isMobile) {
+            setCurrentSlide(index);
+            return;
+        }
+        
+        // На десктопах используем упрощенную анимацию
         if (sliderRef.current) {
-            const slides = sliderRef.current.querySelectorAll('.slide');
-            slides[currentSlide].classList.add('fade-out');
+            // Очищаем предыдущие таймеры
+            slideAnimationTimers.current.forEach(timer => clearTimeout(timer));
+            slideAnimationTimers.current = [];
             
-            // Через небольшую задержку меняем слайд и добавляем класс для появления
-            setTimeout(() => {
+            const timer = setTimeout(() => {
                 setCurrentSlide(index);
-                setTimeout(() => {
-                    const newActiveSlide = sliderRef.current.querySelector('.slide.active');
-                    if (newActiveSlide) {
-                        newActiveSlide.classList.add('fade-in');
-                        // Удаляем класс через время анимации
-                        setTimeout(() => {
-                            newActiveSlide.classList.remove('fade-in');
-                            slides[currentSlide].classList.remove('fade-out');
-                        }, 500);
-                    }
-                }, 50);
-            }, 200);
+            }, 150);
+            
+            slideAnimationTimers.current.push(timer);
         } else {
             setCurrentSlide(index);
         }
-    };
-
-    // Свайп на мобильных устройствах
+    }, [currentSlide, isMobile]);
+    
+    // Оптимизированные обработчики свайпа
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
 
-    const handleTouchStart = (e) => {
+    const handleTouchStart = useCallback((e) => {
         setTouchStart(e.targetTouches[0].clientX);
-    };
+    }, []);
 
-    const handleTouchMove = (e) => {
+    const handleTouchMove = useCallback((e) => {
         setTouchEnd(e.targetTouches[0].clientX);
-    };
+    }, []);
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = useCallback(() => {
         if (!touchStart || !touchEnd) return;
         const distance = touchStart - touchEnd;
         const isLeftSwipe = distance > 50;
         const isRightSwipe = distance < -50;
-
         if (isLeftSwipe && currentSlide < 2) {
             handleSlideChange(currentSlide + 1);
         } else if (isRightSwipe && currentSlide > 0) {
             handleSlideChange(currentSlide - 1);
         }
-
         setTouchStart(null);
         setTouchEnd(null);
-    };
+    }, [touchStart, touchEnd, currentSlide, handleSlideChange]);
 
     // Контент слайдов
     const slideContents = [
@@ -122,13 +156,17 @@ function HomePage() {
         }
     ];
 
-    // Генерируем частицы для фона
-    const generateParticles = () => {
+    // Мемоизированная функция для генерации частиц с оптимизацией
+    const generateParticles = useCallback(() => {
+        // Меньше частиц для лучшей производительности
+        const particleCount = isMobile ? 0 : 5; // Отключаем на мобильных совсем
+        
+        if (particleCount === 0) return null; // Не создаем никаких элементов на мобильных
+        
         const particles = [];
-        const particleCount = isMobile ? 8 : 15;
         
         for (let i = 0; i < particleCount; i++) {
-            const size = Math.random() * (isMobile ? 20 : 30) + 10;
+            const size = Math.random() * 20 + 10;
             particles.push(
                 <div 
                     key={i}
@@ -138,14 +176,14 @@ function HomePage() {
                         top: `${Math.random() * 100}%`,
                         width: `${size}px`,
                         height: `${size}px`,
-                        animationDelay: `${Math.random() * 15}s`,
-                        animationDuration: `${Math.random() * 10 + 10}s`
+                        animationDelay: `${Math.random() * 10}s`, // Сокращаем задержки
+                        animationDuration: `${Math.random() * 5 + 15}s` // Увеличиваем длительность
                     }}
                 />
             );
         }
         return particles;
-    };
+    }, [isMobile]);
 
     return (
         <div className="App">
@@ -168,7 +206,7 @@ function HomePage() {
                 </div>
             </section>
 
-            {/* Slider Section */}
+            {/* Slider Section - оптимизированный с мемоизированными компонентами */}
             <div className="FullWidthSliderWrapper">
                 <div 
                     className="FullWidthSlider" 
@@ -177,42 +215,14 @@ function HomePage() {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 >
-                    {/* Отображаем только активный слайд */}
-                    <div className={`slide ${currentSlide === 0 ? 'active' : 'inactive'}`}>
-                        <div className="slide-content">
-                            <h1>{slideContents[0].title}</h1>
-                            <h2>{slideContents[0].subtitle}</h2>
-                            <ul>
-                                {slideContents[0].items.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div className={`slide ${currentSlide === 1 ? 'active' : 'inactive'}`}>
-                        <div className="slide-content">
-                            <h1>{slideContents[1].title}</h1>
-                            <h2>{slideContents[1].subtitle}</h2>
-                            <ul>
-                                {slideContents[1].items.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div className={`slide ${currentSlide === 2 ? 'active' : 'inactive'}`}>
-                        <div className="slide-content">
-                            <h1>{slideContents[2].title}</h1>
-                            <h2>{slideContents[2].subtitle}</h2>
-                            <ul>
-                                {slideContents[2].items.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+                    {/* Используем мемоизированные компоненты для слайдов */}
+                    {slideContents.map((content, index) => (
+                        <Slide 
+                            key={index}
+                            content={content}
+                            isActive={currentSlide === index}
+                        />
+                    ))}
                 </div>
                 
                 {/* Слайдер навигация и стрелки */}

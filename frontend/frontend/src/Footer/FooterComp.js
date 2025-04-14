@@ -1,13 +1,14 @@
 import React from "react";
 import { FaLinkedin, FaInstagram, FaFacebook, FaTwitter, FaYoutube } from "react-icons/fa";
 import "./FooterComp.css";
+import bigLogo from "../assets/images/big-logo.png";
 
 const FooterComp = () => {
   return (
     <footer className="footer">
       <div className="footer-top">
         <div className="footer-logo">
-          <h2>TalentBridge</h2>
+          <img src={bigLogo} alt="TalentBridge Logo" className="footer-logo-image" />
         </div>
         <div className="footer-columns">
           <div className="footer-column">
