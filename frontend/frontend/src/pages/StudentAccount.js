@@ -14,9 +14,7 @@ function StudentAccount() {
             <div className="studentAccountComponent">
                 <StudentProfile />
             </div>
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }

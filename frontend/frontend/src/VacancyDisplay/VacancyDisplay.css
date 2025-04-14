@@ -8,15 +8,44 @@
     flex-wrap: wrap;
   }
   
+  /* Добавляем анимацию */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
   .filter-section {
     max-width: 250px;
     min-width: 250px;
     margin-left: 0;
     height: fit-content;
-    background: white;
+    background: var(--bg-white);
     padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    animation: fadeIn 0.4s ease-out;
+  }
+  
+  .filter-section:hover {
+    box-shadow: var(--shadow-lg);
   }
   
   .filter-section h3 {
@@ -24,23 +53,56 @@
     margin-top: 10px;
     padding-left: 5px;
     display: flex;
-    font-weight: 400;
+    font-weight: 600;
+    color: var(--text-medium);
+    transition: color var(--transition-fast);
+    font-size: var(--font-sm);
+    letter-spacing: 0.3px;
   }
   
-  .filter-section input{
+  .filter-section h3::before {
+    content: "";
+    width: 4px;
+    height: 18px;
+    background-color: var(--primary-color);
+    margin-right: 8px;
+    border-radius: 2px;
+    transform: scaleY(0.8);
+    opacity: 0.8;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+  
+  .filter-section h3:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  
+  .filter-section input {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    transition: all var(--transition-fast);
   }
-
-  .filter-section input::placeholder{
-    padding-left: 5px;
+  
+  .filter-section input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.15);
+    outline: none;
   }
-
-  ::placeholder{
+  
+  .filter-section input::placeholder {
+    padding-left: 2px;
+    transition: opacity 0.2s;
+  }
+  
+  .filter-section input:focus::placeholder {
+    opacity: 0.5;
+  }
+  
+  ::placeholder {
     color: #ABB7C2;
   }
 
@@ -68,19 +130,76 @@
     width: 95%;
   }
 
-  #CheckboxkeyWords{
-    width: 10%;
-    margin-top: 4px;
+  #CheckboxkeyWords {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: #3182ce;
+    transition: all 0.2s ease;
+    border-radius: 3px;
+    outline: none;
+    position: relative;
   }
-
-  #locationCheckbox{
-    width: 10%;
-    margin-top: 4px;
+  
+  #CheckboxkeyWords:hover {
+    transform: scale(1.15);
+  }
+  
+  #CheckboxkeyWords:checked {
+    accent-color: #3182ce;
+    background-color: #3182ce;
   }
 
   .filter-section label {
     display: flex;
     font-size: 14px;
+    color: #4a5568;
+    cursor: pointer;
+    padding: 3px 0;
+    transition: color 0.2s ease;
+  }
+  
+  .filter-section label:hover {
+    color: #2d3748;
+  }
+  
+  .filter-checkboxes {
+    margin-bottom: 15px;
+    padding-left: 2px;
+  }
+  
+  .filter-checkbox-label {
+    display: flex;
+    font-size: 14px;
+    color: #4a5568;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: color 0.2s ease;
+    align-items: flex-start;
+    margin-bottom: 5px;
+  }
+  
+  .filter-checkbox-label:hover {
+    color: #2d3748;
+  }
+  
+  .filter-checkbox-label span {
+    transition: all 0.2s ease;
+    line-height: 1.4;
+  }
+  
+  .filter-checkbox-label:hover span {
+    color: #3182ce;
+    transform: translateX(2px);
+  }
+  
+  /* Стили для Select компонента с городами */
+  .location-select {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    transition: all 0.2s ease;
   }
   
   .vacancies-section {
@@ -115,10 +234,10 @@
   }
   
   .vacancy-card h2 {
-    font-size: 17px;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 12px;
     margin-top: 0;
     line-height: 1.4;
     padding-right: 45px;
@@ -127,6 +246,8 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    letter-spacing: 0.2px;
+    text-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.05);
   }
   
   .vacancy-card p {
@@ -192,16 +313,29 @@
   }
   
   .search-btn {
-    padding: 8px 15px;
-    background-color: #0077cc;
+    padding: 10px 16px;
+    background-color: #3182ce;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .search-btn:hover {
-    background-color: #005fa3;
+    background-color: #2c5282;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(49, 130, 206, 0.25);
+  }
+  
+  .search-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(49, 130, 206, 0.2);
   }
   
   .apply-btn {
@@ -248,77 +382,126 @@
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 25px;
     margin-bottom: 40px;
   }
   
   .pagination-container .pagination {
     display: flex;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
+    padding: 5px;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
   }
   
   .pagination-container .pagination-btn {
-    background-color: white;
-    border: 1px solid #ddd;
-    padding: 8px 12px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-light);
+    padding: 8px 14px;
     cursor: pointer;
-    transition: background 0.3s;
-    border-radius: 4px;
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    color: var(--text-light);
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .pagination-container .pagination-btn:hover {
-    background-color: #f0f0f0;
+    background-color: #edf2f7;
+    border-color: var(--border-medium);
+    transform: translateY(-1px);
   }
   
   .pagination-container .pagination-btn.active {
-    background-color: #0075E1;
+    background-color: var(--primary-color);
     color: white;
-    border-color: #0075E1;
+    border-color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);
   }
   
   .pagination-container .pagination-btn:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+    background-color: #f1f5f9;
+    transform: none;
   }
   
   .dots {
-    margin: 0 5px;
+    margin: 0 2px;
     align-self: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 1px;
   }
   
-  .match-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  .match-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
     display: flex;
+    flex-direction: column;
     align-items: center;
+  }
+
+  .match-circle {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     font-weight: 700;
     font-size: 14px;
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background-color: #fff;
-    border: 2px solid;
+    margin-bottom: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .match-text {
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    border-radius: 10px;
+    padding: 2px 8px;
+    text-align: center;
   }
 
   .match-circle.high {
-    border-color: #48bb78;
-    color: #48bb78;
-    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.2);
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 2px solid #86efac;
+  }
+
+  .match-text.high {
+    background-color: #dcfce7;
+    color: #15803d;
   }
 
   .match-circle.medium {
-    border-color: #ecc94b;
-    color: #ecc94b;
-    box-shadow: 0 2px 8px rgba(236, 201, 75, 0.2);
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 2px solid #fde047;
+  }
+
+  .match-text.medium {
+    background-color: #fef9c3;
+    color: #854d0e;
   }
 
   .match-circle.low {
-    border-color: #f56565;
-    color: #f56565;
-    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.2);
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 2px solid #fca5a5;
+  }
+
+  .match-text.low {
+    background-color: #fee2e2;
+    color: #b91c1c;
   }
 
   .vacancy-skills {
@@ -380,6 +563,8 @@
       max-width: 100%;
       width: 100%;
       margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
     }
     
     .vacancies-list {
@@ -391,8 +576,9 @@
     }
     
     .vacancy-card h2 {
-      font-size: 16px;
+      font-size: 17px;
       padding-right: 36px;
+      font-weight: 700;
     }
     
     .match-circle {
@@ -401,6 +587,171 @@
       font-size: 12px;
       top: 14px;
       right: 14px;
+    }
+    
+    /* Двухколоночная сетка для чекбоксов и радиокнопок на мобильных */
+    .filter-checkboxes,
+    .experience-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+      margin-bottom: 12px;
+    }
+    
+    /* Делаем фильтр скрываемым на мобильных устройствах */
+    .filter-toggle-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px;
+      background-color: #f1f5f9;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: 500;
+      color: #4a5568;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-toggle-button:hover {
+      background-color: #e2e8f0;
+    }
+    
+    .filter-toggle-button svg {
+      margin-right: 8px;
+    }
+    
+    /* Анимация появления фильтра */
+    .filter-section {
+      animation: slideDown 0.3s ease-out;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Улучшения для мобильного вида */
+    .vacancy-display {
+      flex-direction: column;
+      align-items: center;
+      width: 96%;
+    }
+    
+    .filter-section {
+      max-width: 100%;
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    
+    .vacancies-list {
+      width: 100%;
+    }
+    
+    /* Двухколоночная сетка для чекбоксов и радиокнопок на мобильных */
+    .filter-checkboxes,
+    .experience-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+      margin-bottom: 12px;
+    }
+    
+    .pagination-container .pagination {
+      gap: 4px;
+      padding: 4px 3px;
+      max-width: 95%;
+      overflow-x: auto;
+      justify-content: flex-start;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;  /* Firefox */
+    }
+    
+    .pagination-container .pagination::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari, Opera */
+    }
+    
+    .pagination-container .pagination-btn {
+      padding: 6px 10px;
+      font-size: 13px;
+      min-width: 36px;
+    }
+    
+    .pagination-container {
+      margin-top: 20px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .dots {
+      margin: 0 1px;
+      font-size: 13px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    /* Одноколоночная сетка для маленьких мобильных устройств */
+    .filter-checkboxes,
+    .experience-checkboxes {
+      grid-template-columns: 1fr;
+    }
+    
+    .vacancy-display {
+      gap: 15px;
+    }
+    
+    /* Делаем фильтр более компактным */
+    .filter-section h3 {
+      margin-top: 15px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .filter-section h3::before {
+      height: 16px;
+    }
+    
+    .skills-hint {
+      padding: 8px 10px;
+      margin-bottom: 15px;
+    }
+    
+    .hint-text {
+      font-size: 11px;
+    }
+    
+    .pagination-container .pagination {
+      gap: 3px;
+      padding: 3px;
+      border-radius: 8px;
+    }
+    
+    .pagination-container .pagination-btn {
+      padding: 5px 8px;
+      font-size: 12px;
+      min-width: 32px;
+    }
+    
+    .pagination-container {
+      margin-top: 18px;
+      margin-bottom: 25px;
+    }
+    
+    /* Компактное отображение для очень маленьких экранов */
+    .pagination-container .pagination-btn.mobile-hide {
+      display: none;
     }
   }
   
@@ -423,5 +774,237 @@
     box-shadow: none;
     outline: none;
     border: none;
+  }
+  
+  /* Стили для блока сравнения навыков */
+  .skills-match-container {
+    margin-top: 15px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .match-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .match-score, .similarity-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .match-label, .similarity-label {
+    font-size: 12px;
+    color: #718096;
+    margin-bottom: 4px;
+  }
+
+  .match-value, .similarity-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+  }
+
+  .skills-lists {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .matching-skills, .missing-skills {
+    margin-bottom: 8px;
+  }
+
+  .skills-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 6px;
+  }
+
+  .skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .skill-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .skill-tag.matching {
+    background-color: #e6fffa;
+    color: #0d9488;
+    border: 1px solid #99f6e4;
+  }
+
+  .skill-tag.missing {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+  }
+
+  @media (max-width: 600px) {
+    .match-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .match-score, .similarity-score {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skills-tags {
+      margin-bottom: 10px;
+    }
+  }
+  
+  /* Стили для подсказки о навыках */
+  .skills-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background-color: #ebf8ff;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border-left: 3px solid #0ea5e9;
+    transition: all 0.3s ease;
+  }
+
+  .skills-hint:hover {
+    background-color: #e6f7ff;
+    border-left-width: 4px;
+  }
+
+  .hint-icon {
+    font-size: 16px;
+    color: #0284c7;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .skills-hint:hover .hint-icon {
+    transform: scale(1.1);
+  }
+
+  .hint-text {
+    font-size: 12px;
+    color: #0369a1;
+    line-height: 1.5;
+  }
+
+  /* Улучшенные стили для секции фильтров */
+  .filter-block {
+    display: none;
+  }
+
+  .filter-block:last-of-type {
+    display: none;
+  }
+
+  .filter-title {
+    margin-bottom: 10px;
+    margin-top: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+    padding-left: 5px;
+    position: relative;
+    transition: color 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .filter-title:first-of-type {
+    margin-top: 0;
+  }
+
+  .filter-title:hover {
+    color: #2d3748;
+  }
+
+  .filter-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-input:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  }
+
+  .filter-input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+    outline: none;
+    background-color: #ffffff;
+  }
+
+  .filter-input::placeholder {
+    color: #94a3b8;
+    transition: opacity 0.2s ease;
+    font-weight: 400;
+  }
+
+  .filter-input:focus::placeholder {
+    opacity: 0.6;
+  }
+  
+  /* Стили для радиокнопок опыта работы */
+  .experience-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 15px;
+    padding-left: 2px;
+  }
+
+  #experienceRadio {
+    width: 16px;
+    height: 16px;
+    margin-top: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #3182ce;
+    transition: transform 0.15s ease;
+  }
+
+  #experienceRadio:hover {
+    transform: scale(1.1);
+  }
+
+  #experienceRadio:checked {
+    accent-color: #3182ce;
+  }
+  
+  /* Скрыть кнопку переключения на десктопных устройствах */
+  .mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-only {
+      display: flex;
+    }
   }
   

@@ -14,10 +14,7 @@ function HackaStorage() {
             <div className="HackaStorage">
                 <HackaStoreComp />
             </div> 
-
-            <div className="FooterSection">
                 <FooterComp />
-            </div>
         </div>
     )
 }
