@@ -27,7 +27,7 @@ MODEL_TIMESTAMP_PATH = os.path.join(MODEL_DIR, "model_timestamp.txt")
 
 class JobRecommendationSystem:
     def __init__(self):
-        self.conn_str = "postgres://postgres:Danik-0509@db-talentbridge-instance.chcg804uainf.ap-south-1.rds.amazonaws.com/talentBridge_db"
+        self.conn_str = "postgres://postgres:Danik-0509@db-talentbridge-instance1.chcg804uainf.ap-south-1.rds.amazonaws.com/talentBridge_db"
         self.vectorizer = None
         self.knn_model = None
         self.vacancies_df = None
