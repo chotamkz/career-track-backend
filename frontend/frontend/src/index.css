@@ -59,6 +59,10 @@
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
+  
+  /* Высота навбара для вычисления отступов */
+  --navbar-height: 80px;
+  --navbar-scrolled-height: 65px;
 }
 
 /* Глобальные стили для изоляции компонентов */
@@ -68,7 +72,8 @@ body {
   color: var(--text-medium);
   line-height: 1.5;
   margin: 0;
-  padding: 0;
+  /* Добавляем отступ сверху равный высоте навигационной панели + доп. отступ */
+  padding-top: calc(var(--navbar-height) + 40px);
 }
 
 /* Стили для отдельных страниц не должны переопределять компоненты */
@@ -76,6 +81,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  /* Учитываем фиксированный навбар */
+  padding-top: var(--navbar-height);
+  margin-top: 40px;
 }
 
 /* Главный контент должен занимать всю доступную высоту */
@@ -109,12 +117,32 @@ footer.footer {
 @media (max-width: 768px) {
   :root {
     --container-padding: var(--container-sm-padding);
+    --navbar-height: 70px;
+    --navbar-scrolled-height: 60px;
+  }
+  
+  body {
+    padding-top: calc(var(--navbar-height) + 35px);
+  }
+  
+  .page-container {
+    margin-top: 35px;
   }
 }
 
 @media (max-width: 480px) {
   :root {
     --container-padding: var(--container-xs-padding);
+    --navbar-height: 65px;
+    --navbar-scrolled-height: 55px;
+  }
+  
+  body {
+    padding-top: calc(var(--navbar-height) + 30px);
+  }
+  
+  .page-container {
+    margin-top: 30px;
   }
 }
 

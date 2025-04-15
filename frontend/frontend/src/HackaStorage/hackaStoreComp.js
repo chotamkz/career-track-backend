@@ -1,6 +1,8 @@
 import react, {useState, useEffect } from "react";
-import { FaSearch, FaCalendarAlt, FaUsers } from "react-icons/fa";
+import { FaSearch, FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import "./hackaStoreComp.css";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const HackaStoreComp = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -11,6 +13,17 @@ const HackaStoreComp = () => {
       access: "",
     });
     const [hackathons, setHackathons] = useState([]);
+    const navigate = useNavigate();
+  
+    // Массив изображений для хакатонов
+    const hackathonImages = [
+      'https://images.unsplash.com/photo-1499750310107-5fef28a66643',
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c',
+      'https://images.unsplash.com/photo-1558655146-d09347e92766',
+      'https://images.unsplash.com/photo-1581092335397-9fa73b389d58',
+      'https://images.unsplash.com/photo-1550439062-609e1531270e',
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998',
+    ];
   
     useEffect(() => {
       // Simulating fetching data from an API
@@ -25,6 +38,7 @@ const HackaStoreComp = () => {
             type: "Machine learning",
             date: "May 03, 2025",
             status: "Открыт",
+            image: hackathonImages[0]
           },
           {
             id: 2,
@@ -34,6 +48,7 @@ const HackaStoreComp = () => {
             type: "Machine learning",
             date: "May 03, 2025",
             status: "Открыт",
+            image: hackathonImages[1]
           },
           {
             id: 3,
@@ -43,6 +58,7 @@ const HackaStoreComp = () => {
             type: "Machine learning",
             date: "May 03, 2025",
             status: "Открыт",
+            image: hackathonImages[2]
           },
         ];
         setHackathons(data);
@@ -53,6 +69,26 @@ const HackaStoreComp = () => {
   
     const handleSearch = () => {
       console.log("Searching for:", searchQuery);
+    };
+  
+    const renderHackathonCards = () => {
+      return hackathons.map((hackathon) => (
+        <div className="hackathonCard" key={hackathon.id} onClick={() => navigateToHackathon(hackathon.id)}>
+          <div className="hackathonImage">
+            <img src={hackathon.image || 'https://via.placeholder.com/300x150'} alt={hackathon.title} />
+          </div>
+          <div className="hackathonDetails">
+            <h2>{hackathon.title}</h2>
+            <p><FaMapMarkerAlt />{hackathon.location}</p>
+            <p><FaClock />{hackathon.duration} дней</p>
+            <div className="statusBadge">{hackathon.status}</div>
+          </div>
+        </div>
+      ));
+    };
+  
+    const navigateToHackathon = (id) => {
+      navigate(`/hackathon/${id}`);
     };
   
     return (
@@ -98,21 +134,7 @@ const HackaStoreComp = () => {
           </aside>
   
           <div className="hackathonList">
-            {hackathons.map((hackathon) => (
-              <div key={hackathon.id} className="hackathonCard">
-                <div className="hackathonImage"></div>
-                <div className="hackathonDetails">
-                  <h2>{hackathon.title}</h2>
-                  <p>
-                    <FaUsers /> {hackathon.type}
-                  </p>
-                  <p>
-                    <FaCalendarAlt /> Дата: {hackathon.date}
-                  </p>
-                  <p className="status">{hackathon.status}</p>
-                </div>
-              </div>
-            ))}
+            {renderHackathonCards()}
           </div>
         </div>
       </div>

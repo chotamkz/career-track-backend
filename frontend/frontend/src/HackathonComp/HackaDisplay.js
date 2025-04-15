@@ -4,14 +4,22 @@ import "./HackaDisplay.css";
 import { hackathonService } from '../services/api';
 
 const topics = [
-  { id: 1, name: "Для новичков", count: 92, prize: "$1,000,000" },
-  { id: 2, name: "Machine Learning", count: 59, prize: "$1,000,000" },
-  { id: 3, name: "AI", count: 56, prize: "$1,000,000" },
-  { id: 4, name: "Здравоохранение", count: 38, prize: "$1,000,000" },
-  { id: 5, name: "Блокчейн", count: 23, prize: "$1,000,000" },
-  { id: 6, name: "Финтех", count: 21, prize: "$1,000,000" },
-  { id: 7, name: "База Данных", count: 15, prize: "$1,000,000" },
-  { id: 8, name: "Образование", count: 10, prize: "$1,000,000" },
+  { id: 1, name: "Для новичков", count: 92, prize: "1,000,000 тенге" },
+  { id: 2, name: "Machine Learning", count: 59, prize: "$500,000 тенге" },
+  { id: 3, name: "AI", count: 56, prize: "2,000,000 тенге" },
+  { id: 4, name: "Здравоохранение", count: 38, prize: "400,000 тенге" },
+  { id: 5, name: "Блокчейн", count: 23, prize: "700,000 тенге" },
+  { id: 6, name: "Финтех", count: 21, prize: "1,000,000 тенге" },
+  { id: 7, name: "База Данных", count: 15, prize: "800,000 тенге" },
+  { id: 8, name: "Образование", count: 10, prize: "550,000 тенге" },
+];
+
+// Массив изображений для хакатонов
+const hackathonImages = [
+  'https://images.squarespace-cdn.com/content/v1/5e6542d2ae16460bb741a9eb/1603318636443-A846ACUKNYUBA0RPLJ94/marvin-meyer-SYTO3xs06fU-unsplash.jpg',
+  'https://cdn.prod.website-files.com/5b3dd54182ecae4d1602962f/609e33e18c5000af6211f094_HR%20Hackathon%20-%20Section%202.jpg',
+  'https://www.madebywifi.com/wp-content/uploads/2018/01/internet-for-hackatons-1024x480.jpg',
+  'https://images.unsplash.com/photo-1542744095-fcf48d80b0fd'
 ];
 
 const HackaDisplay = () => {
@@ -30,7 +38,13 @@ const HackaDisplay = () => {
           throw new Error(data.error);
         }
 
-        setHackathons(data);
+        // Добавляем изображения к хакатонам
+        const hackathonsWithImages = data.map((hackathon, index) => ({
+          ...hackathon,
+          image: hackathonImages[index % hackathonImages.length]
+        }));
+
+        setHackathons(hackathonsWithImages);
         setError(null);
       } catch (err) {
         setError('Не удалось загрузить данные хакатонов');
@@ -63,7 +77,9 @@ const HackaDisplay = () => {
           ) : (
             hackathons.map((hackathon) => (
               <div key={hackathon.id} className="hackathon-card">
-                <div className="hackathon-image-placeholder"></div>
+                <div className="hackathon-image" style={{ backgroundImage: `url(${hackathon.image})` }}>
+                  {/* Изображение хакатона как фон */}
+                </div>
                 <div className="hackathon-content">
                   <h3 className="hackathon-title">{hackathon.name}</h3>
                   <div className="hackathon-meta">

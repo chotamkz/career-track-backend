@@ -6,7 +6,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgresql://careertrack_f38p_user:ib08LVqEQeueQCKGw60SiOHprXg0TQIG@dpg-cvc4okaj1k6c73e50ov0-a.oregon-postgres.render.com/careertrack_f38p
+      - DATABASE_URL=postgres://postgres:Danik-0509@db-talentbridge-instance.chcg804uainf.ap-south-1.rds.amazonaws.com/talentBridge_db
       - SERVER_ADDRESS=:8080
       - LOG_LEVEL=INFO
       - JWT_SECRET=alsdkjhf4lk5j4thy45lyyhl45jh
