@@ -16,30 +16,45 @@ func NewVacancyRepo(db *sql.DB) repository.VacancyRepository {
 	return &VacancyRepo{DB: db}
 }
 
-func (vr *VacancyRepo) GetVacancies() ([]model.Vacancy, error) {
-	query := `SELECT id, title, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience  FROM vacancies`
-	rows, err := vr.DB.Query(query)
+func (vr *VacancyRepo) CountVacancies() (int, error) {
+	var total int
+	err := vr.DB.QueryRow(`SELECT COUNT(*) FROM vacancies`).Scan(&total)
 	if err != nil {
-		return nil, err
+		return 0, fmt.Errorf("CountVacancies: %v", err)
+	}
+	return total, nil
+}
+
+func (vr *VacancyRepo) GetVacancies(limit, offset int) ([]model.Vacancy, error) {
+	query := strings.TrimSpace(`
+        SELECT 
+          id, title, requirements, location, posted_date, employer_id, created_at,
+          salary_from, salary_to, salary_currency, salary_gross, vacancy_url,
+          work_schedule, experience
+        FROM vacancies
+        ORDER BY posted_date DESC
+        LIMIT $1 OFFSET $2
+    `)
+	rows, err := vr.DB.Query(query, limit, offset)
+
+	if err != nil {
+		return nil, fmt.Errorf("ListVacancies query: %v", err)
 	}
 	defer rows.Close()
 
 	var vacancies []model.Vacancy
 	for rows.Next() {
 		var v model.Vacancy
-		err := rows.Scan(
-			&v.ID, &v.Title /*&v.Description,*/, &v.Requirements,
+		if err := rows.Scan(
+			&v.ID, &v.Title, &v.Requirements,
 			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
-		)
-		//skills, err := vr.getSkillsForVacancy(v.ID)
-		if err != nil {
-			return nil, err
+		); err != nil {
+			return nil, fmt.Errorf("ListVacancies scan: %v", err)
 		}
-		//v.Skills = skills
 		vacancies = append(vacancies, v)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ListVacancies rows: %v", err)
 	}
 	return vacancies, nil
 }

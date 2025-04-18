@@ -70,9 +70,9 @@ export const API_ENDPOINTS = {
 
 // Сервисные функции для работы с вакансиями
 export const vacancyService = {
-  getAllVacancies: async () => {
+  getAllVacancies: async (page = 1, size = 5) => {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.VACANCIES.GET_ALL);
+      const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${page}&size=${size}`);
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -82,11 +82,17 @@ export const vacancyService = {
   searchVacancies: async (params) => {
     try {
       const queryParams = new URLSearchParams();
+      
+      if (!params.page) params.page = 1;
+      if (!params.size) params.size = 5;
+      
       Object.entries(params).forEach(([key, value]) => {
-        if (value) queryParams.append(key, value);
+        if (value !== undefined && value !== null && value !== '') {
+          queryParams.append(key, value);
+        }
       });
       
-      const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.SEARCH}?${queryParams.toString()}`);
+      const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.SEARCH}?${queryParams}`);
       return response.data;
     } catch (error) {
       return handleApiError(error);

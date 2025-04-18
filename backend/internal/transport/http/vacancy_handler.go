@@ -27,13 +27,28 @@ func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, logger *util.Logger, 
 }
 
 func (vh *VacancyHandler) ListVacanciesHandler(c *gin.Context) {
-	vacancies, err := vh.vacancyUsecase.ListVacancies()
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(c.DefaultQuery("size", "5"))
+	if err != nil || size < 1 || size > 100 {
+		size = 5
+	}
+
+	vacancies, total, err := vh.vacancyUsecase.ListVacancies(page, size)
 	if err != nil {
-		vh.logger.Errorf("Failed to list vacancies: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		vh.logger.Errorf("ListVacancies failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancies"})
 		return
 	}
-	c.JSON(http.StatusOK, vacancies)
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":       page,
+		"size":       size,
+		"totalCount": total,
+		"vacancies":  vacancies,
+	})
 }
 
 func (vh *VacancyHandler) DetailVacancyHandler(c *gin.Context) {

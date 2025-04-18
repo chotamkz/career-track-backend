@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
+	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type MLRecommendation struct {
@@ -28,17 +30,48 @@ type MLResponse struct {
 type VacancyUsecase struct {
 	vacancyRepo  repository.VacancyRepository
 	mlServiceURL string
+	countCache   *cache.Cache
 }
 
 func NewVacancyUsecase(vacRepo repository.VacancyRepository, mlServiceURL string) *VacancyUsecase {
+	c := cache.New(3*time.Minute, 5*time.Minute)
 	return &VacancyUsecase{
 		vacancyRepo:  vacRepo,
 		mlServiceURL: mlServiceURL,
+		countCache:   c,
 	}
 }
 
-func (vu *VacancyUsecase) ListVacancies() ([]model.Vacancy, error) {
-	return vu.vacancyRepo.GetVacancies()
+func (vu *VacancyUsecase) ListVacancies(page, size int) ([]model.Vacancy, int, error) {
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 {
+		size = 5
+	}
+	offset := (page - 1) * size
+
+	var total int
+	if x, found := vu.countCache.Get("vacancyTotalCount"); found {
+		total = x.(int)
+	} else {
+		cnt, err := vu.vacancyRepo.CountVacancies()
+		if err != nil {
+			return nil, 0, fmt.Errorf("cannot count vacancies: %v", err)
+		}
+		total = cnt
+		vu.countCache.Set("vacancyTotalCount", total, cache.DefaultExpiration)
+	}
+
+	if size == 0 {
+		return nil, total, nil
+	}
+
+	vacs, err := vu.vacancyRepo.GetVacancies(size, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("cannot list vacancies: %v", err)
+	}
+	return vacs, total, nil
 }
 
 func (vu *VacancyUsecase) GetVacancyById(id uint) (model.Vacancy, error) {

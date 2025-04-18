@@ -12,7 +12,9 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const [locationOptions, setLocationOptions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [totalCount, setTotalCount] = useState(0);
   const vacanciesPerPage = 5;
+  const [cache, setCache] = useState({});
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,7 +29,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
   useEffect(() => {
     fetchVacancies();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     handleSearch(searchFilters);
@@ -36,14 +38,34 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const fetchVacancies = async () => {
     setLoading(true);
     try {
-      const data = await vacancyService.getAllVacancies();
+      if (cache[currentPage]) {
+        setVacancies(cache[currentPage]);
+        setLoading(false);
+        const totalP = Math.ceil(totalCount / vacanciesPerPage);
+        if (currentPage < totalP && !cache[currentPage + 1]) {
+          apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage + 1}&size=${vacanciesPerPage}`)
+            .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
+            .catch(() => {});
+        }
+        return;
+      }
+      const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage}&size=${vacanciesPerPage}`);
+      const data = response.data;
       
-      setVacancies(Array.isArray(data) ? data : 
-                  (data.vacancies ? data.vacancies : []));
+      setVacancies(data.vacancies || []);
+      setTotalCount(data.totalCount || 0);
+      setCache(prev => ({ ...prev, [currentPage]: data.vacancies }));
+      const totalP = Math.ceil((data.totalCount || 0) / vacanciesPerPage);
+      if (currentPage < totalP) {
+        apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage + 1}&size=${vacanciesPerPage}`)
+          .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
+          .catch(() => {});
+      }
       
+      // Получение уникальных городов для фильтра по местоположению
       const uniqueCities = [
         ...new Set(
-          (Array.isArray(data) ? data : (data.vacancies ? data.vacancies : []))
+          (data.vacancies || [])
             .map((vacancy) => {
               if (!vacancy.location) return null;
               let city = vacancy.location.trim().split(",")[0];
@@ -87,6 +109,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
 
       if (hasKeywords && !hasKeywordFilter) {
         setVacancies([]);
+        setTotalCount(0);
         setLoading(false);
         return;
       }
@@ -109,7 +132,9 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           salary_from: searchFilters.salary || undefined,
           schedule: searchFilters.schedule || undefined,
           ml_skills: filters.mlSkills?.trim() || undefined,
-          query: searchQuery || undefined
+          query: searchQuery || undefined,
+          page: currentPage,
+          size: vacanciesPerPage
         };
 
         Object.keys(searchParams).forEach(key => {
@@ -125,20 +150,24 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         console.log("Поисковый запрос:", searchParams);
 
         if (Object.keys(searchParams).length > 0) {
-          data = await vacancyService.searchVacancies(searchParams);
+          const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.SEARCH}?${new URLSearchParams(searchParams)}`);
+          data = response.data;
         } else {
-          data = await vacancyService.getAllVacancies();
+          const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage}&size=${vacanciesPerPage}`);
+          data = response.data;
         }
       } else {
-        data = await vacancyService.getAllVacancies();
+        const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage}&size=${vacanciesPerPage}`);
+        data = response.data;
       }
       
-      let filteredData = Array.isArray(data) ? data : (data.vacancies ? data.vacancies : []);
-
+      setVacancies(data.vacancies || []);
+      setTotalCount(data.totalCount || 0);
+      
       if (hasKeywords && hasKeywordFilter) {
         const keywords = filters.keywords.toLowerCase().trim();
-        console.log("Пример вакансии:", filteredData[0]);
-        filteredData = filteredData.filter(vacancy => {
+        console.log("Пример вакансии:", data.vacancies[0]);
+        const filteredData = (data.vacancies || []).filter(vacancy => {
           const matchesTitle = filters.keywordFilter?.title && 
                              vacancy.title?.toLowerCase().includes(keywords);
           const matchesCompany = filters.keywordFilter?.company && 
@@ -149,19 +178,23 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           
           return matchesTitle || matchesCompany || matchesDescription;
         });
+        
+        setVacancies(filteredData);
+        setTotalCount(filteredData.length);
       }
       
       if (searchQuery) {
         const query = searchQuery.toLowerCase().trim();
-        filteredData = filteredData.filter(vacancy => 
+        const filteredData = (data.vacancies || []).filter(vacancy => 
           vacancy.title?.toLowerCase().includes(query) || 
           vacancy.company_name?.toLowerCase().includes(query) || 
           vacancy.description?.toLowerCase().includes(query) || 
           vacancy.requirements?.toLowerCase().includes(query)
         );
+        
+        setVacancies(filteredData);
+        setTotalCount(filteredData.length);
       }
-      
-      setVacancies(filteredData);
 
       setCurrentPage(1);
     } catch (err) {
@@ -170,7 +203,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     } finally {
       setLoading(false);
     }
-  }, [searchFilters, searchQuery, onFiltersChange]);
+  }, [searchFilters, searchQuery, onFiltersChange, currentPage, vacanciesPerPage]);
 
   const getMatchClass = (percentage) => {
     if (percentage >= 75) return 'high';
@@ -184,16 +217,15 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     return 'Низкое соответствие';
   };
 
-  const filteredVacancies = vacancies;
+  // Используем серверную пагинацию, не нужно делить на страницы на клиенте
+  const currentVacancies = vacancies;
 
-  const indexOfLastVacancy = currentPage * vacanciesPerPage;
-  const indexOfFirstVacancy = indexOfLastVacancy - vacanciesPerPage;
-  const currentVacancies = filteredVacancies.slice(indexOfFirstVacancy, indexOfLastVacancy);
-
+  // Рассчитываем общее количество страниц на основе totalCount с сервера
+  const totalPages = Math.ceil(totalCount / vacanciesPerPage);
   const pagesToShow = 10;
-  const totalPages = Math.ceil(filteredVacancies.length / vacanciesPerPage);
   const startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
   const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+  
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
