@@ -148,29 +148,26 @@
 }
 
 .apply-btn {
-  background-color: #0075E1;
+  background-color: #3182ce;
   color: white;
   border: none;
-  padding: 12px 28px;
+  padding: 12px 24px;
   border-radius: 4px;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-  box-shadow: none;
-  outline: none;
-  border-bottom: none;
 }
 
 .apply-btn:hover {
-  background-color: #0062bb;
+  background-color: #2c5282;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 117, 225, 0.3);
+}
+
+.apply-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .apply-btn::after {
@@ -341,4 +338,341 @@
   background-color: #bee3f8;
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(66, 153, 225, 0.15);
+}
+
+/* Стили для модального окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.apply-modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 20px;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #718096;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-modal:hover {
+  color: #2d3748;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.vacancy-title-small {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+  font-size: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f7fafc;
+  border-radius: 0 0 8px 8px;
+}
+
+.modal-button {
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-button.primary {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+}
+
+.modal-button.primary:hover {
+  background-color: #2c5282;
+}
+
+.modal-button.primary:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.modal-button.secondary {
+  background-color: white;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.modal-button.secondary:hover {
+  background-color: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+.modal-button.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Стили для сообщения об успешной отправке */
+.success-content {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #48bb78;
+  color: white;
+  font-size: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.success-content p {
+  color: #4a5568;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.success-content .modal-button {
+  margin-top: 20px;
+  padding: 10px 24px;
+}
+
+/* Стили для отображения информации о существующем отклике */
+.already-applied {
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.applied-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.applied-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #0ea5e9;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.already-applied span {
+  font-weight: 500;
+  color: #0369a1;
+}
+
+.application-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.status-label {
+  color: #475569;
+}
+
+.status-value {
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.status-value.applied {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.status-value.viewed {
+  background-color: #fdf4ff;
+  color: #a21caf;
+}
+
+.status-value.invited {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.status-value.rejected {
+  background-color: #fff1f2;
+  color: #be123c;
+}
+
+.application-date {
+  color: #64748b;
+  font-size: 13px;
+  margin-left: auto;
+}
+
+.already-applied-icon {
+  width: 50px;
+  height: 50px;
+  background-color: #fb923c;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.success-content h4 {
+  color: #2d3748;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.status-text {
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 5px;
+}
+
+.status-text.applied {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.status-text.viewed {
+  background-color: #fdf4ff;
+  color: #a21caf;
+}
+
+.status-text.invited {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.status-text.rejected {
+  background-color: #fff1f2;
+  color: #be123c;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .applied-badge {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .application-status {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .application-date {
+    margin-left: 0;
+  }
 } 

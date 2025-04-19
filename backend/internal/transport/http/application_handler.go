@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
 	"github.com/chotamkz/career-track-backend/internal/util"
@@ -51,7 +52,12 @@ func (ah *ApplicationHandler) SubmitApplicationHandler(c *gin.Context) {
 		VacancyID:   uint(vacancyID),
 		CoverLetter: input.CoverLetter,
 	}
-	if err := ah.appUsecase.SubmitApplication(&app); err != nil {
+	err = ah.appUsecase.SubmitApplication(&app)
+	if err != nil {
+		if errors.Is(err, usecase.ErrAlreadyApplied) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "You have already applied to this vacancy"})
+			return
+		}
 		ah.logger.Errorf("Failed to submit application: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to submit application"})
 		return
@@ -84,18 +90,25 @@ func (ah *ApplicationHandler) UpdateApplicationStatusHandler(c *gin.Context) {
 }
 
 func (ah *ApplicationHandler) GetStudentApplicationsHandler(c *gin.Context) {
-	studentIDStr := c.Param("id")
-	studentID, err := strconv.ParseUint(studentIDStr, 10, 32)
-	if err != nil {
-		ah.logger.Errorf("Invalid student id: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid student id"})
+	uidVal, exists := c.Get("user")
+	if !exists {
+		ah.logger.Error("Student ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	apps, err := ah.appUsecase.GetStudentApplications(uint(studentID))
+	studentID, ok := uidVal.(uint)
+	if !ok {
+		ah.logger.Error("Invalid student ID type")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
+		return
+	}
+
+	apps, err := ah.appUsecase.GetStudentApplications(studentID)
 	if err != nil {
-		ah.logger.Errorf("Failed to get applications for student: %v", err)
+		ah.logger.Errorf("Failed to get applications for student %d: %v", studentID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get applications"})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"applications": apps})
 }

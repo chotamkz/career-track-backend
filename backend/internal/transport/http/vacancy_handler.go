@@ -1,6 +1,7 @@
 package http
 
 import (
+	"database/sql"
 	"github.com/chotamkz/career-track-backend/internal/config"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
@@ -16,11 +17,13 @@ type VacancyHandler struct {
 	vacancyUsecase *usecase.VacancyUsecase
 	logger         *util.Logger
 	cfg            *config.Config
+	appUsecase     *usecase.ApplicationUsecase
 }
 
-func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, logger *util.Logger, cfg *config.Config) *VacancyHandler {
+func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, appUsecase *usecase.ApplicationUsecase, logger *util.Logger, cfg *config.Config) *VacancyHandler {
 	return &VacancyHandler{
 		vacancyUsecase: vacUsecase,
+		appUsecase:     appUsecase,
 		logger:         logger,
 		cfg:            cfg,
 	}
@@ -52,20 +55,38 @@ func (vh *VacancyHandler) ListVacanciesHandler(c *gin.Context) {
 }
 
 func (vh *VacancyHandler) DetailVacancyHandler(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 32)
+	vidParam := c.Param("id")
+	vid64, err := strconv.ParseUint(vidParam, 10, 32)
 	if err != nil {
-		vh.logger.Errorf("Invalid vacancy ID: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vacancy ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vacancy id"})
 		return
 	}
-	vacancy, err := vh.vacancyUsecase.GetVacancyById(uint(id))
+	vacancyID := uint(vid64)
+
+	vac, err := vh.vacancyUsecase.GetVacancyById(vacancyID)
 	if err != nil {
-		vh.logger.Errorf("Failed to get vacancy by ID: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		vh.logger.Errorf("Failed to get vacancy %d: %v", vacancyID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancy"})
 		return
 	}
-	c.JSON(http.StatusOK, vacancy)
+
+	resp := model.VacancyDetailResponse{Vacancy: vac}
+
+	if ut, exists := c.Get("userType"); exists && ut == string(model.UserTypeStudent) {
+		if uidVal, ok := c.Get("user"); ok {
+			if studentID, ok2 := uidVal.(uint); ok2 {
+				app, err := vh.appUsecase.GetApplicationByStudentAndVacancy(studentID, vacancyID)
+				if err == nil {
+					resp.ApplicationStatus = &app.Status
+				}
+				if err != nil && err != sql.ErrNoRows {
+					vh.logger.Errorf("Error fetching app for student %d on vacancy %d: %v", studentID, vacancyID, err)
+				}
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, resp)
 }
 
 func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {

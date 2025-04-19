@@ -124,7 +124,9 @@ function NavigationBar() {
             <nav className={mobileMenuOpen ? 'open' : ''}>
                 <ul className="nav-links">
                     <li><Link to="/vacancies" onClick={handleNavLinkClick}>Поиск вакансий</Link></li>
-                    <li><Link to="/profile" onClick={handleNavLinkClick}>Мои заявки</Link></li>
+                    {isAuthenticated() && userRole === "STUDENT" && (
+                        <li><Link to="/applications" onClick={handleNavLinkClick}>Мои заявки</Link></li>
+                    )}
                     <li><Link to="/hackathons" onClick={handleNavLinkClick}>Хакатоны</Link></li>
                     <li><Link to="/" onClick={handleNavLinkClick}>О нас</Link></li>
                 </ul>

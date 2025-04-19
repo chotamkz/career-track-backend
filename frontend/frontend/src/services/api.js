@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Базовый URL для API
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/v1';
+console.log("API URL:", BASE_URL);
 
 // Создаем экземпляр axios с базовым URL
 export const apiClient = axios.create({
@@ -11,27 +12,34 @@ export const apiClient = axios.create({
   },
 });
 
-// Добавляем перехватчик запросов для добавления токена
+// Добавляем перехватчик запросов для добавления токена и логирования
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    console.log(`API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`, config);
     return config;
   },
   (error) => {
+    console.error("API Request Error:", error);
     return Promise.reject(error);
   }
 );
 
-// Добавляем перехватчик ответов для обработки ошибок
+// Добавляем перехватчик ответов для обработки ошибок и логирования
 apiClient.interceptors.response.use(
   (response) => {
+    console.log(`API Response [${response.status}]`, response.data);
     return response;
   },
   (error) => {
-    console.error('API Error:', error);
+    console.error('API Response Error:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+    }
     return Promise.reject(error);
   }
 );
@@ -51,6 +59,9 @@ export const API_ENDPOINTS = {
     PROFILE: '/employers/me',
     UPDATE: '/employers/me',
   },
+  APPLICATIONS: {
+    GET_MY_APPLICATIONS: '/applications/me',
+  },
   VACANCIES: {
     GET_ALL: '/vacancies',
     SEARCH: '/vacancies/search',
@@ -58,6 +69,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/vacancies/${id}`,
     DELETE: (id) => `/vacancies/${id}`,
     GET_BY_ID: (id) => `/vacancies/${id}`,
+    APPLY: (id) => `/vacancies/${id}/apply`,
   },
   HACKATHONS: {
     GET_ALL: '/hackathons',
@@ -106,7 +118,16 @@ export const vacancyService = {
     } catch (error) {
       return handleApiError(error);
     }
-  }
+  },
+  
+  applyToVacancy: async (id, coverLetter) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.VACANCIES.APPLY(id), { coverLetter });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  },
 };
 
 // Сервисные функции для работы с хакатонами
@@ -125,6 +146,20 @@ export const hackathonService = {
       const response = await apiClient.get(API_ENDPOINTS.HACKATHONS.GET_BY_ID(id));
       return response.data;
     } catch (error) {
+      return handleApiError(error);
+    }
+  }
+};
+
+// Сервисные функции для работы с заявками студента
+export const applicationService = {
+  getMyApplications: async () => {
+    try {
+      // Затем делаем реальный запрос к API
+      const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.GET_MY_APPLICATIONS);
+      return response.data;
+    } catch (error) {
+      console.error('Error in getMyApplications:', error);
       return handleApiError(error);
     }
   }

@@ -345,14 +345,15 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
               )}
               
               <div className="vacancy-actions">
-                <a 
-                  href={vacancy.vacancy_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
+                <button 
+                  className="apply-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVacancyClick(vacancy.id);
+                  }}
                 >
-                  <button className="apply-btn">Откликнуться</button>
-                </a>
+                  Откликнуться
+                </button>
                 <button 
                   className="contact-btn" 
                   onClick={(e) => {

@@ -1,0 +1,24 @@
+.applications-page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.applications-content {
+  flex: 1;
+  margin-top: 120px;
+  padding-bottom: 50px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .applications-content {
+    margin-top: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .applications-content {
+    margin-top: 80px;
+  }
+} 

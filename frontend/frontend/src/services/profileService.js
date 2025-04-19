@@ -53,7 +53,7 @@ export const studentProfileService = {
   // Получение истории заявок
   getApplicationHistory: async () => {
     try {
-      const response = await apiClient.get(`${API_ENDPOINTS.STUDENTS.PROFILE}/applications`);
+      const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.GET_MY_APPLICATIONS);
       return response.data;
     } catch (error) {
       return handleApiError(error);

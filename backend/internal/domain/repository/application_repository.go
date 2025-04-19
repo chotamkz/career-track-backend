@@ -7,4 +7,5 @@ type ApplicationRepository interface {
 	UpdateApplicationStatus(appID uint, newStatus model.ApplicationStatus) error
 	GetApplicationsByStudentID(studentID uint) ([]model.Application, error)
 	GetApplicationByID(appID uint) (model.Application, error)
+	GetByStudentAndVacancy(studentID, vacancyID uint) (model.Application, error)
 }

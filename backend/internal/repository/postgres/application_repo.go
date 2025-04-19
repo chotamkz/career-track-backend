@@ -88,3 +88,20 @@ func (ar *ApplicationRepo) GetApplicationByID(appID uint) (model.Application, er
 	}
 	return app, nil
 }
+
+func (ar *ApplicationRepo) GetByStudentAndVacancy(studentID, vacancyID uint) (model.Application, error) {
+	const query = `
+        SELECT id, student_id, vacancy_id, cover_letter, submitted_date, status, updated_date
+        FROM applications
+        WHERE student_id = $1 AND vacancy_id = $2
+        ORDER BY submitted_date DESC
+        LIMIT 1
+    `
+	var app model.Application
+	err := ar.DB.QueryRow(query, studentID, vacancyID).
+		Scan(&app.ID, &app.StudentID, &app.VacancyID, &app.CoverLetter, &app.SubmittedDate, &app.Status, &app.UpdatedDate)
+	if err != nil {
+		return model.Application{}, err
+	}
+	return app, nil
+}
