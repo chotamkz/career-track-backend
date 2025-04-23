@@ -189,3 +189,7 @@ func getMLRecommendations(studentSkills, mlServiceURL string) (MLResponse, error
 	}
 	return mlResp, nil
 }
+
+func (vu *VacancyUsecase) GetEmployerVacancies(employerID uint) ([]model.Vacancy, error) {
+	return vu.vacancyRepo.GetVacanciesByEmployerID(employerID)
+}

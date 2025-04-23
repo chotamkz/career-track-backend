@@ -191,3 +191,20 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, vacancy)
 }
+
+func (vh *VacancyHandler) GetEmployerVacanciesHandler(c *gin.Context) {
+	uidVal, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	employerID := uidVal.(uint)
+
+	vacs, err := vh.vacancyUsecase.GetEmployerVacancies(employerID)
+	if err != nil {
+		vh.logger.Errorf("GetEmployerVacancies failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancies"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"vacancies": vacs})
+}

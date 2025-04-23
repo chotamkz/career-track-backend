@@ -9,15 +9,20 @@ import (
 )
 
 var (
-	ErrAlreadyApplied = errors.New("you have already applied to this vacancy")
+	ErrAlreadyApplied  = errors.New("you have already applied to this vacancy")
+	ErrNotVacancyOwner = errors.New("you do not own this vacancy")
 )
 
 type ApplicationUsecase struct {
-	appRepo repository.ApplicationRepository
+	appRepo     repository.ApplicationRepository
+	vacancyRepo repository.VacancyRepository
 }
 
-func NewApplicationUsecase(appRepo repository.ApplicationRepository) *ApplicationUsecase {
-	return &ApplicationUsecase{appRepo: appRepo}
+func NewApplicationUsecase(appRepo repository.ApplicationRepository, vacRepo repository.VacancyRepository) *ApplicationUsecase {
+	return &ApplicationUsecase{
+		appRepo:     appRepo,
+		vacancyRepo: vacRepo,
+	}
 }
 
 func (au *ApplicationUsecase) SubmitApplication(app *model.Application) error {
@@ -49,4 +54,17 @@ func (au *ApplicationUsecase) GetApplicationByID(appID uint) (model.Application,
 
 func (au *ApplicationUsecase) GetApplicationByStudentAndVacancy(studentID, vacancyID uint) (model.Application, error) {
 	return au.appRepo.GetByStudentAndVacancy(studentID, vacancyID)
+}
+
+func (au *ApplicationUsecase) GetApplicationsForVacancy(
+	employerID, vacancyID uint,
+) ([]model.Application, error) {
+	vac, err := au.vacancyRepo.GetVacancyById(vacancyID)
+	if err != nil {
+		return nil, err
+	}
+	if vac.EmployerID != employerID {
+		return nil, ErrNotVacancyOwner
+	}
+	return au.appRepo.GetApplicationsByVacancyID(vacancyID)
 }

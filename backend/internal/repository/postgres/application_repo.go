@@ -105,3 +105,27 @@ func (ar *ApplicationRepo) GetByStudentAndVacancy(studentID, vacancyID uint) (mo
 	}
 	return app, nil
 }
+
+func (ar *ApplicationRepo) GetApplicationsByVacancyID(vacancyID uint) ([]model.Application, error) {
+	const query = `
+      SELECT id, student_id, vacancy_id, cover_letter, submitted_date, status, updated_date
+      FROM applications
+      WHERE vacancy_id = $1
+      ORDER BY submitted_date DESC
+    `
+	rows, err := ar.DB.Query(query, vacancyID)
+	if err != nil {
+		return nil, fmt.Errorf("GetApplicationsByVacancyID: %v", err)
+	}
+	defer rows.Close()
+
+	var apps []model.Application
+	for rows.Next() {
+		var a model.Application
+		if err := rows.Scan(&a.ID, &a.StudentID, &a.VacancyID, &a.CoverLetter, &a.SubmittedDate, &a.Status, &a.UpdatedDate); err != nil {
+			return nil, fmt.Errorf("scan applications: %v", err)
+		}
+		apps = append(apps, a)
+	}
+	return apps, rows.Err()
+}

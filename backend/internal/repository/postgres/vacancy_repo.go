@@ -261,3 +261,38 @@ func (vr *VacancyRepo) GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error) {
 	}
 	return vacancies, nil
 }
+
+func (vr *VacancyRepo) GetVacanciesByEmployerID(employerID uint) ([]model.Vacancy, error) {
+	const query = `
+        SELECT 
+          id, title, requirements, location, posted_date, employer_id, created_at,
+          salary_from, salary_to, salary_currency, salary_gross, vacancy_url,
+          work_schedule, experience
+        FROM vacancies
+        WHERE employer_id = $1
+        ORDER BY posted_date DESC
+    `
+	rows, err := vr.DB.Query(query, employerID)
+	if err != nil {
+		return nil, fmt.Errorf("GetVacanciesByEmployerID: %v", err)
+	}
+	defer rows.Close()
+
+	var vacs []model.Vacancy
+	for rows.Next() {
+		var v model.Vacancy
+		if err := rows.Scan(
+			&v.ID, &v.Title, &v.Requirements, &v.Location, &v.PostedDate,
+			&v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo,
+			&v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL,
+			&v.WorkSchedule, &v.Experience,
+		); err != nil {
+			return nil, fmt.Errorf("scan vacancy: %v", err)
+		}
+		vacs = append(vacs, v)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %v", err)
+	}
+	return vacs, nil
+}

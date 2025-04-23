@@ -11,4 +11,5 @@ type VacancyRepository interface {
 	InsertVacancySkill(vacancyID uint, skillName string) error
 	GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error)
 	CountVacancies() (int, error)
+	GetVacanciesByEmployerID(employerID uint) ([]model.Vacancy, error)
 }

@@ -31,12 +31,13 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 
 	vacancyRepo := postgres.NewVacancyRepo(db)
 	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, cfg.MLServiceURL)
-	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db))
+	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db), vacancyRepo)
 	vacancyHandler := NewVacancyHandler(vacancyUsecase, appUsecase, logger, cfg)
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
 	router.GET("/api/v1/vacancies/:id", middleware.OptionalAuth(cfg.JWTSecret), vacancyHandler.DetailVacancyHandler)
 	router.GET("/api/v1/vacancies/search", vacancyHandler.FilterVacanciesHandler)
 	router.POST("/api/v1/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.CreateVacancyHandler)
+	router.GET("/api/v1/employers/me/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.GetEmployerVacanciesHandler)
 
 	userRepo := postgres.NewUserRepo(db, logger)
 	profileRepo := postgres.NewProfileRepo(db, logger)
@@ -69,6 +70,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.POST("/api/v1/vacancies/:id/apply", middleware.RequireStudent(cfg.JWTSecret), applicationHandler.SubmitApplicationHandler)
 	router.PATCH("/api/v1/vacancies/applications/:id", middleware.RequireEmployer(cfg.JWTSecret), applicationHandler.UpdateApplicationStatusHandler)
 	router.GET("/api/v1/applications/me", middleware.RequireStudent(cfg.JWTSecret), applicationHandler.GetStudentApplicationsHandler)
+	router.GET("/api/v1/vacancies/:id/applications", middleware.RequireEmployer(cfg.JWTSecret), applicationHandler.GetApplicationsForVacancyHandler)
 
 	return &http.Server{
 		Addr:    cfg.ServerAddress,
