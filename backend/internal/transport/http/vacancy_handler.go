@@ -2,6 +2,7 @@ package http
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/chotamkz/career-track-backend/internal/config"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/usecase"
@@ -242,4 +243,67 @@ func (vh *VacancyHandler) GetEmployerVacanciesHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"vacancies": vacs})
+}
+
+func (h *VacancyHandler) UpdateVacancyHandler(c *gin.Context) {
+	vid, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vacancy id"})
+		return
+	}
+
+	empVal, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	employerID := empVal.(uint)
+
+	var in struct {
+		Title          string  `json:"title" binding:"required"`
+		Description    string  `json:"description" binding:"required"`
+		Requirements   string  `json:"requirements"`
+		Location       string  `json:"location" binding:"required"`
+		SalaryFrom     float64 `json:"salary_from"`
+		SalaryTo       float64 `json:"salary_to"`
+		SalaryCurrency string  `json:"salary_currency"`
+		SalaryGross    bool    `json:"salary_gross"`
+		VacancyURL     string  `json:"vacancy_url"`
+		WorkSchedule   string  `json:"work_schedule"`
+		Experience     string  `json:"experience"`
+	}
+	if err := c.ShouldBindJSON(&in); err != nil {
+		h.logger.Errorf("Invalid input for update vacancy: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	vac := model.Vacancy{
+		ID:             uint(vid),
+		Title:          in.Title,
+		Description:    in.Description,
+		Requirements:   in.Requirements,
+		Location:       in.Location,
+		SalaryFrom:     in.SalaryFrom,
+		SalaryTo:       in.SalaryTo,
+		SalaryCurrency: in.SalaryCurrency,
+		SalaryGross:    in.SalaryGross,
+		VacancyURL:     sql.NullString{String: in.VacancyURL, Valid: in.VacancyURL != ""},
+		WorkSchedule:   in.WorkSchedule,
+		Experience:     in.Experience,
+	}
+
+	if err := h.vacancyUsecase.UpdateVacancy(employerID, &vac); err != nil {
+		if errors.Is(err, usecase.ErrNotVacancyOwner) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You do not own this vacancy"})
+		} else if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Vacancy not found"})
+		} else {
+			h.logger.Errorf("UpdateVacancy failed: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update vacancy"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, vac)
 }

@@ -81,6 +81,42 @@ func (vr *VacancyRepo) UpsertVacancy(v *model.Vacancy) error {
 	return vr.DB.QueryRow(query, v.Title, v.Description, v.Requirements, v.Location, v.PostedDate, v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency, v.SalaryGross, v.VacancyURL, v.WorkSchedule, v.Experience).Scan(&v.ID)
 }
 
+func (vr *VacancyRepo) UpdateVacancy(v *model.Vacancy) error {
+	const q = `
+    UPDATE vacancies SET
+      title           = $1,
+      description     = $2,
+      requirements    = $3,
+      location        = $4,
+      salary_from     = $5,
+      salary_to       = $6,
+      salary_currency = $7,
+      salary_gross    = $8,
+      vacancy_url     = $9,
+      work_schedule   = $10,
+      experience      = $11,
+      updated_at      = NOW()
+    WHERE id = $11
+    `
+	res, err := vr.DB.Exec(q,
+		v.Title, v.Description, v.Requirements, v.Location,
+		v.SalaryFrom, v.SalaryTo, v.SalaryCurrency, v.SalaryGross,
+		v.VacancyURL, v.WorkSchedule, v.Experience,
+		v.ID,
+	)
+	if err != nil {
+		return fmt.Errorf("UpdateVacancy exec: %v", err)
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("UpdateVacancy rows: %v", err)
+	}
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
 func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
 	query := `
 		SELECT id, title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience

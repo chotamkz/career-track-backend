@@ -12,6 +12,8 @@ import EmployerLogin from "./pages/EmployerLogin";
 import EmployerRegistration from "./pages/EmployerRegistration";
 import StudentAccount from "./pages/StudentAccount";
 import EmployerAccount from "./pages/EmployerAccount";
+import EmployerVacanciesPage from "./pages/EmployerVacanciesPage";
+import EmployerApplicationsPage from "./pages/EmployerApplicationsPage";
 import ApplicationsPage from "./pages/ApplicationsPage";
 
 const AppRoutes = () => {
@@ -36,6 +38,8 @@ const AppRoutes = () => {
             <Route path="/auth/employer/register" element={<EmployerRegistration />} /> 
             <Route path="/account/student" element={<StudentAccount />} />
             <Route path="/account/employer" element={<EmployerAccount />} />
+            <Route path="/account/employer/vacancies" element={<EmployerVacanciesPage />} />
+            <Route path="/account/employer/applications" element={<EmployerApplicationsPage />} />
         </Routes>
     )
 }

@@ -208,3 +208,15 @@ func getMLRecommendations(studentSkills, mlServiceURL string) (MLResponse, error
 func (vu *VacancyUsecase) GetEmployerVacancies(employerID uint) ([]model.Vacancy, error) {
 	return vu.vacancyRepo.GetVacanciesByEmployerID(employerID)
 }
+
+func (vu *VacancyUsecase) UpdateVacancy(employerID uint, v *model.Vacancy) error {
+	exist, err := vu.vacancyRepo.GetVacancyById(v.ID)
+	if err != nil {
+		return err
+	}
+	if exist.EmployerID != employerID {
+		return ErrNotVacancyOwner
+	}
+
+	return vu.vacancyRepo.UpdateVacancy(v)
+}

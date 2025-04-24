@@ -2,19 +2,11 @@ import React, { useState, useEffect } from "react";
 import FooterComp from "../Footer/FooterComp";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import EmployerProfile from "../AccountComponents/employerProfile";
-import EmployerVacancies from "../AccountComponents/EmployerVacancies";
-import EmployerApplications from "../AccountComponents/EmployerApplications";
 import "./EmployerAccount.css";
 
 function EmployerAccount() {
-    const [activeTab, setActiveTab] = useState("profile");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    // Для отладки - выводим текущую активную вкладку
-    useEffect(() => {
-        console.log("Active tab changed to:", activeTab);
-    }, [activeTab]);
 
     // Функция для обработки ошибок в дочерних компонентах
     const handleComponentError = (componentName, error) => {
@@ -38,44 +30,21 @@ function EmployerAccount() {
                 <NavigationBar />
             </div>
             <div className="employerAccountContent">
-                <div className="employer-account-tabs">
-                    <button 
-                        className={`employer-account-tab ${activeTab === "profile" ? "active" : ""}`}
-                        onClick={() => setActiveTab("profile")}
-                    >
-                        Профиль компании
-                    </button>
-                    <button 
-                        className={`employer-account-tab ${activeTab === "vacancies" ? "active" : ""}`}
-                        onClick={() => setActiveTab("vacancies")}
-                    >
-                        Управление вакансиями
-                    </button>
-                    <button 
-                        className={`employer-account-tab ${activeTab === "applications" ? "active" : ""}`}
-                        onClick={() => setActiveTab("applications")}
-                    >
-                        Заявки соискателей
-                    </button>
-                </div>
+                <h1 className="employer-account-main-title">Профиль компании</h1>
                 
                 {error && (
                     <div className="employer-account-error">{error}</div>
                 )}
                 
-            <div className="employerAccountComponent">
+                <div className="employerAccountComponent">
                     {loading ? (
                         <div className="employer-account-loading">Загрузка...</div>
                     ) : (
-                        <>
-                            {activeTab === "profile" && <EmployerProfile />}
-                            {activeTab === "vacancies" && <EmployerVacancies />}
-                            {activeTab === "applications" && <EmployerApplications />}
-                        </>
+                        <EmployerProfile />
                     )}
                 </div>
             </div>
-                <FooterComp />
+            <FooterComp />
         </div>
     );
 }

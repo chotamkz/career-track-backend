@@ -127,6 +127,12 @@ function NavigationBar() {
                     {isAuthenticated() && userRole === "STUDENT" && (
                         <li><Link to="/applications" onClick={handleNavLinkClick}>Мои заявки</Link></li>
                     )}
+                    {isAuthenticated() && userRole === "EMPLOYER" && (
+                        <>
+                            <li><Link to="/account/employer/vacancies" onClick={handleNavLinkClick}>Управление вакансиями</Link></li>
+                            <li><Link to="/account/employer/applications" onClick={handleNavLinkClick}>Заявки соискателей</Link></li>
+                        </>
+                    )}
                     <li><Link to="/hackathons" onClick={handleNavLinkClick}>Хакатоны</Link></li>
                     <li><Link to="/" onClick={handleNavLinkClick}>О нас</Link></li>
                 </ul>
@@ -143,7 +149,7 @@ function NavigationBar() {
                                 {userRole === "STUDENT" ? (
                                     <Link to="/account/student" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Профиль студента</Link>
                                 ) : userRole === "EMPLOYER" ? (
-                                    <Link to="/account/employer" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Профиль работодателя</Link>
+                                    <Link to="/account/employer" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Профиль компании</Link>
                                 ) : (
                                     <p className="dropdown-item">Неизвестный профиль</p>
                                 )}

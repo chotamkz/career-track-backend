@@ -15,9 +15,7 @@ const EmployerProfile = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [formData, setFormData] = useState({});
-  const [vacancies, setVacancies] = useState([]);
   const [error, setError] = useState(null);
 
   // Загрузка данных профиля при монтировании компонента
@@ -51,19 +49,7 @@ const EmployerProfile = () => {
       }
     };
 
-    const fetchVacancies = async () => {
-      try {
-        const vacanciesData = await employerProfileService.getVacancies();
-        if (!vacanciesData.error) {
-          setVacancies(vacanciesData);
-        }
-      } catch (err) {
-        console.error("Error fetching vacancies:", err);
-      }
-    };
-
     fetchProfileData();
-    fetchVacancies();
   }, []);
 
   const handleInputChange = (e) => {
@@ -214,114 +200,74 @@ const EmployerProfile = () => {
         </div>
       </div>
 
-      <div className="tabs">
-        <button 
-          className={`tab-button ${activeTab === "overview" ? "active" : ""}`}
-          onClick={() => setActiveTab("overview")}
-        >
-          Общие сведения
-        </button>
-        <button 
-          className={`tab-button ${activeTab === "vacancies" ? "active" : ""}`}
-          onClick={() => setActiveTab("vacancies")}
-        >
-          Вакансии
-        </button>
+      <div className="company-overview">
+        <h3>Детали компании</h3>
+        {isEditing ? (
+          <>
+            <div className="overview-form">
+              <div className="form-group">
+                <label>Веб-сайт:</label>
+                <input
+                  type="url"
+                  name="website"
+                  value={formData.website || ""}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Отрасль:</label>
+                <input
+                  type="text"
+                  name="industry"
+                  value={formData.industry || ""}
+                  onChange={handleInputChange}
+                  placeholder="Сфера деятельности"
+                />
+              </div>
+              <div className="form-group">
+                <label>Размер компании:</label>
+                <select 
+                  name="size" 
+                  value={formData.size || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Выберите размер</option>
+                  <option value="1-10 сотрудников">1-10 сотрудников</option>
+                  <option value="11-50 сотрудников">11-50 сотрудников</option>
+                  <option value="51-200 сотрудников">51-200 сотрудников</option>
+                  <option value="201-500 сотрудников">201-500 сотрудников</option>
+                  <option value="501-1000 сотрудников">501-1000 сотрудников</option>
+                  <option value="1001+ сотрудников">1001+ сотрудников</option>
+                </select>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <p>
+              <strong>Веб-сайт:</strong>{" "}
+              {profile.website ? (
+                <a
+                  href={profile.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {profile.website}
+                </a>
+              ) : (
+                "Не указан"
+              )}
+            </p>
+            <p>
+              <strong>Отрасль:</strong> {profile.industry || "Не указана"}
+            </p>
+            <p>
+              <strong>Размер компании:</strong> {profile.size || "Не указан"}
+            </p>
+          </>
+        )}
       </div>
-
-      {activeTab === "overview" ? (
-        <div className="company-overview">
-          <h3>Обзор</h3>
-          {isEditing ? (
-            <>
-              <div className="overview-form">
-                <div className="form-group">
-                  <label>Веб-сайт:</label>
-                  <input
-                    type="url"
-                    name="website"
-                    value={formData.website || ""}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Отрасль:</label>
-                  <input
-                    type="text"
-                    name="industry"
-                    value={formData.industry || ""}
-                    onChange={handleInputChange}
-                    placeholder="Сфера деятельности"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Размер компании:</label>
-                  <select 
-                    name="size" 
-                    value={formData.size || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Выберите размер</option>
-                    <option value="1-10 сотрудников">1-10 сотрудников</option>
-                    <option value="11-50 сотрудников">11-50 сотрудников</option>
-                    <option value="51-200 сотрудников">51-200 сотрудников</option>
-                    <option value="201-500 сотрудников">201-500 сотрудников</option>
-                    <option value="501-1000 сотрудников">501-1000 сотрудников</option>
-                    <option value="1001+ сотрудников">1001+ сотрудников</option>
-                  </select>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <p>
-                <strong>Веб-сайт:</strong>{" "}
-                {profile.website ? (
-                  <a
-                    href={profile.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {profile.website}
-                  </a>
-                ) : (
-                  "Не указан"
-                )}
-              </p>
-              <p>
-                <strong>Отрасль:</strong> {profile.industry || "Не указана"}
-              </p>
-              <p>
-                <strong>Размер компании:</strong> {profile.size || "Не указан"}
-              </p>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="company-vacancies">
-          <h3>Вакансии</h3>
-          <div className="vacancies-list">
-            {vacancies.length > 0 ? (
-              vacancies.map((vacancy) => (
-                <div key={vacancy.id} className="vacancy-card">
-                  <h4>{vacancy.title}</h4>
-                  <p>{vacancy.description.substring(0, 100)}...</p>
-                  <div className="vacancy-footer">
-                    <span>{vacancy.location}</span>
-                    <button className="edit-vacancy-btn">Редактировать</button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="empty-vacancies">
-                У вас пока нет активных вакансий
-              </div>
-            )}
-          </div>
-          <button className="add-vacancy-btn">Добавить вакансию</button>
-        </div>
-      )}
     </div>
   );
 };

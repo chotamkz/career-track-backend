@@ -237,17 +237,21 @@ const EmployerVacancies = () => {
                 
                 <div className="employer-vacancies__item-details">
                   <div className="employer-vacancies__item-location">
-                    <i className="employer-vacancies__icon-location"></i>
+                    <i className="employer-vacancies__icon-location">📍</i>
                     {vacancy.location || 'Не указано'}
                   </div>
                   
                   <div className="employer-vacancies__item-salary">
-                    <i className="employer-vacancies__icon-salary"></i>
-                    {vacancy.salary || 'Не указана'}
+                    <i className="employer-vacancies__icon-salary">💰</i>
+                    {
+                      vacancy.salary_from || vacancy.salary_to ? 
+                      `${vacancy.salary_from || ''} ${vacancy.salary_from && vacancy.salary_to ? '—' : ''} ${vacancy.salary_to || ''} ${vacancy.salary_currency || ''}` 
+                      : 'Не указана'
+                    }
                   </div>
                   
                   <div className="employer-vacancies__item-date">
-                    <i className="employer-vacancies__icon-date"></i>
+                    <i className="employer-vacancies__icon-date">🗓️</i>
                     {vacancy.createdAt ? formatDate(vacancy.createdAt) : 'Дата не указана'}
                   </div>
                 </div>
@@ -265,6 +269,13 @@ const EmployerVacancies = () => {
                       {skill.trim()}
                     </span>
                   ))}
+                  
+                  {vacancy.skills && Array.isArray(vacancy.skills) && 
+                   vacancy.skills.map((skill, index) => (
+                    <span key={index} className="employer-vacancies__item-skill">
+                      {skill}
+                    </span>
+                   ))}
                 </div>
                 
                 <div className="employer-vacancies__item-actions">
@@ -272,7 +283,7 @@ const EmployerVacancies = () => {
                     className="employer-vacancies__action-btn employer-vacancies__action-btn--edit"
                     onClick={() => handleEditVacancy(vacancy)}
                   >
-                    Редактировать
+                    ✏️ Редактировать
                   </button>
                   
                   <button 
@@ -293,14 +304,14 @@ const EmployerVacancies = () => {
                       });
                     }}
                   >
-                    {vacancy.status === 'ACTIVE' ? 'Закрыть' : 'Активировать'}
+                    {vacancy.status === 'ACTIVE' ? '🔒 Закрыть' : '🔓 Активировать'}
                   </button>
                   
                   <button 
                     className="employer-vacancies__action-btn employer-vacancies__action-btn--delete"
                     onClick={() => handleDeleteVacancy(vacancy.id)}
                   >
-                    Удалить
+                    🗑️ Удалить
                   </button>
                 </div>
               </div>
