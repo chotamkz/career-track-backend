@@ -22,6 +22,17 @@ const VacancyDetails = () => {
   const userRole = getUserRole();
   const isStudent = userRole === "STUDENT";
 
+  // Константа с фиксированными статусами заявок
+  const APPLICATION_STATUSES = [
+    { value: 'APPLIED', label: 'Новая заявка', icon: '📋', color: 'blue' },
+    { value: 'CV_SCREENING', label: 'Рассмотрение резюме', icon: '👀', color: 'yellow' },
+    { value: 'INTERVIEW_SCHEDULED', label: 'Собеседование назначено', icon: '📅', color: 'indigo' },
+    { value: 'INTERVIEW_COMPLETED', label: 'Собеседование проведено', icon: '✓', color: 'purple' },
+    { value: 'OFFER_EXTENDED', label: 'Предложение отправлено', icon: '📨', color: 'teal' },
+    { value: 'ACCEPTED', label: 'Кандидат принят', icon: '🎉', color: 'green' },
+    { value: 'REJECTED', label: 'Кандидат отклонен', icon: '❌', color: 'red' },
+  ];
+
   useEffect(() => {
     const fetchVacancy = async () => {
       setLoading(true);
@@ -144,13 +155,22 @@ const VacancyDetails = () => {
 
   // Получение текста статуса отклика для отображения
   const getStatusText = (status) => {
-    switch (status) {
-      case "APPLIED": return "На рассмотрении";
-      case "VIEWED": return "Просмотрено";
-      case "INVITED": return "Приглашение";
-      case "REJECTED": return "Отклонено";
-      default: return status;
-    }
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status.toUpperCase());
+    return statusObj ? statusObj.label : status;
+  };
+
+  // Получение иконки статуса
+  const getStatusIcon = (status) => {
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status.toUpperCase());
+    return statusObj ? statusObj.icon : '❓';
+  };
+
+  // Получение класса стиля для статуса
+  const getStatusClass = (status) => {
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status.toUpperCase());
+    const color = statusObj ? statusObj.color : 'gray';
+    
+    return `status-${color}`;
   };
 
   if (loading) {
@@ -246,13 +266,13 @@ const VacancyDetails = () => {
         {isStudent && vacancy.applicationStatus ? (
           <div className="already-applied">
             <div className="applied-badge">
-              <div className="applied-icon">✓</div>
+              <div className="applied-icon">{getStatusIcon(vacancy.applicationStatus)}</div>
               <span>Вы уже откликнулись</span>
             </div>
             <div className="application-status">
               <span className="status-label">Статус:</span>
-              <span className={`status-value ${vacancy.applicationStatus.toLowerCase()}`}>
-                {getStatusText(vacancy.applicationStatus)}
+              <span className={`status-value ${getStatusClass(vacancy.applicationStatus)}`}>
+                {getStatusIcon(vacancy.applicationStatus)} {getStatusText(vacancy.applicationStatus)}
               </span>
               {vacancy.applicationDate && (
                 <span className="application-date">
@@ -296,14 +316,14 @@ const VacancyDetails = () => {
               </div>
             ) : vacancy.applicationStatus ? (
               <div className="success-content">
-                <div className="already-applied-icon">!</div>
+                <div className="already-applied-icon">{getStatusIcon(vacancy.applicationStatus)}</div>
                 <h4>Вы уже откликнулись на эту вакансию</h4>
                 {vacancy.applicationDate && (
                   <p>Дата отклика: {new Date(vacancy.applicationDate).toLocaleDateString()}</p>
                 )}
                 <p>Текущий статус: 
-                  <span className={`status-text ${vacancy.applicationStatus.toLowerCase()}`}>
-                    {getStatusText(vacancy.applicationStatus)}
+                  <span className={`status-text ${getStatusClass(vacancy.applicationStatus)}`}>
+                    {getStatusIcon(vacancy.applicationStatus)} {getStatusText(vacancy.applicationStatus)}
                   </span>
                 </p>
                 <button className="modal-button" onClick={closeApplyModal}>Закрыть</button>

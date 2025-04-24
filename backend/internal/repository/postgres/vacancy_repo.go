@@ -296,3 +296,18 @@ func (vr *VacancyRepo) GetVacanciesByEmployerID(employerID uint) ([]model.Vacanc
 	}
 	return vacs, nil
 }
+
+func (vr *VacancyRepo) DeleteVacancyByID(vacancyID uint) error {
+	res, err := vr.DB.Exec(`DELETE FROM vacancies WHERE id = $1`, vacancyID)
+	if err != nil {
+		return fmt.Errorf("DeleteVacancyByID exec: %v", err)
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("DeleteVacancyByID rows: %v", err)
+	}
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}

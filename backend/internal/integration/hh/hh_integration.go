@@ -1,6 +1,7 @@
 package hh
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
@@ -171,7 +172,9 @@ func MapHHVacancyToInternal(hhVac HHVacancy, logger *util.Logger) model.Vacancy 
 		vacancy.SalaryCurrency = hhVac.Salary.Currency
 		vacancy.SalaryGross = hhVac.Salary.Gross
 	}
-	vacancy.VacancyURL = hhVac.AlternateURL
-
+	vacancy.VacancyURL = sql.NullString{
+		String: hhVac.AlternateURL,
+		Valid:  hhVac.AlternateURL != "",
+	}
 	return vacancy
 }

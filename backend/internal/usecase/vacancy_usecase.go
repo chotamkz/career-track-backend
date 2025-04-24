@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
@@ -84,6 +85,20 @@ func (vu *VacancyUsecase) FilterVacancies(filter model.VacancyFilter) ([]model.V
 
 func (vu *VacancyUsecase) CreateVacancy(v *model.Vacancy) error {
 	return vu.vacancyRepo.CreateVacancy(v)
+}
+
+func (vu *VacancyUsecase) DeleteVacancy(employerID, vacancyID uint) error {
+	vac, err := vu.vacancyRepo.GetVacancyById(vacancyID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("vacancy not found: %w", err)
+		}
+		return err
+	}
+	if vac.EmployerID != employerID {
+		return ErrNotVacancyOwner
+	}
+	return vu.vacancyRepo.DeleteVacancyByID(vacancyID)
 }
 
 func (vu *VacancyUsecase) AddSkillsToVacancy(vacancyID uint, skills []string) error {

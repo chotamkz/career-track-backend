@@ -545,118 +545,140 @@
 .applied-badge {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  background-color: #e6f7ff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
 .applied-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 24px;
-  height: 24px;
+  background-color: #ffffff;
   border-radius: 50%;
-  background-color: #0ea5e9;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 18px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .already-applied span {
   font-weight: 500;
-  color: #0369a1;
+  color: #1e40af;
 }
 
 .application-status {
+  background-color: #f9fafb;
+  padding: 14px;
+  border-radius: 8px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 5px;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .status-label {
-  color: #475569;
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 .status-value {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 13px;
+  font-size: 14px;
+  margin: 4px 0;
+  gap: 6px;
 }
 
-.status-value.applied {
-  background-color: #f0f9ff;
-  color: #0369a1;
+/* Статусы по цветам */
+.status-blue {
+  background-color: #e0f2fe;
+  color: #0c4a6e;
 }
 
-.status-value.viewed {
-  background-color: #fdf4ff;
-  color: #a21caf;
+.status-yellow {
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
-.status-value.invited {
-  background-color: #ecfdf5;
-  color: #047857;
+.status-indigo {
+  background-color: #e0e7ff;
+  color: #4338ca;
 }
 
-.status-value.rejected {
-  background-color: #fff1f2;
-  color: #be123c;
+.status-purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.status-teal {
+  background-color: #ccfbf1;
+  color: #115e59;
+}
+
+.status-orange {
+  background-color: #fff7ed;
+  color: #9a3412;
+}
+
+.status-green {
+  background-color: #dcfce7;
+  color: #14532d;
+}
+
+.status-red {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-gray {
+  background-color: #f3f4f6;
+  color: #374151;
 }
 
 .application-date {
-  color: #64748b;
   font-size: 13px;
-  margin-left: auto;
+  color: #71717a;
+  margin-top: 4px;
 }
 
 .already-applied-icon {
-  width: 50px;
-  height: 50px;
-  background-color: #fb923c;
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
+  background-color: #f9fafb;
   border-radius: 50%;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
+  font-size: 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .success-content h4 {
-  color: #2d3748;
-  margin-bottom: 15px;
   font-size: 18px;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #374151;
 }
 
 .status-text {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 6px;
   font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-left: 5px;
-}
-
-.status-text.applied {
-  background-color: #f0f9ff;
-  color: #0369a1;
-}
-
-.status-text.viewed {
-  background-color: #fdf4ff;
-  color: #a21caf;
-}
-
-.status-text.invited {
-  background-color: #ecfdf5;
-  color: #047857;
-}
-
-.status-text.rejected {
-  background-color: #fff1f2;
-  color: #be123c;
+  font-size: 14px;
+  white-space: nowrap;
+  gap: 4px;
 }
 
 /* Адаптивность для мобильных */

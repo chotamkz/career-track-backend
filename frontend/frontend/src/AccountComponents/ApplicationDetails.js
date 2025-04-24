@@ -11,6 +11,19 @@ const ApplicationDetails = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [debugInfo, setDebugInfo] = useState(null);
 
+  // Константа с фиксированными статусами заявок
+  const APPLICATION_STATUSES = [
+    { value: 'APPLIED', label: 'Новая заявка', icon: '📋', color: 'blue' },
+    { value: 'CV_SCREENING', label: 'Рассмотрение резюме', icon: '👀', color: 'yellow' },
+    { value: 'INTERVIEW_SCHEDULED', label: 'Собеседование назначено', icon: '📅', color: 'indigo' },
+    { value: 'INTERVIEW_COMPLETED', label: 'Собеседование проведено', icon: '✓', color: 'purple' },
+    { value: 'OFFER_EXTENDED', label: 'Предложение получено', icon: '📨', color: 'teal' },
+    { value: 'ACCEPTED', label: 'Предложение принято', icon: '🎉', color: 'green' },
+    { value: 'REJECTED', label: 'Отказано', icon: '❌', color: 'red' },
+    { value: 'PENDING', label: 'В ожидании', icon: '⏳', color: 'orange' },
+    { value: 'PROCESSING', label: 'В обработке', icon: '⚙️', color: 'gray' },
+  ];
+
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -67,66 +80,60 @@ const ApplicationDetails = () => {
 
   // Функция для преобразования статуса API в человекочитаемый текст
   const getStatusText = (apiStatus) => {
-    switch (apiStatus.toUpperCase()) {
-      case "APPLIED":
-        return "На рассмотрении";
-      case "ACCEPTED":
-      case "APPROVED":
-        return "Принято";
-      case "REJECTED":
-      case "DECLINED":
-        return "Отклонено";
-      case "PENDING":
-        return "Ожидает рассмотрения";
-      case "PROCESSING":
-        return "В обработке";
-      default:
-        return apiStatus;
-    }
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === apiStatus.toUpperCase());
+    return statusObj ? statusObj.label : apiStatus;
   };
 
   // Функция для преобразования человекочитаемого статуса в API-статус
-  const getApiStatus = (readableStatus) => {
-    switch (readableStatus.toLowerCase()) {
+  const getApiStatus = (filterName) => {
+    if (filterName === "all") {
+      return APPLICATION_STATUSES.map(status => status.value);
+    }
+    
+    switch (filterName) {
       case "на рассмотрении":
-        return ["APPLIED", "PENDING", "PROCESSING"];
+        return ["APPLIED", "PENDING", "PROCESSING", "CV_SCREENING"];
+      case "собеседование":
+        return ["INTERVIEW_SCHEDULED", "INTERVIEW_COMPLETED"];
       case "принято":
-        return ["ACCEPTED", "APPROVED"];
+        return ["ACCEPTED", "OFFER_EXTENDED"];
       case "отклонено":
-        return ["REJECTED", "DECLINED"];
+        return ["REJECTED"];
       default:
-        return [readableStatus.toUpperCase()];
+        const status = APPLICATION_STATUSES.find(s => s.label.toLowerCase() === filterName.toLowerCase());
+        return status ? [status.value] : [];
     }
   };
 
   const getStatusClass = (status) => {
-    // Приводим к верхнему регистру для унификации
-    const statusUpper = status.toUpperCase();
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status.toUpperCase());
+    const color = statusObj ? statusObj.color : 'gray';
     
-    if (statusUpper === "APPLIED" || statusUpper === "PENDING" || statusUpper === "PROCESSING") {
-      return "status-pending";
-    } else if (statusUpper === "ACCEPTED" || statusUpper === "APPROVED") {
-      return "status-accepted";
-    } else if (statusUpper === "REJECTED" || statusUpper === "DECLINED") {
-      return "status-rejected";
-    } else {
-      return "status-other";
+    switch (color) {
+      case 'blue':
+        return 'status-blue';
+      case 'yellow':
+        return 'status-yellow';
+      case 'indigo':
+        return 'status-indigo';
+      case 'purple':
+        return 'status-purple';
+      case 'teal':
+        return 'status-teal';
+      case 'green':
+        return 'status-accepted';
+      case 'red':
+        return 'status-rejected';
+      case 'orange':
+        return 'status-pending';
+      default:
+        return 'status-other';
     }
   };
 
   const getStatusIcon = (status) => {
-    // Приводим к верхнему регистру для унификации
-    const statusUpper = status.toUpperCase();
-    
-    if (statusUpper === "APPLIED" || statusUpper === "PENDING" || statusUpper === "PROCESSING") {
-      return "⏳";
-    } else if (statusUpper === "ACCEPTED" || statusUpper === "APPROVED") {
-      return "✅";
-    } else if (statusUpper === "REJECTED" || statusUpper === "DECLINED") {
-      return "❌";
-    } else {
-      return "❓";
-    }
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status.toUpperCase());
+    return statusObj ? statusObj.icon : '❓';
   };
 
   const filterApplications = () => {
@@ -183,23 +190,33 @@ const ApplicationDetails = () => {
           className={`filter-button ${selectedFilter === "на рассмотрении" ? "active" : ""}`}
           onClick={() => setSelectedFilter("на рассмотрении")}
         >
-          На рассмотрении
+          <span className="filter-icon">👀</span> На рассмотрении
+        </button>
+        <button 
+          className={`filter-button ${selectedFilter === "собеседование" ? "active" : ""}`}
+          onClick={() => setSelectedFilter("собеседование")}
+        >
+          <span className="filter-icon">📅</span> Собеседование
         </button>
         <button 
           className={`filter-button ${selectedFilter === "принято" ? "active" : ""}`}
           onClick={() => setSelectedFilter("принято")}
         >
-          Принято
+          <span className="filter-icon">🎉</span> Принято
         </button>
         <button 
           className={`filter-button ${selectedFilter === "отклонено" ? "active" : ""}`}
           onClick={() => setSelectedFilter("отклонено")}
         >
-          Отклонено
+          <span className="filter-icon">❌</span> Отказано
         </button>
       </div>
 
-      {filteredApplications.length > 0 ? (
+      {filteredApplications.length === 0 ? (
+        <div className="no-applications">
+          По выбранному фильтру заявок не найдено
+        </div>
+      ) : (
         <div className="applications-list">
           {filteredApplications.map((application) => (
             <div 
@@ -252,10 +269,6 @@ const ApplicationDetails = () => {
               )}
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="no-applications">
-          <p>У вас пока нет заявок на вакансии</p>
         </div>
       )}
     </div>

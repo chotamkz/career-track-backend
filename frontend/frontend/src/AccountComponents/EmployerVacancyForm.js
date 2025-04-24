@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import "./EmployerVacancyForm.css";
 import { apiClient, API_ENDPOINTS, handleApiError } from "../services/api";
+import RichTextEditor from "../components/RichTextEditor";
+import "../components/RichTextEditor.css";
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+// Библиотека установлена: npm install react-quill-new
 
 const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     requirements: "",
-    responsibilities: "",
-    salary: "",
     location: "",
-    employmentType: "FULL_TIME",
-    experienceLevel: "ENTRY",
+    salary_from: "",
+    salary_to: "",
+    salary_currency: "KZT",
+    salary_gross: true,
+    work_schedule: "Полный день",
+    experience: "Нет опыта",
     skills: []
   });
   
@@ -19,6 +26,22 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Фиксированные значения для выпадающих списков
+  const experienceOptions = [
+    "Нет опыта",
+    "От 1 года до 3 лет",
+    "От 3 до 6 лет"
+  ];
+
+  const scheduleOptions = [
+    "Полный день",
+    "Удаленная работа",
+    "Сменный график",
+    "Гибкий график"
+  ];
+
+  const currencyOptions = ["KZT", "USD", "EUR", "RUB"];
 
   useEffect(() => {
     // Если передан ID вакансии, значит режим редактирования
@@ -37,11 +60,13 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
       let skills = response.data.skills;
       if (typeof skills === 'string') {
         skills = skills.split(',').map(skill => skill.trim());
+      } else if (!Array.isArray(skills)) {
+        skills = [];
       }
       
       setFormData({
         ...response.data,
-        skills: skills || []
+        skills: skills
       });
       
     } catch (error) {
@@ -52,10 +77,19 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Обработчик для редактора текста
+  const handleEditorChange = (value, fieldName) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value
     }));
   };
 
@@ -86,7 +120,8 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
       // Подготовка данных для отправки
       const dataToSend = {
         ...formData,
-        skills: formData.skills.join(', ')
+        salary_from: formData.salary_from ? Number(formData.salary_from) : undefined,
+        salary_to: formData.salary_to ? Number(formData.salary_to) : undefined
       };
       
       let response;
@@ -140,108 +175,133 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
             value={formData.title}
             onChange={handleInputChange}
             className="employer-vacancy-form__input"
+            placeholder="Введите название вакансии"
             required
           />
         </div>
         
         <div className="employer-vacancy-form__group">
           <label className="employer-vacancy-form__label">Описание вакансии</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className="employer-vacancy-form__textarea"
-            required
-          />
+          <div className="employer-vacancy-form__rich-editor-container">
+            <RichTextEditor 
+              value={formData.description}
+              onChange={(value) => handleEditorChange(value, 'description')}
+              placeholder="Подробно опишите вакансию, обязанности и условия работы"
+            />
+          </div>
         </div>
         
         <div className="employer-vacancy-form__group">
-          <label className="employer-vacancy-form__label">Требования</label>
+          <label className="employer-vacancy-form__label">Требования к кандидату</label>
           <textarea
             name="requirements"
             value={formData.requirements}
             onChange={handleInputChange}
             className="employer-vacancy-form__textarea"
+            placeholder="Укажите необходимые навыки, образование, опыт работы"
           />
         </div>
         
         <div className="employer-vacancy-form__group">
-          <label className="employer-vacancy-form__label">Обязанности</label>
-          <textarea
-            name="responsibilities"
-            value={formData.responsibilities}
+          <label className="employer-vacancy-form__label">Место работы</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
             onChange={handleInputChange}
-            className="employer-vacancy-form__textarea"
+            className="employer-vacancy-form__input"
+            placeholder="Например: Алматы, Астана, Каскелен, Удаленно"
+            required
           />
         </div>
-        
-        <div className="employer-vacancy-form__row">
-          <div className="employer-vacancy-form__group employer-vacancy-form__group--half">
-            <label className="employer-vacancy-form__label">Зарплата</label>
-            <input
-              type="text"
-              name="salary"
-              value={formData.salary}
-              onChange={handleInputChange}
-              className="employer-vacancy-form__input"
-              placeholder="например: 80 000 - 120 000 руб."
-            />
-          </div>
-          
-          <div className="employer-vacancy-form__group employer-vacancy-form__group--half">
-            <label className="employer-vacancy-form__label">Местоположение</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              className="employer-vacancy-form__input"
-              placeholder="например: Москва или Удаленно"
-            />
+                
+        <div className="employer-vacancy-form__group">
+          <label className="employer-vacancy-form__label">Зарплата</label>
+          <div className="employer-vacancy-form__salary">
+            <div className="employer-vacancy-form__salary-range">
+              <input
+                type="number"
+                name="salary_from"
+                value={formData.salary_from}
+                onChange={handleInputChange}
+                className="employer-vacancy-form__input employer-vacancy-form__input--salary"
+                placeholder="От"
+              />
+              <span className="employer-vacancy-form__salary-separator">—</span>
+              <input
+                type="number"
+                name="salary_to"
+                value={formData.salary_to}
+                onChange={handleInputChange}
+                className="employer-vacancy-form__input employer-vacancy-form__input--salary"
+                placeholder="До"
+              />
+              <select
+                name="salary_currency"
+                value={formData.salary_currency}
+                onChange={handleInputChange}
+                className="employer-vacancy-form__select employer-vacancy-form__select--currency"
+              >
+                {currencyOptions.map(currency => (
+                  <option key={currency} value={currency}>{currency}</option>
+                ))}
+              </select>
+            </div>
+            <div className="employer-vacancy-form__salary-gross">
+              <input
+                type="checkbox"
+                id="salaryGross"
+                name="salary_gross"
+                checked={formData.salary_gross}
+                onChange={handleInputChange}
+                className="employer-vacancy-form__checkbox"
+              />
+              <label htmlFor="salaryGross" className="employer-vacancy-form__checkbox-label">
+                До вычета налогов
+              </label>
+            </div>
           </div>
         </div>
         
         <div className="employer-vacancy-form__row">
           <div className="employer-vacancy-form__group employer-vacancy-form__group--half">
-            <label className="employer-vacancy-form__label">Тип занятости</label>
+            <label className="employer-vacancy-form__label">График работы</label>
             <select
-              name="employmentType"
-              value={formData.employmentType}
+              name="work_schedule"
+              value={formData.work_schedule}
               onChange={handleInputChange}
               className="employer-vacancy-form__select"
             >
-              <option value="FULL_TIME">Полная занятость</option>
-              <option value="PART_TIME">Частичная занятость</option>
-              <option value="CONTRACT">Контракт</option>
-              <option value="INTERNSHIP">Стажировка</option>
+              {scheduleOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
             </select>
           </div>
           
           <div className="employer-vacancy-form__group employer-vacancy-form__group--half">
-            <label className="employer-vacancy-form__label">Уровень опыта</label>
+            <label className="employer-vacancy-form__label">Требуемый опыт</label>
             <select
-              name="experienceLevel"
-              value={formData.experienceLevel}
+              name="experience"
+              value={formData.experience}
               onChange={handleInputChange}
               className="employer-vacancy-form__select"
             >
-              <option value="ENTRY">Начальный (Junior)</option>
-              <option value="MID">Средний (Middle)</option>
-              <option value="SENIOR">Высокий (Senior)</option>
-              <option value="LEAD">Ведущий (Lead)</option>
+              {experienceOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
             </select>
           </div>
         </div>
         
         <div className="employer-vacancy-form__group">
-          <label className="employer-vacancy-form__label">Навыки и технологии</label>
+          <label className="employer-vacancy-form__label">Ключевые навыки</label>
           <div className="employer-vacancy-form__skills-input">
             <input
               type="text"
               value={skillInput}
               onChange={(e) => setSkillInput(e.target.value)}
               className="employer-vacancy-form__input employer-vacancy-form__input--skill"
-              placeholder="Добавьте навык и нажмите кнопку"
+              placeholder="Введите навык и нажмите 'Добавить'"
             />
             <button
               type="button"
@@ -260,6 +320,7 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
                   type="button"
                   onClick={() => handleRemoveSkill(skill)}
                   className="employer-vacancy-form__remove-skill-btn"
+                  aria-label="Удалить навык"
                 >
                   ×
                 </button>
@@ -281,7 +342,7 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
             className="employer-vacancy-form__button employer-vacancy-form__button--submit"
             disabled={loading}
           >
-            {loading ? "Сохранение..." : isEditing ? "Обновить вакансию" : "Создать вакансию"}
+            {loading ? "Сохранение..." : isEditing ? "Сохранить изменения" : "Опубликовать вакансию"}
           </button>
         </div>
       </form>

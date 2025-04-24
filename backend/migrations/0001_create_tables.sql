@@ -40,12 +40,14 @@ CREATE TABLE IF NOT EXISTS vacancies (
     salary_to NUMERIC,
     salary_currency TEXT,
     salary_gross BOOLEAN,
-    vacancy_url TEXT,
+    vacancy_url TEXT DEFAULT '',
     work_schedule TEXT,
     experience TEXT
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url ON vacancies(vacancy_url);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url_not_null
+    ON vacancies(vacancy_url)
+    WHERE vacancy_url IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS applications (
     id SERIAL PRIMARY KEY,

@@ -151,6 +151,11 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 		return
 	}
 
+	var urlNull sql.NullString
+	if input.VacancyURL != "" {
+		urlNull = sql.NullString{String: input.VacancyURL, Valid: true}
+	}
+
 	var vacancy model.Vacancy
 	vacancy.Title = input.Title
 	vacancy.Description = input.Description
@@ -160,7 +165,7 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	vacancy.SalaryTo = input.SalaryTo
 	vacancy.SalaryCurrency = input.SalaryCurrency
 	vacancy.SalaryGross = input.SalaryGross
-	vacancy.VacancyURL = input.VacancyURL
+	vacancy.VacancyURL = urlNull
 	vacancy.WorkSchedule = input.WorkSchedule
 	vacancy.Experience = input.Experience
 	vacancy.PostedDate = time.Now()
@@ -190,6 +195,36 @@ func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, vacancy)
+}
+
+func (vh *VacancyHandler) DeleteVacancyHandler(c *gin.Context) {
+	vid, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vacancy id"})
+		return
+	}
+	vacancyID := uint(vid)
+
+	empVal, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	employerID := empVal.(uint)
+
+	err = vh.vacancyUsecase.DeleteVacancy(employerID, vacancyID)
+	if err != nil {
+		switch err {
+		case usecase.ErrNotVacancyOwner:
+			c.JSON(http.StatusForbidden, gin.H{"error": "You do not own this vacancy"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete vacancy"})
+			vh.logger.Errorf("DeleteVacancy failed: %v", err)
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (vh *VacancyHandler) GetEmployerVacanciesHandler(c *gin.Context) {

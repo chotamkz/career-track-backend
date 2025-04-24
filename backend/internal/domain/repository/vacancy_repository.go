@@ -12,4 +12,5 @@ type VacancyRepository interface {
 	GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error)
 	CountVacancies() (int, error)
 	GetVacanciesByEmployerID(employerID uint) ([]model.Vacancy, error)
+	DeleteVacancyByID(vacancyID uint) error
 }

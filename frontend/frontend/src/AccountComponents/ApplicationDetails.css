@@ -30,38 +30,46 @@
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.filter-icon {
+  font-size: 16px;
 }
 
 .filter-button:hover {
   background-color: #f1f1f1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .filter-button.active {
-  background-color: #007bff;
+  background-color: #4f46e5;
   color: white;
-  border-color: #007bff;
+  border-color: #4f46e5;
 }
 
 .applications-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 15px;
 }
 
 .application-card {
-  padding: 15px;
+  padding: 16px;
   border: 1px solid #eee;
   border-radius: 8px;
-  background-color: #f9f9f9;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background-color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   position: relative;
 }
 
 .application-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  background-color: #f5f5f5;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .application-card:after {
@@ -70,7 +78,7 @@
   right: 15px;
   bottom: 15px;
   font-size: 18px;
-  color: #007bff;
+  color: #4f46e5;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -82,77 +90,115 @@
 .application-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  margin-bottom: 12px;
 }
 
 .application-job-title {
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
   margin: 0;
   color: #333;
+  padding-right: 20px;
 }
 
 .application-status {
-  padding: 5px 10px;
-  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-blue {
+  background-color: #e0f2fe;
+  color: #0c4a6e;
+}
+
+.status-yellow {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-indigo {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.status-purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.status-teal {
+  background-color: #ccfbf1;
+  color: #115e59;
 }
 
 .status-pending {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #fff7ed;
+  color: #9a3412;
 }
 
 .status-accepted {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #dcfce7;
+  color: #14532d;
 }
 
 .status-rejected {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .status-other {
-  background-color: #e2e3e5;
-  color: #383d41;
+  background-color: #f3f4f6;
+  color: #374151;
 }
 
 .application-company-info {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
-  color: #666;
+  color: #555;
   font-size: 14px;
 }
 
 .application-location {
-  color: #666;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .application-date {
-  font-size: 14px;
-  color: #888;
+  font-size: 13px;
+  color: #777;
   margin-bottom: 5px;
 }
 
 .application-feedback {
   margin-top: 15px;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  border-left: 3px solid #4f46e5;
 }
 
 .application-feedback h4 {
-  margin: 0 0 5px 0;
-  font-size: 16px;
+  margin: 0 0 8px 0;
+  font-size: 14px;
   color: #333;
+  font-weight: 600;
 }
 
 .application-feedback p {
   margin: 0;
   color: #555;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .application-cover-letter {
@@ -161,44 +207,81 @@
 
 .application-cover-letter summary {
   cursor: pointer;
-  color: #007bff;
-  font-weight: bold;
+  color: #4f46e5;
+  font-weight: 500;
+  padding: 5px 0;
+  outline: none;
+}
+
+.application-cover-letter summary:hover {
+  text-decoration: underline;
 }
 
 .application-cover-letter p {
   margin: 10px 0 0 0;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
   color: #555;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .application-loading {
   text-align: center;
-  padding: 20px;
+  padding: 40px;
   color: #666;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.application-loading:after {
+  content: "";
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .application-error {
   text-align: center;
   padding: 15px;
-  background-color: #f8d7da;
-  color: #721c24;
-  border-radius: 5px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-radius: 6px;
   margin-bottom: 20px;
+  border-left: 4px solid #991b1b;
 }
 
 .no-applications {
   text-align: center;
   padding: 30px;
-  color: #888;
+  color: #6b7280;
   font-style: italic;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
 }
 
 /* Медиа-запросы для адаптивности */
 @media (max-width: 768px) {
   .application-details-container {
     padding: 15px;
+  }
+  
+  .applications-list {
+    grid-template-columns: 1fr;
   }
   
   .application-header {
@@ -220,5 +303,6 @@
   
   .filter-button {
     width: 100%;
+    justify-content: center;
   }
 } 

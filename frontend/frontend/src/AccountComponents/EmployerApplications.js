@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./EmployerApplications.css";
 import { apiClient, API_ENDPOINTS, handleApiError } from "../services/api";
+import { useParams } from 'react-router-dom';
+import { applicationService } from '../services/api.js';
 
 const EmployerApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -15,6 +17,19 @@ const EmployerApplications = () => {
   const [vacancies, setVacancies] = useState([]);
   const ITEMS_PER_PAGE = 10;
   const [selectedVacancyId, setSelectedVacancyId] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Константа с фиксированными статусами заявок
+  const APPLICATION_STATUSES = [
+    { value: 'APPLIED', label: 'Новая заявка', icon: '📋', color: 'blue' },
+    { value: 'CV_SCREENING', label: 'Рассмотрение резюме', icon: '👀', color: 'yellow' },
+    { value: 'INTERVIEW_SCHEDULED', label: 'Собеседование назначено', icon: '📅', color: 'indigo' },
+    { value: 'INTERVIEW_COMPLETED', label: 'Собеседование проведено', icon: '✓', color: 'purple' },
+    { value: 'OFFER_EXTENDED', label: 'Предложение отправлено', icon: '📨', color: 'teal' },
+    { value: 'ACCEPTED', label: 'Кандидат принят', icon: '🎉', color: 'green' },
+    { value: 'REJECTED', label: 'Кандидат отклонен', icon: '❌', color: 'red' },
+  ];
 
   useEffect(() => {
     fetchVacancies();
@@ -147,27 +162,52 @@ const EmployerApplications = () => {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      // Используем правильный эндпоинт из API_ENDPOINTS
-      await apiClient.put(
-        API_ENDPOINTS.APPLICATIONS.UPDATE_STATUS(selectedVacancyId, applicationId), 
-        { status: newStatus }
-      );
+      setIsLoading(true);
       
-      // Обновляем статус в локальном состоянии
-      setAllApplications(prevApps => 
-        prevApps.map(app => 
-          app.id === applicationId ? { ...app, status: newStatus } : app
-        )
-      );
+      // Находим текущий статус для отображения в уведомлении
+      const oldStatus = applications.find(app => app.id === applicationId)?.status;
+      const newStatusLabel = APPLICATION_STATUSES.find(s => s.value === newStatus)?.label;
+
+      await applicationService.updateApplicationStatus(null, applicationId, newStatus);
       
-      // Если открыта детальная информация о заявке, обновляем и её
+      // Обновляем статус заявки в локальном состоянии
+      setApplications(applications.map(app => 
+        app.id === applicationId ? { ...app, status: newStatus } : app
+      ));
+      
+      // Также обновляем статус в общем списке заявок
+      setAllApplications(allApplications.map(app => 
+        app.id === applicationId ? { ...app, status: newStatus } : app
+      ));
+      
+      // Обновляем статус в выбранной заявке, если она открыта
       if (selectedApplication && selectedApplication.id === applicationId) {
         setSelectedApplication(prev => ({ ...prev, status: newStatus }));
       }
       
+      // Показываем уведомление об успешном обновлении
+      setNotification({
+        visible: true,
+        message: `Статус изменен на "${newStatusLabel}"`,
+        type: "success"
+      });
+      
+      // Скрываем уведомление через 3 секунды
+      setTimeout(() => {
+        setNotification({ visible: false, message: "", type: "" });
+      }, 3000);
     } catch (error) {
-      console.error("Error updating application status:", error);
-      setError(handleApiError(error).error || "Не удалось обновить статус заявки");
+      console.error("Ошибка при обновлении статуса заявки:", error);
+      setNotification({
+        visible: true,
+        message: `Ошибка при обновлении статуса: ${error.message || "Неизвестная ошибка"}`,
+        type: "error"
+      });
+      setTimeout(() => {
+        setNotification({ visible: false, message: "", type: "" });
+      }, 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -184,26 +224,38 @@ const EmployerApplications = () => {
     setCurrentPage(1); // Сбрасываем на первую страницу при изменении фильтра
   };
 
+  const getStatusText = (status) => {
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status);
+    return statusObj ? statusObj.label : status;
+  };
+
   const getStatusClassName = (status) => {
-    switch(status) {
-      case "PENDING":
-      case "APPLIED": return "employer-applications__status--pending";
-      case "ACCEPTED": return "employer-applications__status--accepted";
-      case "REJECTED": return "employer-applications__status--rejected";
-      case "INTERVIEW": return "employer-applications__status--interview";
-      default: return "";
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status);
+    const color = statusObj ? statusObj.color : 'gray';
+    
+    switch (color) {
+      case 'blue':
+        return 'bg-blue-100 text-blue-800';
+      case 'yellow':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'indigo':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'purple':
+        return 'bg-purple-100 text-purple-800';
+      case 'teal':
+        return 'bg-teal-100 text-teal-800';
+      case 'green':
+        return 'bg-green-100 text-green-800';
+      case 'red':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getStatusText = (status) => {
-    switch(status) {
-      case "PENDING":
-      case "APPLIED": return "На рассмотрении";
-      case "ACCEPTED": return "Принято";
-      case "REJECTED": return "Отклонено";
-      case "INTERVIEW": return "Собеседование";
-      default: return status;
-    }
+  const getStatusIcon = (status) => {
+    const statusObj = APPLICATION_STATUSES.find(s => s.value === status);
+    return statusObj ? statusObj.icon : '❓';
   };
 
   const formatDate = (dateString) => {
@@ -232,6 +284,12 @@ const EmployerApplications = () => {
     <div className="employer-applications">
       <h2 className="employer-applications__title">Заявки от соискателей</h2>
       
+      {notification && notification.visible && (
+        <div className={`notification notification--${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+      
       {error && (
         <div className="employer-applications__error">{error}</div>
       )}
@@ -245,11 +303,11 @@ const EmployerApplications = () => {
             onChange={handleFilterChange}
           >
             <option value="ALL">Все заявки</option>
-            <option value="PENDING">На рассмотрении</option>
-            <option value="APPLIED">Новые заявки</option>
-            <option value="INTERVIEW">Собеседование</option>
-            <option value="ACCEPTED">Принятые</option>
-            <option value="REJECTED">Отклоненные</option>
+            {APPLICATION_STATUSES.map(status => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
           </select>
         </div>
         
@@ -287,7 +345,7 @@ const EmployerApplications = () => {
                     {application.vacancyTitle}
                   </h3>
                   <span className={`employer-applications__status ${getStatusClassName(application.status)}`}>
-                    {getStatusText(application.status)}
+                    {getStatusIcon(application.status)} {getStatusText(application.status)}
                   </span>
                 </div>
                 
@@ -361,9 +419,21 @@ const EmployerApplications = () => {
               
               <div className="employer-applications__details-row">
                 <span className="employer-applications__details-label">Статус:</span>
-                <span className={`employer-applications__details-status ${getStatusClassName(selectedApplication.status)}`}>
-                  {getStatusText(selectedApplication.status)}
-                </span>
+                <div className="employer-applications__status-container">
+                  <select 
+                    className={`employer-applications__status-select ${getStatusClassName(selectedApplication.status)}`}
+                    value={selectedApplication.status}
+                    onChange={(e) => handleStatusChange(selectedApplication.id, e.target.value)}
+                    disabled={isLoading}
+                  >
+                    {APPLICATION_STATUSES.map(status => (
+                      <option key={status.value} value={status.value}>
+                        {status.icon} {status.label}
+                      </option>
+                    ))}
+                  </select>
+                  {isLoading && <span className="employer-applications__loading-indicator">⏳</span>}
+                </div>
               </div>
               
               {selectedApplication.resume && (
@@ -392,25 +462,25 @@ const EmployerApplications = () => {
               <button 
                 className="employer-applications__action-btn employer-applications__action-btn--reject"
                 onClick={() => handleStatusChange(selectedApplication.id, "REJECTED")}
-                disabled={selectedApplication.status === "REJECTED"}
+                disabled={selectedApplication.status === "REJECTED" || isLoading}
               >
-                Отклонить
+                ❌ Отклонить кандидата
               </button>
               
               <button 
                 className="employer-applications__action-btn employer-applications__action-btn--interview"
-                onClick={() => handleStatusChange(selectedApplication.id, "INTERVIEW")}
-                disabled={selectedApplication.status === "INTERVIEW"}
+                onClick={() => handleStatusChange(selectedApplication.id, "INTERVIEW_SCHEDULED")}
+                disabled={selectedApplication.status === "INTERVIEW_SCHEDULED" || isLoading}
               >
-                Пригласить на собеседование
+                📅 Назначить собеседование
               </button>
               
               <button 
                 className="employer-applications__action-btn employer-applications__action-btn--accept"
                 onClick={() => handleStatusChange(selectedApplication.id, "ACCEPTED")}
-                disabled={selectedApplication.status === "ACCEPTED"}
+                disabled={selectedApplication.status === "ACCEPTED" || isLoading}
               >
-                Принять
+                🎉 Принять кандидата
               </button>
             </div>
           </div>

@@ -64,7 +64,7 @@ export const API_ENDPOINTS = {
   APPLICATIONS: {
     GET_MY_APPLICATIONS: '/applications/me',
     GET_VACANCY_APPLICATIONS: (vacancyId) => `/vacancies/${vacancyId}/applications`,
-    UPDATE_STATUS: (vacancyId, applicationId) => `/vacancies/${vacancyId}/applications/${applicationId}/status`,
+    UPDATE_STATUS: (vacancyId, applicationId) => `/vacancies/${vacancyId}/applications/${applicationId}`,
   },
   VACANCIES: {
     GET_ALL: '/vacancies',
@@ -132,6 +132,97 @@ export const vacancyService = {
       return handleApiError(error);
     }
   },
+
+  /**
+   * Создать новую вакансию
+   * @param {Object} vacancyData - Данные вакансии
+   * @param {string} vacancyData.title - Название вакансии
+   * @param {string} vacancyData.description - Описание вакансии
+   * @param {string} vacancyData.requirements - Требования к кандидатам
+   * @param {string} vacancyData.location - Местоположение работы
+   * @param {number} [vacancyData.salary_from] - Минимальная зарплата
+   * @param {number} [vacancyData.salary_to] - Максимальная зарплата
+   * @param {string} [vacancyData.salary_currency] - Валюта зарплаты (напр., "KZT")
+   * @param {boolean} [vacancyData.salary_gross] - Зарплата указана до вычета налогов
+   * @param {string} [vacancyData.vacancy_url] - URL вакансии
+   * @param {string} [vacancyData.work_schedule] - График работы
+   * @param {string} [vacancyData.experience] - Требуемый опыт работы
+   * @param {string[]} [vacancyData.skills] - Массив требуемых навыков
+   * @returns {Promise<Object>} Созданная вакансия
+   */
+  createVacancy: async (vacancyData) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.VACANCIES.CREATE, vacancyData);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  },
+
+  /**
+   * Обновить существующую вакансию
+   * @param {string} id - Идентификатор вакансии
+   * @param {Object} vacancyData - Обновленные данные вакансии
+   * @returns {Promise<Object>} Обновленная вакансия
+   */
+  updateVacancy: async (id, vacancyData) => {
+    try {
+      const response = await apiClient.put(API_ENDPOINTS.VACANCIES.UPDATE(id), vacancyData);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  },
+
+  /**
+   * Удалить вакансию
+   * @param {string} id - Идентификатор вакансии
+   * @returns {Promise<Object>} Результат удаления с информацией о статусе
+   * 
+   * Возможные коды ответов:
+   * - 204 No Content — успешно удалено
+   * - 403 Forbidden — вакансия не принадлежит этому работодателю
+   * - 400 Bad Request — некорректный id
+   * - 401 Unauthorized — не передан или невалиден токен
+   */
+  deleteVacancy: async (id) => {
+    try {
+      const response = await apiClient.delete(API_ENDPOINTS.VACANCIES.DELETE(id));
+      return { 
+        success: true, 
+        status: response.status,
+        message: 'Вакансия успешно удалена'
+      };
+    } catch (error) {
+      // Обработка конкретных статус-кодов ошибок
+      if (error.response) {
+        const status = error.response.status;
+        let errorMessage = '';
+        
+        switch(status) {
+          case 400:
+            errorMessage = 'Некорректный идентификатор вакансии';
+            break;
+          case 401:
+            errorMessage = 'Необходима авторизация. Возможно, срок действия вашей сессии истек';
+            break;
+          case 403:
+            errorMessage = 'У вас нет прав на удаление этой вакансии';
+            break;
+          default:
+            errorMessage = error.response.data?.message || 'Ошибка при удалении вакансии';
+        }
+        
+        return { 
+          success: false, 
+          status: status, 
+          error: errorMessage 
+        };
+      }
+      
+      return handleApiError(error);
+    }
+  }
 };
 
 // Сервисные функции для работы с хакатонами
@@ -178,16 +269,35 @@ export const applicationService = {
     }
   },
   
-  updateApplicationStatus: async (vacancyId, applicationId, status) => {
+  /**
+   * Получить заявки на указанную вакансию
+   * @param {string} vacancyId Идентификатор вакансии
+   * @returns {Promise<Array>} Массив заявок
+   */
+  getApplicationsForVacancy: async (vacancyId) => {
     try {
-      const response = await apiClient.put(
-        API_ENDPOINTS.APPLICATIONS.UPDATE_STATUS(vacancyId, applicationId), 
-        { status }
+      const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES}/${vacancyId}/applications`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+  
+  /**
+   * Обновить статус заявки
+   * @param {string} applicationId Идентификатор заявки
+   * @param {string} newStatus Новый статус заявки ('APPLIED', 'CV_SCREENING', 'INTERVIEW_SCHEDULED', 'INTERVIEW_COMPLETED', 'OFFER_EXTENDED', 'ACCEPTED', 'REJECTED')
+   * @returns {Promise<Object>} Обновленная заявка
+   */
+  updateApplicationStatus: async (vacancyId, applicationId, newStatus) => {
+    try {
+      const response = await apiClient.patch(
+        `/vacancies/applications/${applicationId}`,
+        { newStatus }
       );
       return response.data;
     } catch (error) {
-      console.error('Error in updateApplicationStatus:', error);
-      return handleApiError(error);
+      throw handleApiError(error);
     }
   }
 };

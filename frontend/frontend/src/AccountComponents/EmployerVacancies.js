@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EmployerVacancies.css';
-import { apiClient, API_ENDPOINTS, handleApiError } from '../services/api';
+import { apiClient, API_ENDPOINTS, handleApiError, vacancyService } from '../services/api';
 import EmployerVacancyForm from './EmployerVacancyForm';
 
 const EmployerVacancies = () => {
@@ -14,6 +14,7 @@ const EmployerVacancies = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   
   useEffect(() => {
     fetchVacancies();
@@ -102,13 +103,32 @@ const EmployerVacancies = () => {
     if (!confirmDelete) return;
     
     try {
-      await apiClient.delete(API_ENDPOINTS.VACANCIES.DELETE(confirmDelete));
-      setVacancies(prevVacancies => 
-        prevVacancies.filter(vacancy => vacancy.id !== confirmDelete)
-      );
-      setConfirmDelete(null);
+      setDeleting(true);
+      setError(null);
+      
+      const result = await vacancyService.deleteVacancy(confirmDelete);
+      
+      if (result.success) {
+        // Успешное удаление (204 No Content)
+        setVacancies(prevVacancies => 
+          prevVacancies.filter(vacancy => vacancy.id !== confirmDelete)
+        );
+        setConfirmDelete(null);
+      } else {
+        // Обработка ошибок удаления
+        setError(result.error || "Не удалось удалить вакансию");
+        
+        // При определенных ошибках (401 - истек токен) может потребоваться перенаправление
+        if (result.status === 401) {
+          // Здесь можно добавить редирект на страницу входа при необходимости
+          // window.location.href = '/auth/employer';
+        }
+      }
     } catch (error) {
-      setError(handleApiError(error).error || "Не удалось удалить вакансию");
+      setError("Произошла ошибка при удалении вакансии");
+      console.error('Error deleting vacancy:', error);
+    } finally {
+      setDeleting(false);
     }
   };
   
@@ -328,18 +348,26 @@ const EmployerVacancies = () => {
             <p className="employer-vacancies__confirm-message">
               Вы уверены, что хотите удалить эту вакансию? Это действие нельзя отменить.
             </p>
+            {error && (
+              <div className="employer-vacancies__confirm-error">{error}</div>
+            )}
             <div className="employer-vacancies__confirm-actions">
               <button 
                 className="employer-vacancies__confirm-btn employer-vacancies__confirm-btn--cancel"
-                onClick={() => setConfirmDelete(null)}
+                onClick={() => {
+                  setConfirmDelete(null);
+                  setError(null);
+                }}
+                disabled={deleting}
               >
                 Отмена
               </button>
               <button 
                 className="employer-vacancies__confirm-btn employer-vacancies__confirm-btn--delete"
                 onClick={confirmDeleteVacancy}
+                disabled={deleting}
               >
-                Удалить
+                {deleting ? "Удаление..." : "Удалить"}
               </button>
             </div>
           </div>
