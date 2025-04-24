@@ -163,7 +163,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       
       setVacancies(data.vacancies || []);
       setTotalCount(data.totalCount || 0);
-      
+
       if (hasKeywords && hasKeywordFilter) {
         const keywords = filters.keywords.toLowerCase().trim();
         console.log("Пример вакансии:", data.vacancies[0]);
@@ -262,8 +262,8 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
             <div key={vacancy.id} className="vacancy-card" onClick={() => handleVacancyClick(vacancy.id)}>
               {searchFilters.ml_skills && vacancy.match_percentage !== undefined && (
                 <div className="match-indicator">
-                  <div className={`match-circle ${getMatchClass(vacancy.match_percentage)}`}>
-                    {vacancy.match_percentage}%
+                <div className={`match-circle ${getMatchClass(vacancy.match_percentage)}`}>
+                  {vacancy.match_percentage}%
                   </div>
                   <span className={`match-text ${getMatchClass(vacancy.match_percentage)}`}>
                     {getMatchText(vacancy.match_percentage)}
@@ -275,9 +275,9 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
               <div className="vacancy-details">
                 <p className="salary">
                   {vacancy.salary_from && vacancy.salary_to
-                    ? `${vacancy.salary_from} - ${vacancy.salary_to} ${vacancy.salary_currency}`
-                    : "Зарплата не указана"}
-                </p>
+                  ? `${vacancy.salary_from} - ${vacancy.salary_to} ${vacancy.salary_currency}`
+                  : "Зарплата не указана"}
+              </p>
                 
                 <div className="vacancy-meta-info">
                   {vacancy.location && (
@@ -401,8 +401,8 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
                 onClick={() => goToPage(page)} 
                 className={`pagination-btn ${currentPage === page ? "active" : ""} ${isMobileHidden ? "mobile-hide" : ""}`}
               >
-                {page}
-              </button>
+              {page}
+            </button>
             );
           })}
 

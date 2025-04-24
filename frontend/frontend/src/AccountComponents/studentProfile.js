@@ -206,7 +206,7 @@ const StudentProfile = () => {
               </a>
             </div>
           ) : (
-            <p>Загрузите своё резюме</p>
+          <p>Загрузите своё резюме</p>
           )}
           <input 
             type="file" 
@@ -243,7 +243,7 @@ const StudentProfile = () => {
               </div>
             ))
           ) : (
-            <div className="history-box">В настоящий момент у вас нет активных заявок</div>
+        <div className="history-box">В настоящий момент у вас нет активных заявок</div>
           )}
         </div>
       </div>

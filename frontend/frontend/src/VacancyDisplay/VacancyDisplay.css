@@ -92,12 +92,12 @@
     box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.15);
     outline: none;
   }
-  
+
   .filter-section input::placeholder {
     padding-left: 2px;
     transition: opacity 0.2s;
   }
-  
+
   .filter-section input:focus::placeholder {
     opacity: 0.5;
   }
@@ -273,7 +273,7 @@
     color: #718096;
     font-size: 13px;
   }
-
+  
   .vacancy-card .location::before {
     content: "📍";
     margin-right: 6px;
@@ -354,7 +354,7 @@
     box-shadow: none;
     outline: none;
     border-bottom: none;
-  }
+    }
   
   .apply-btn:hover {
     background-color: #0062bb;

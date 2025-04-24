@@ -1,0 +1,223 @@
+/* Контейнер формы вакансии */
+.employer-vacancy-form {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Заголовок формы */
+.employer-vacancy-form__title {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Форма */
+.employer-vacancy-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Группа формы */
+.employer-vacancy-form__group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+/* Ряд с элементами в строку */
+.employer-vacancy-form__row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+/* Половинный размер для элементов в ряду */
+.employer-vacancy-form__group--half {
+  flex: 1;
+}
+
+/* Метки полей */
+.employer-vacancy-form__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+/* Текстовые поля ввода */
+.employer-vacancy-form__input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+}
+
+.employer-vacancy-form__input:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Textarea */
+.employer-vacancy-form__textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  min-height: 100px;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.employer-vacancy-form__textarea:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Select */
+.employer-vacancy-form__select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.employer-vacancy-form__select:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+/* Секция с навыками */
+.employer-vacancy-form__skills-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.employer-vacancy-form__input--skill {
+  flex: 1;
+}
+
+.employer-vacancy-form__add-skill-btn {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.employer-vacancy-form__add-skill-btn:hover {
+  background-color: #003d82;
+}
+
+/* Список навыков */
+.employer-vacancy-form__skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* Тег навыка */
+.employer-vacancy-form__skill-tag {
+  background-color: #e9f0f7;
+  border: 1px solid #c5d6e8;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Кнопка удаления навыка */
+.employer-vacancy-form__remove-skill-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.employer-vacancy-form__remove-skill-btn:hover {
+  color: #ff3b30;
+}
+
+/* Секция с кнопками действий */
+.employer-vacancy-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Кнопки */
+.employer-vacancy-form__button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s, opacity 0.3s;
+}
+
+.employer-vacancy-form__button--cancel {
+  background-color: #f2f2f2;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.employer-vacancy-form__button--cancel:hover {
+  background-color: #e5e5e5;
+}
+
+.employer-vacancy-form__button--submit {
+  background-color: #0056b3;
+  color: white;
+  border: none;
+}
+
+.employer-vacancy-form__button--submit:hover {
+  background-color: #003d82;
+}
+
+.employer-vacancy-form__button--submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Сообщение об ошибке */
+.employer-vacancy-form__error {
+  background-color: #fff0f0;
+  color: #d32f2f;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border-left: 3px solid #d32f2f;
+}
+
+/* Индикатор загрузки */
+.employer-vacancy-form__loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+} 

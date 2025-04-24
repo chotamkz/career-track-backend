@@ -1,30 +1,40 @@
 .employer-account-container {
-    width: 80%;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
+    width: 90%;
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 .employer-profile {
-    padding: 20px;
+    padding: 25px;
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
 }
 
 .profile-header {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    align-items: flex-start;
+    gap: 30px;
 }
 
 .company-logo {
-    width: 80px;
-    height: 80px;
-    border-radius: 5px;
-    object-fit: contain;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    transition: transform 0.3s ease;
+}
+
+.company-logo:hover {
+    transform: scale(1.05);
 }
 
 .company-info {
@@ -32,98 +42,158 @@
 }
 
 .company-info h2 {
-    margin-bottom: 8px;
-    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+    color: #263238;
+    font-weight: 600;
 }
 
 .company-info .email {
-    color: #666;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
+    color: #607d8b;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.company-info .email::before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23607d8b"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
+    background-repeat: no-repeat;
+    margin-right: 6px;
 }
 
 .company-info .description {
-    margin-bottom: 15px;
-    font-size: 0.95rem;
-    color: #444;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+    color: #455a64;
+    line-height: 1.6;
 }
 
 .tabs {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 2px;
 }
 
 .tab-button {
-    padding: 10px 15px;
+    padding: 12px 20px;
     border: none;
-    background-color: #f5f5f5;
-    color: #333;
-    border-radius: 5px;
+    background-color: transparent;
+    color: #607d8b;
+    font-weight: 500;
+    font-size: 1.05rem;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 .tab-button.active {
+    color: #0056b3;
+    background-color: transparent;
+}
+
+.tab-button.active::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
     background-color: #0056b3;
-    color: white;
+    border-radius: 3px 3px 0 0;
+}
+
+.tab-button:hover:not(.active) {
+    color: #0056b3;
+    background-color: rgba(0, 86, 179, 0.05);
 }
 
 .company-overview, .company-vacancies {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 25px;
+    padding: 25px;
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .company-overview h3, .company-vacancies h3 {
-    margin-bottom: 15px;
-    color: #333;
+    margin-bottom: 20px;
+    color: #263238;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
 }
 
 .company-overview p {
-    margin: 8px 0;
-    line-height: 1.5;
+    margin: 12px 0;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+}
+
+.company-overview p strong {
+    min-width: 150px;
+    display: inline-block;
+    color: #455a64;
 }
 
 .company-overview a {
     color: #0056b3;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .company-overview a:hover {
+    color: #003d82;
     text-decoration: underline;
 }
 
 /* Стили для формы редактирования */
 .company-input, .company-textarea {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #455a64;
+    background-color: #f5f7fa;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.company-input:focus, .company-textarea:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+    outline: none;
 }
 
 .company-textarea {
-    min-height: 80px;
+    min-height: 120px;
     resize: vertical;
 }
 
 .edit-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .edit-button, .save-button, .cancel-button {
-    padding: 8px 15px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .edit-button {
@@ -131,41 +201,62 @@
     color: white;
 }
 
+.edit-button:hover {
+    background-color: #003d82;
+    box-shadow: 0 2px 8px rgba(0, 86, 179, 0.3);
+}
+
 .save-button {
-    background-color: #28a745;
+    background-color: #2e7d32;
     color: white;
+}
+
+.save-button:hover {
+    background-color: #1b5e20;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
 }
 
 .cancel-button {
-    background-color: #6c757d;
+    background-color: #78909c;
     color: white;
 }
 
-.edit-button:hover, .save-button:hover, .cancel-button:hover {
-    opacity: 0.9;
+.cancel-button:hover {
+    background-color: #546e7a;
+    box-shadow: 0 2px 8px rgba(120, 144, 156, 0.3);
 }
 
 /* Стили для формы обзора */
 .overview-form {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #455a64;
 }
 
 .form-group input, .form-group select {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #f5f7fa;
+    color: #455a64;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+    outline: none;
 }
 
 /* Стили для загрузки логотипа */
@@ -173,104 +264,152 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .logo-preview {
-    width: 80px;
-    height: 80px;
-    border-radius: 5px;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #ddd;
+    border: 2px dashed #b0bec5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f7fa;
 }
 
 .logo-upload {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    padding: 8px;
+    width: 100%;
+    cursor: pointer;
 }
 
 /* Стили для вакансий */
 .vacancies-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 20px;
+    margin-bottom: 25px;
 }
 
 .vacancy-card {
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
+    padding: 20px;
+    background-color: #f9fafb;
+    border-radius: 8px;
     border-left: 4px solid #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vacancy-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .vacancy-card h4 {
-    margin-bottom: 8px;
-    color: #333;
+    margin-bottom: 10px;
+    color: #263238;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
 .vacancy-card p {
-    color: #666;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
+    color: #546e7a;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .vacancy-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    color: #78909c;
 }
 
 .edit-vacancy-btn {
     background-color: transparent;
     color: #0056b3;
     border: 1px solid #0056b3;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .edit-vacancy-btn:hover {
     background-color: #0056b3;
     color: white;
+    box-shadow: 0 2px 6px rgba(0, 86, 179, 0.2);
 }
 
 .add-vacancy-btn {
-    background-color: #28a745;
+    background-color: #2e7d32;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
+    padding: 12px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95rem;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.add-vacancy-btn::before {
+    content: "+";
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .add-vacancy-btn:hover {
-    background-color: #218838;
+    background-color: #1b5e20;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
 }
 
 .empty-vacancies {
     text-align: center;
-    padding: 20px;
-    color: #777;
+    padding: 30px;
+    color: #78909c;
     font-style: italic;
+    border: 1px dashed #b0bec5;
+    border-radius: 8px;
+    background-color: #f5f7fa;
 }
 
-/* Стили для состояний загрузки и ошибки */
 .loading {
-    text-align: center;
-    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
     font-size: 1.2rem;
-    color: #666;
+    color: #607d8b;
+}
+
+.loading::after {
+    content: "...";
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: "."; }
+    40% { content: ".."; }
+    60%, 100% { content: "..."; }
 }
 
 .error {
-    text-align: center;
-    padding: 20px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #ffebee;
+    border-left: 4px solid #c62828;
+    color: #c62828;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-size: 1rem;
 }

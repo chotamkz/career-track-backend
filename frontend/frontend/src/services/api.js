@@ -58,9 +58,13 @@ export const API_ENDPOINTS = {
   EMPLOYERS: {
     PROFILE: '/employers/me',
     UPDATE: '/employers/me',
+    VACANCIES: '/employers/me/vacancies',
+    GET_ALL_APPLICATIONS: '/employers/me/applications',
   },
   APPLICATIONS: {
     GET_MY_APPLICATIONS: '/applications/me',
+    GET_VACANCY_APPLICATIONS: (vacancyId) => `/vacancies/${vacancyId}/applications`,
+    UPDATE_STATUS: (vacancyId, applicationId) => `/vacancies/${vacancyId}/applications/${applicationId}/status`,
   },
   VACANCIES: {
     GET_ALL: '/vacancies',
@@ -160,6 +164,29 @@ export const applicationService = {
       return response.data;
     } catch (error) {
       console.error('Error in getMyApplications:', error);
+      return handleApiError(error);
+    }
+  },
+  
+  getVacancyApplications: async (vacancyId) => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.GET_VACANCY_APPLICATIONS(vacancyId));
+      return response.data;
+    } catch (error) {
+      console.error('Error in getVacancyApplications:', error);
+      return handleApiError(error);
+    }
+  },
+  
+  updateApplicationStatus: async (vacancyId, applicationId, status) => {
+    try {
+      const response = await apiClient.put(
+        API_ENDPOINTS.APPLICATIONS.UPDATE_STATUS(vacancyId, applicationId), 
+        { status }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error in updateApplicationStatus:', error);
       return handleApiError(error);
     }
   }

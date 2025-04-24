@@ -23,7 +23,7 @@ const SearchBar = ({ onSearch, initialQuery = "" }) => {
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
-            onSearch(searchQuery);
+        onSearch(searchQuery);
         }
     }
 

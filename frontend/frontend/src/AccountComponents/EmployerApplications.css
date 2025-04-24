@@ -1,0 +1,504 @@
+/* Основной контейнер */
+.employer-applications {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 30px auto;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Заголовок */
+.employer-applications__title {
+  font-size: 1.8rem;
+  color: #263238;
+  font-weight: 600;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Фильтры */
+.employer-applications__filters {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.employer-applications__filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.employer-applications__filter-label {
+  font-size: 0.95rem;
+  color: #455a64;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.employer-applications__filter-select {
+  padding: 12px 15px;
+  border: 1px solid #cfd8dc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+  color: #455a64;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23455a64"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  appearance: none;
+}
+
+.employer-applications__filter-select:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+  outline: none;
+}
+
+/* Список заявок */
+.employer-applications__list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+/* Элемент заявки */
+.employer-applications__item {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: #f9fafb;
+  position: relative;
+  overflow: hidden;
+}
+
+.employer-applications__item:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  border-color: #b0bec5;
+}
+
+.employer-applications__item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: #0056b3;
+}
+
+.employer-applications__item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.employer-applications__vacancy-title {
+  font-size: 1.2rem;
+  color: #263238;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Статусы */
+.employer-applications__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.employer-applications__status--pending {
+  background-color: #fff8e1;
+  color: #f57c00;
+}
+
+.employer-applications__status--pending::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #f57c00;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.employer-applications__status--interview {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.employer-applications__status--interview::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #1976d2;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.employer-applications__status--accepted {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.employer-applications__status--accepted::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #2e7d32;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.employer-applications__status--rejected {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.employer-applications__status--rejected::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #c62828;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Информация о соискателе */
+.employer-applications__applicant-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #546e7a;
+}
+
+.employer-applications__applicant-name {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.employer-applications__applicant-name::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23546e7a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
+  background-repeat: no-repeat;
+  margin-right: 6px;
+}
+
+.employer-applications__date {
+  color: #78909c;
+  display: flex;
+  align-items: center;
+}
+
+.employer-applications__date::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2378909c"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>');
+  background-repeat: no-repeat;
+  margin-right: 6px;
+}
+
+/* Пагинация */
+.employer-applications__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.employer-applications__pagination-btn {
+  background-color: #f5f7fa;
+  border: 1px solid #b0bec5;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  color: #455a64;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.employer-applications__pagination-btn:hover:not(:disabled) {
+  background-color: #eceff1;
+  border-color: #90a4ae;
+}
+
+.employer-applications__pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.employer-applications__pagination-info {
+  font-size: 0.95rem;
+  color: #607d8b;
+}
+
+/* Детали заявки */
+.employer-applications__details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(38, 50, 56, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.employer-applications__details {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.employer-applications__close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #78909c;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.employer-applications__close-btn:hover {
+  color: #455a64;
+  background-color: #eceff1;
+}
+
+.employer-applications__details-title {
+  margin-top: 0;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.4rem;
+  color: #263238;
+  font-weight: 600;
+  padding-right: 40px;
+}
+
+.employer-applications__details-info {
+  margin-bottom: 25px;
+  background-color: #f5f7fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.employer-applications__details-row {
+  display: flex;
+  margin-bottom: 15px;
+  line-height: 1.6;
+  align-items: center;
+}
+
+.employer-applications__details-row:last-child {
+  margin-bottom: 0;
+}
+
+.employer-applications__details-label {
+  font-weight: 500;
+  color: #455a64;
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.employer-applications__details-value {
+  color: #263238;
+}
+
+.employer-applications__details-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.employer-applications__resume-link {
+  color: #0056b3;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.employer-applications__resume-link::before {
+  content: "";
+  display: inline-block;
+  width: R16px;
+  height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%230056b3"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>');
+  background-repeat: no-repeat;
+  margin-right: 6px;
+}
+
+.employer-applications__resume-link:hover {
+  color: #003d82;
+  text-decoration: underline;
+}
+
+.employer-applications__cover-letter {
+  margin-bottom: 25px;
+  padding: 0 5px;
+}
+
+.employer-applications__cover-letter h4 {
+  font-size: 1.1rem;
+  color: #455a64;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.employer-applications__cover-letter p {
+  color: #546e7a;
+  line-height: 1.6;
+  background-color: #f5f7fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 3px solid #b0bec5;
+  white-space: pre-line;
+}
+
+.employer-applications__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.employer-applications__action-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.employer-applications__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.employer-applications__action-btn--reject {
+  background-color: white;
+  border: 1px solid #f44336;
+  color: #f44336;
+}
+
+.employer-applications__action-btn--reject:hover:not(:disabled) {
+  background-color: #ffebee;
+  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.2);
+}
+
+.employer-applications__action-btn--interview {
+  background-color: #0056b3;
+  color: white;
+}
+
+.employer-applications__action-btn--interview:hover:not(:disabled) {
+  background-color: #003d82;
+  box-shadow: 0 2px 6px rgba(0, 86, 179, 0.2);
+}
+
+.employer-applications__action-btn--accept {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.employer-applications__action-btn--accept:hover:not(:disabled) {
+  background-color: #1b5e20;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.2);
+}
+
+.employer-applications__empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #607d8b;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+  border: 1px dashed #b0bec5;
+  font-style: italic;
+}
+
+.employer-applications__error {
+  padding: 15px;
+  background-color: #ffebee;
+  border-left: 4px solid #c62828;
+  color: #c62828;
+  margin: 20px 0;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.employer-applications__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #607d8b;
+}
+
+.employer-applications__loading::after {
+  content: "...";
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60%, 100% { content: "..."; }
+} 
