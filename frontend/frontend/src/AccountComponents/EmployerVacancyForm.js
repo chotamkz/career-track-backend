@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./EmployerVacancyForm.css";
-import { apiClient, API_ENDPOINTS, handleApiError } from "../services/api";
+import { apiClient, API_ENDPOINTS, handleApiError, vacancyService } from "../services/api";
 import RichTextEditor from "../components/RichTextEditor";
 import "../components/RichTextEditor.css";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { toast } from 'react-toastify';
 // Библиотека установлена: npm install react-quill-new
 
 const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    requirements: "",
     location: "",
     salary_from: "",
     salary_to: "",
@@ -31,7 +31,6 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   const [expandedSections, setExpandedSections] = useState({
     basicInfo: true,
     description: false,
-    requirements: false,
     additionalInfo: false
   });
 
@@ -62,23 +61,26 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
   const fetchVacancyData = async (id) => {
     try {
       setLoading(true);
-      const response = await apiClient.get(API_ENDPOINTS.VACANCIES.GET_BY_ID(id));
+      const data = await vacancyService.getVacancyById(id);
       
       // Преобразуем строку навыков в массив, если она пришла в виде строки
-      let skills = response.data.skills;
+      let skills = data.skills;
       if (typeof skills === 'string') {
         skills = skills.split(',').map(skill => skill.trim());
       } else if (!Array.isArray(skills)) {
         skills = [];
       }
       
+      // Удаляем поле requirements, vacancy_url и status из данных
+      const { requirements, vacancy_url, status, ...restData } = data;
+      
       setFormData({
-        ...response.data,
+        ...restData,
         skills: skills
       });
       
     } catch (error) {
-      setError(handleApiError(error).error);
+      setError(error.error || "Произошла ошибка при загрузке данных вакансии");
     } finally {
       setLoading(false);
     }
@@ -133,28 +135,27 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
       setLoading(true);
       setError(null);
       
+      // Удаляем vacancy_url и status из данных, если они есть
+      const { vacancy_url, status, ...dataWithoutExcluded } = formData;
+      
       // Подготовка данных для отправки
       const dataToSend = {
-        ...formData,
+        ...dataWithoutExcluded,
         salary_from: formData.salary_from ? Number(formData.salary_from) : undefined,
         salary_to: formData.salary_to ? Number(formData.salary_to) : undefined
       };
       
       let response;
       if (isEditing) {
-        response = await apiClient.put(
-          API_ENDPOINTS.VACANCIES.UPDATE(vacancyId),
-          dataToSend
-        );
+        response = await vacancyService.updateVacancy(vacancyId, dataToSend);
+        toast.success("Вакансия успешно обновлена!");
       } else {
-        response = await apiClient.post(
-          API_ENDPOINTS.VACANCIES.CREATE,
-          dataToSend
-        );
+        response = await vacancyService.createVacancy(dataToSend);
+        toast.success("Вакансия успешно создана!");
       }
       
       if (onSave) {
-        onSave(response.data);
+        onSave(response);
       }
       
       if (onClose) {
@@ -162,7 +163,8 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
       }
       
     } catch (error) {
-      setError(handleApiError(error).error);
+      setError(error.error || "Произошла ошибка при сохранении вакансии");
+      toast.error("Произошла ошибка при сохранении вакансии");
     } finally {
       setLoading(false);
     }
@@ -335,36 +337,7 @@ const EmployerVacancyForm = ({ vacancyId, onClose, onSave }) => {
           )}
         </div>
         
-        {/* Секция 3: Требования к кандидату */}
-        <div className="employer-vacancy-form__accordion">
-          <div 
-            className={`employer-vacancy-form__accordion-header ${expandedSections.requirements ? 'active' : ''}`}
-            onClick={() => toggleSection('requirements')}
-          >
-            <h3 className="employer-vacancy-form__accordion-title">
-              Требования к кандидату
-            </h3>
-            <span className="employer-vacancy-form__accordion-icon">
-              {expandedSections.requirements ? '−' : '+'}
-            </span>
-          </div>
-          
-          {expandedSections.requirements && (
-            <div className="employer-vacancy-form__accordion-content">
-              <div className="employer-vacancy-form__group">
-                <textarea
-                  name="requirements"
-                  value={formData.requirements}
-                  onChange={handleInputChange}
-                  className="employer-vacancy-form__textarea"
-                  placeholder="Укажите необходимые навыки, образование, опыт работы"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Секция 4: Ключевые навыки */}
+        {/* Секция 3: Ключевые навыки */}
         <div className="employer-vacancy-form__accordion">
           <div 
             className={`employer-vacancy-form__accordion-header ${expandedSections.additionalInfo ? 'active' : ''}`}

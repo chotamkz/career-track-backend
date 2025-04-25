@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { isAuthenticated, logout, getUserRole } from "../services/authService";
 import "./NavigationBar.css";
 import smallLogo from "../assets/images/small-logo.png";
@@ -7,6 +7,7 @@ import smallLogo from "../assets/images/small-logo.png";
 
 function NavigationBar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [userRole, setUserRole] = useState(null);
     const [scrolled, setScrolled] = useState(false);
@@ -17,6 +18,13 @@ function NavigationBar() {
             setUserRole(getUserRole());
         }
     }, []);
+    
+    // Функция для определения активной вкладки
+    const isActive = (path) => {
+        // Проверяем, начинается ли текущий путь с указанного пути
+        // Например, /vacancies/123 должен активировать вкладку /vacancies
+        return location.pathname.startsWith(path);
+    };
     
     // Оптимизированный обработчик прокрутки для изменения стиля навбара
     useEffect(() => {
@@ -123,18 +131,18 @@ function NavigationBar() {
             
             <nav className={mobileMenuOpen ? 'open' : ''}>
                 <ul className="nav-links">
-                    <li><Link to="/vacancies" onClick={handleNavLinkClick}>Поиск вакансий</Link></li>
+                    <li><Link to="/vacancies" onClick={handleNavLinkClick} className={isActive('/vacancies') ? 'active' : ''}>Поиск вакансий</Link></li>
                     {isAuthenticated() && userRole === "STUDENT" && (
-                        <li><Link to="/applications" onClick={handleNavLinkClick}>Мои заявки</Link></li>
+                        <li><Link to="/applications" onClick={handleNavLinkClick} className={isActive('/applications') ? 'active' : ''}>Мои заявки</Link></li>
                     )}
                     {isAuthenticated() && userRole === "EMPLOYER" && (
                         <>
-                            <li><Link to="/account/employer/vacancies" onClick={handleNavLinkClick}>Управление вакансиями</Link></li>
-                            <li><Link to="/account/employer/applications" onClick={handleNavLinkClick}>Заявки соискателей</Link></li>
+                            <li><Link to="/account/employer/vacancies" onClick={handleNavLinkClick} className={isActive('/account/employer/vacancies') ? 'active' : ''}>Управление вакансиями</Link></li>
+                            <li><Link to="/account/employer/applications" onClick={handleNavLinkClick} className={isActive('/account/employer/applications') ? 'active' : ''}>Заявки соискателей</Link></li>
                         </>
                     )}
-                    <li><Link to="/hackathons" onClick={handleNavLinkClick}>Хакатоны</Link></li>
-                    <li><Link to="/" onClick={handleNavLinkClick}>О нас</Link></li>
+                    <li><Link to="/hackathons" onClick={handleNavLinkClick} className={isActive('/hackathons') ? 'active' : ''}>Хакатоны</Link></li>
+                    <li><Link to="/" onClick={handleNavLinkClick} className={location.pathname === '/' ? 'active' : ''}>О нас</Link></li>
                 </ul>
             </nav>
             

@@ -8,6 +8,7 @@
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
   position: relative;
   overflow: hidden;
+  z-index: 100;
 }
 
 /* Decorative elements */

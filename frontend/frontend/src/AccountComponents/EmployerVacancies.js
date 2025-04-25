@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './EmployerVacancies.css';
 import { apiClient, API_ENDPOINTS, handleApiError, vacancyService } from '../services/api';
 import EmployerVacancyForm from './EmployerVacancyForm';
+import EmployerVacancyDetails from './EmployerVacancyDetails';
 
 const EmployerVacancies = () => {
   const [vacancies, setVacancies] = useState([]);
@@ -12,13 +13,27 @@ const EmployerVacancies = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('ALL');
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  
+  useEffect(() => {
+    const isModalOpen = showForm || confirmDelete || showDetails;
+    if (isModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showForm, confirmDelete, showDetails]);
   
   useEffect(() => {
     fetchVacancies();
-  }, [currentPage, searchTerm, filterStatus]);
+  }, [currentPage, searchTerm]);
   
   const fetchVacancies = async () => {
     try {
@@ -36,10 +51,6 @@ const EmployerVacancies = () => {
       
       if (searchTerm) {
         params.append('search', searchTerm);
-      }
-      
-      if (filterStatus !== 'ALL') {
-        params.append('status', filterStatus);
       }
       
       if (params.toString()) {
@@ -93,10 +104,25 @@ const EmployerVacancies = () => {
   const handleEditVacancy = (vacancy) => {
     setEditingVacancy(vacancy);
     setShowForm(true);
+    setShowDetails(false);
   };
   
-  const handleDeleteVacancy = (vacancyId) => {
+  const handleDeleteVacancy = (vacancyId, event) => {
+    // Предотвращаем всплытие события, чтобы не сработал клик по карточке
+    if (event) {
+      event.stopPropagation();
+    }
     setConfirmDelete(vacancyId);
+  };
+
+  const handleVacancyClick = (vacancy) => {
+    setSelectedVacancy(vacancy);
+    setShowDetails(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+    setSelectedVacancy(null);
   };
   
   const confirmDeleteVacancy = async () => {
@@ -154,15 +180,16 @@ const EmployerVacancies = () => {
     setCurrentPage(1);
   };
   
-  const handleStatusFilterChange = (e) => {
-    setFilterStatus(e.target.value);
-    setCurrentPage(1);
-  };
-  
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Дата не указана';
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('ru-RU', options);
+  const formatSalary = (min, max, currency) => {
+    if (min && max) {
+      return `${min.toLocaleString()} - ${max.toLocaleString()} ${currency}`;
+    } else if (min) {
+      return `от ${min.toLocaleString()} ${currency}`;
+    } else if (max) {
+      return `до ${max.toLocaleString()} ${currency}`;
+    } else {
+      return 'Не указана';
+    }
   };
   
   if (loading && vacancies.length === 0) {
@@ -195,19 +222,6 @@ const EmployerVacancies = () => {
             className="employer-vacancies__search-input"
           />
         </div>
-        
-        <div className="employer-vacancies__filter">
-          <select
-            value={filterStatus}
-            onChange={handleStatusFilterChange}
-            className="employer-vacancies__filter-select"
-          >
-            <option value="ALL">Все статусы</option>
-            <option value="ACTIVE">Активные</option>
-            <option value="CLOSED">Закрытые</option>
-            <option value="DRAFT">Черновики</option>
-          </select>
-        </div>
       </div>
       
       {vacancies.length === 0 ? (
@@ -224,15 +238,15 @@ const EmployerVacancies = () => {
         <>
           <div className="employer-vacancies__list">
             {vacancies.map(vacancy => (
-              <div key={vacancy.id} className="employer-vacancies__item">
+              <div 
+                key={vacancy.id} 
+                className="employer-vacancies__item"
+                onClick={() => handleVacancyClick(vacancy)}
+              >
                 <div className="employer-vacancies__item-header">
                   <h3 className="employer-vacancies__item-title">
                     {vacancy.title}
                   </h3>
-                  <span className={`employer-vacancies__item-status employer-vacancies__item-status--${vacancy.status ? vacancy.status.toLowerCase() : 'draft'}`}>
-                    {vacancy.status === 'ACTIVE' ? 'Активная' : 
-                     vacancy.status === 'CLOSED' ? 'Закрыта' : 'Черновик'}
-                  </span>
                 </div>
                 
                 <div className="employer-vacancies__item-details">
@@ -243,23 +257,17 @@ const EmployerVacancies = () => {
                   
                   <div className="employer-vacancies__item-salary">
                     <i className="employer-vacancies__icon-salary">💰</i>
-                    {
-                      vacancy.salary_from || vacancy.salary_to ? 
-                      `${vacancy.salary_from || ''} ${vacancy.salary_from && vacancy.salary_to ? '—' : ''} ${vacancy.salary_to || ''} ${vacancy.salary_currency || ''}` 
-                      : 'Не указана'
-                    }
+                    {formatSalary(vacancy.salaryMin, vacancy.salaryMax, vacancy.currency)}
                   </div>
                   
                   <div className="employer-vacancies__item-date">
-                    <i className="employer-vacancies__icon-date">🗓️</i>
-                    {vacancy.createdAt ? formatDate(vacancy.createdAt) : 'Дата не указана'}
+                    <i className="employer-vacancies__icon-date">📅</i>
+                    {new Date(vacancy.createdAt).toLocaleDateString('ru-RU', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
                   </div>
-                </div>
-                
-                <div className="employer-vacancies__item-description">
-                  {vacancy.description && vacancy.description.length > 150 
-                    ? `${vacancy.description.substring(0, 150)}...` 
-                    : vacancy.description || 'Без описания'}
                 </div>
                 
                 <div className="employer-vacancies__item-skills">
@@ -281,35 +289,17 @@ const EmployerVacancies = () => {
                 <div className="employer-vacancies__item-actions">
                   <button 
                     className="employer-vacancies__action-btn employer-vacancies__action-btn--edit"
-                    onClick={() => handleEditVacancy(vacancy)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditVacancy(vacancy);
+                    }}
                   >
                     ✏️ Редактировать
                   </button>
                   
                   <button 
-                    className="employer-vacancies__action-btn employer-vacancies__action-btn--status"
-                    onClick={() => {
-                      const newStatus = vacancy.status === 'ACTIVE' ? 'CLOSED' : 'ACTIVE';
-                      apiClient.put(API_ENDPOINTS.VACANCIES.UPDATE(vacancy.id), {
-                        ...vacancy,
-                        status: newStatus
-                      }).then(() => {
-                        setVacancies(prevVacancies =>
-                          prevVacancies.map(v => 
-                            v.id === vacancy.id ? {...v, status: newStatus} : v
-                          )
-                        );
-                      }).catch(err => {
-                        setError(handleApiError(err).error);
-                      });
-                    }}
-                  >
-                    {vacancy.status === 'ACTIVE' ? '🔒 Закрыть' : '🔓 Активировать'}
-                  </button>
-                  
-                  <button 
                     className="employer-vacancies__action-btn employer-vacancies__action-btn--delete"
-                    onClick={() => handleDeleteVacancy(vacancy.id)}
+                    onClick={(e) => handleDeleteVacancy(vacancy.id, e)}
                   >
                     🗑️ Удалить
                   </button>
@@ -348,6 +338,16 @@ const EmployerVacancies = () => {
             vacancyId={editingVacancy?.id}
             onClose={handleFormClose}
             onSave={handleFormSave}
+          />
+        </div>
+      )}
+
+      {showDetails && selectedVacancy && (
+        <div className="employer-vacancies__details-overlay">
+          <EmployerVacancyDetails
+            vacancyId={selectedVacancy.id}
+            onClose={handleCloseDetails}
+            onEdit={() => handleEditVacancy(selectedVacancy)}
           />
         </div>
       )}

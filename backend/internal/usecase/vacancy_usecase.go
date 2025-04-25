@@ -30,14 +30,16 @@ type MLResponse struct {
 
 type VacancyUsecase struct {
 	vacancyRepo  repository.VacancyRepository
+	skillRepo    repository.SkillRepository
 	mlServiceURL string
 	countCache   *cache.Cache
 }
 
-func NewVacancyUsecase(vacRepo repository.VacancyRepository, mlServiceURL string) *VacancyUsecase {
+func NewVacancyUsecase(vacRepo repository.VacancyRepository, skillRepo repository.SkillRepository, mlServiceURL string) *VacancyUsecase {
 	c := cache.New(3*time.Minute, 5*time.Minute)
 	return &VacancyUsecase{
 		vacancyRepo:  vacRepo,
+		skillRepo:    skillRepo,
 		mlServiceURL: mlServiceURL,
 		countCache:   c,
 	}
@@ -209,8 +211,8 @@ func (vu *VacancyUsecase) GetEmployerVacancies(employerID uint) ([]model.Vacancy
 	return vu.vacancyRepo.GetVacanciesByEmployerID(employerID)
 }
 
-func (vu *VacancyUsecase) UpdateVacancy(employerID uint, v *model.Vacancy) error {
-	exist, err := vu.vacancyRepo.GetVacancyById(v.ID)
+func (vu *VacancyUsecase) UpdateVacancy(employerID uint, vac *model.Vacancy, skillNames []string) error {
+	exist, err := vu.vacancyRepo.GetVacancyById(vac.ID)
 	if err != nil {
 		return err
 	}
@@ -218,5 +220,28 @@ func (vu *VacancyUsecase) UpdateVacancy(employerID uint, v *model.Vacancy) error
 		return ErrNotVacancyOwner
 	}
 
-	return vu.vacancyRepo.UpdateVacancy(v)
+	if err := vu.vacancyRepo.UpdateVacancy(vac); err != nil {
+		return err
+	}
+
+	if skillNames != nil {
+		var skillIDs []uint
+		for _, name := range skillNames {
+			s, err := vu.skillRepo.GetByName(name)
+			if err == sql.ErrNoRows {
+				s = model.Skill{Name: name}
+				if err := vu.skillRepo.Create(&s); err != nil {
+					return err
+				}
+			} else if err != nil {
+				return err
+			}
+			skillIDs = append(skillIDs, s.ID)
+		}
+		if err := vu.vacancyRepo.SetSkills(vac.ID, skillIDs); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

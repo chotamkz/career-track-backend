@@ -14,4 +14,5 @@ type VacancyRepository interface {
 	GetVacanciesByEmployerID(employerID uint) ([]model.Vacancy, error)
 	DeleteVacancyByID(vacancyID uint) error
 	UpdateVacancy(vac *model.Vacancy) error
+	SetSkills(vacancyID uint, skillIDs []uint) error
 }

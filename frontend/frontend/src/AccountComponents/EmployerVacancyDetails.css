@@ -1,0 +1,190 @@
+/* Стили для компонента детализации вакансии работодателя */
+.ev-details {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.ev-details__loading,
+.ev-details__error {
+  padding: 30px;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.ev-details__error {
+  color: #e53e3e;
+}
+
+.ev-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.ev-details__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: #2d3748;
+  flex: 1;
+}
+
+.ev-details__close-btn {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.25rem;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.ev-details__close-btn:hover {
+  background-color: #f1f5f9;
+  color: #718096;
+}
+
+.ev-details__content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ev-details__section {
+  margin-bottom: 24px;
+}
+
+.ev-details__subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #4a5568;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.ev-details__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.ev-details__info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.ev-details__label {
+  font-size: 0.875rem;
+  color: #718096;
+  margin-bottom: 4px;
+}
+
+.ev-details__value {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.ev-details__description {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+.ev-details__description ul,
+.ev-details__description ol {
+  padding-left: 20px;
+  margin: 12px 0;
+}
+
+.ev-details__description p {
+  margin: 12px 0;
+}
+
+.ev-details__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ev-details__skill-tag {
+  background-color: #ebf8ff;
+  color: #3182ce;
+  font-size: 0.8125rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: inline-flex;
+}
+
+.ev-details__actions {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.ev-details__edit-btn {
+  background-color: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.ev-details__edit-btn:hover {
+  background-color: #2b6cb0;
+}
+
+/* Адаптивная верстка для мобильных устройств */
+@media (max-width: 640px) {
+  .ev-details {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .ev-details__header {
+    padding: 12px 16px;
+  }
+  
+  .ev-details__title {
+    font-size: 1.25rem;
+  }
+  
+  .ev-details__info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .ev-details__content {
+    padding: 16px;
+  }
+} 

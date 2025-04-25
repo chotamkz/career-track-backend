@@ -31,6 +31,19 @@ const EmployerApplications = () => {
     { value: 'REJECTED', label: 'Кандидат отклонен', icon: '❌', color: 'red' },
   ];
 
+  // Эффект для управления классом modal-open при открытии модальных окон
+  useEffect(() => {
+    if (selectedApplication) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [selectedApplication]);
+
   useEffect(() => {
     fetchVacancies();
   }, []);

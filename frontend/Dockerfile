@@ -15,6 +15,9 @@ RUN npm install axios --save
 # Install react-quill-new for rich text editor (fork supporting React 19)
 RUN npm install react-quill-new --save
 
+# Добавьте эту строку после других установок npm
+RUN npm install react-toastify --save
+
 # Copy only the necessary source files after installing dependencies
 COPY ./frontend /app
 

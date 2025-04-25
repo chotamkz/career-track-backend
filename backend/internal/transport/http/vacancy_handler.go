@@ -260,17 +260,18 @@ func (h *VacancyHandler) UpdateVacancyHandler(c *gin.Context) {
 	employerID := empVal.(uint)
 
 	var in struct {
-		Title          string  `json:"title" binding:"required"`
-		Description    string  `json:"description" binding:"required"`
-		Requirements   string  `json:"requirements"`
-		Location       string  `json:"location" binding:"required"`
-		SalaryFrom     float64 `json:"salary_from"`
-		SalaryTo       float64 `json:"salary_to"`
-		SalaryCurrency string  `json:"salary_currency"`
-		SalaryGross    bool    `json:"salary_gross"`
-		VacancyURL     string  `json:"vacancy_url"`
-		WorkSchedule   string  `json:"work_schedule"`
-		Experience     string  `json:"experience"`
+		Title          string   `json:"title" binding:"required"`
+		Description    string   `json:"description" binding:"required"`
+		Requirements   string   `json:"requirements"`
+		Location       string   `json:"location" binding:"required"`
+		SalaryFrom     float64  `json:"salary_from"`
+		SalaryTo       float64  `json:"salary_to"`
+		SalaryCurrency string   `json:"salary_currency"`
+		SalaryGross    bool     `json:"salary_gross"`
+		VacancyURL     string   `json:"vacancy_url"`
+		WorkSchedule   string   `json:"work_schedule"`
+		Experience     string   `json:"experience"`
+		Skills         []string `json:"skills"`
 	}
 	if err := c.ShouldBindJSON(&in); err != nil {
 		h.logger.Errorf("Invalid input for update vacancy: %v", err)
@@ -293,7 +294,7 @@ func (h *VacancyHandler) UpdateVacancyHandler(c *gin.Context) {
 		Experience:     in.Experience,
 	}
 
-	if err := h.vacancyUsecase.UpdateVacancy(employerID, &vac); err != nil {
+	if err := h.vacancyUsecase.UpdateVacancy(employerID, &vac, in.Skills); err != nil {
 		if errors.Is(err, usecase.ErrNotVacancyOwner) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You do not own this vacancy"})
 		} else if err == sql.ErrNoRows {

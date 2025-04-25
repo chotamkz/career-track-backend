@@ -36,15 +36,15 @@ function EmployerAccount() {
                     <div className="employer-account-error">{error}</div>
                 )}
                 
-                <div className="employerAccountComponent">
+            <div className="employerAccountComponent">
                     {loading ? (
                         <div className="employer-account-loading">Загрузка...</div>
                     ) : (
-                        <EmployerProfile />
+                <EmployerProfile />
                     )}
                 </div>
             </div>
-            <FooterComp />
+                <FooterComp />
         </div>
     );
 }

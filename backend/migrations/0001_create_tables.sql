@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS vacancies (
     salary_gross BOOLEAN,
     vacancy_url TEXT DEFAULT '',
     work_schedule TEXT,
-    experience TEXT
+    experience TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_vacancy_url_not_null

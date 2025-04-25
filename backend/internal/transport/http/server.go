@@ -30,7 +30,8 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	}))
 
 	vacancyRepo := postgres.NewVacancyRepo(db)
-	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, cfg.MLServiceURL)
+	skillRepo := postgres.NewSkillRepo(db)
+	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, skillRepo, cfg.MLServiceURL)
 	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db), vacancyRepo)
 	vacancyHandler := NewVacancyHandler(vacancyUsecase, appUsecase, logger, cfg)
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)

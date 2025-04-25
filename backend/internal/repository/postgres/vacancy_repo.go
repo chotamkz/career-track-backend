@@ -86,20 +86,19 @@ func (vr *VacancyRepo) UpdateVacancy(v *model.Vacancy) error {
     UPDATE vacancies SET
       title           = $1,
       description     = $2,
-      requirements    = $3,
-      location        = $4,
-      salary_from     = $5,
-      salary_to       = $6,
-      salary_currency = $7,
-      salary_gross    = $8,
-      vacancy_url     = $9,
-      work_schedule   = $10,
-      experience      = $11,
+      location        = $3,
+      salary_from     = $4,
+      salary_to       = $5,
+      salary_currency = $6,
+      salary_gross    = $7,
+      vacancy_url     = $8,
+      work_schedule   = $9,
+      experience      = $10,
       updated_at      = NOW()
     WHERE id = $11
     `
 	res, err := vr.DB.Exec(q,
-		v.Title, v.Description, v.Requirements, v.Location,
+		v.Title, v.Description, v.Location,
 		v.SalaryFrom, v.SalaryTo, v.SalaryCurrency, v.SalaryGross,
 		v.VacancyURL, v.WorkSchedule, v.Experience,
 		v.ID,
@@ -346,4 +345,29 @@ func (vr *VacancyRepo) DeleteVacancyByID(vacancyID uint) error {
 		return sql.ErrNoRows
 	}
 	return nil
+}
+
+func (vr *VacancyRepo) SetSkills(vacancyID uint, skillIDs []uint) error {
+	tx, err := vr.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.Exec(`DELETE FROM vacancy_skills WHERE vacancy_id = $1`, vacancyID); err != nil {
+		return err
+	}
+	stmt, err := tx.Prepare(`INSERT INTO vacancy_skills(vacancy_id, skill_id, created_at, updated_at) VALUES($1,$2,NOW(),NOW())`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	for _, sid := range skillIDs {
+		if _, err := stmt.Exec(vacancyID, sid); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
 }
