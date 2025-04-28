@@ -6,7 +6,8 @@ type VacancyRepository interface {
 	GetVacancies(limit, offset int) ([]model.Vacancy, error)
 	UpsertVacancy(v *model.Vacancy) error
 	GetVacancyById(id uint) (model.Vacancy, error)
-	GetFilteredVacancies(filter model.VacancyFilter) ([]model.Vacancy, error)
+	GetFilteredVacancies(filter model.VacancyFilter, limit, offset int) ([]model.Vacancy, error)
+	CountFilteredVacancies(filter model.VacancyFilter) (int, error)
 	CreateVacancy(v *model.Vacancy) error
 	InsertVacancySkill(vacancyID uint, skillName string) error
 	GetVacanciesByIDs(ids []uint) ([]model.Vacancy, error)
@@ -15,4 +16,5 @@ type VacancyRepository interface {
 	DeleteVacancyByID(vacancyID uint) error
 	UpdateVacancy(vac *model.Vacancy) error
 	SetSkills(vacancyID uint, skillIDs []uint) error
+	GetAllRegions() ([]string, error)
 }

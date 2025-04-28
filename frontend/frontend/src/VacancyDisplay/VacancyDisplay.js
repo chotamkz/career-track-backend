@@ -35,6 +35,10 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     handleSearch(searchFilters);
   }, [searchQuery]);
 
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
   const fetchVacancies = async () => {
     setLoading(true);
     try {
@@ -61,28 +65,21 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
           .catch(() => {});
       }
-      
-      // Получение уникальных городов для фильтра по местоположению
-      const uniqueCities = [
-        ...new Set(
-          (data.vacancies || [])
-            .map((vacancy) => {
-              if (!vacancy.location) return null;
-              let city = vacancy.location.trim().split(",")[0];
-              city = city.replace(/\d+(\.\d+)?/g, "").trim();
-              return city;
-            })
-            .filter((city) => city)
-        ),
-      ];
-
-      setLocationOptions(
-        uniqueCities.map((city) => ({ value: city, label: city }))
-      );
     } catch (err) {
       setError(err.message || "Ошибка загрузки вакансий");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRegions = async () => {
+    try {
+      const regions = await vacancyService.getRegions();
+      const options = regions.map(region => ({ value: region, label: region }));
+      setLocationOptions(options);
+    } catch (err) {
+      console.error("Ошибка при получении списка регионов:", err);
+      setLocationOptions([]);
     }
   };
 

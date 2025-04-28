@@ -41,6 +41,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.GET("/api/v1/employers/me/vacancies", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.GetEmployerVacanciesHandler)
 	router.DELETE("/api/v1/vacancies/:id", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.DeleteVacancyHandler)
 	router.PUT("/api/v1/vacancies/:id", middleware.RequireEmployer(cfg.JWTSecret), vacancyHandler.UpdateVacancyHandler)
+	router.GET("/api/v1/vacancies/regions", vacancyHandler.GetRegionsHandler)
 
 	userRepo := postgres.NewUserRepo(db, logger)
 	profileRepo := postgres.NewProfileRepo(db, logger)

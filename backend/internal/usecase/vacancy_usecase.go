@@ -36,7 +36,7 @@ type VacancyUsecase struct {
 }
 
 func NewVacancyUsecase(vacRepo repository.VacancyRepository, skillRepo repository.SkillRepository, mlServiceURL string) *VacancyUsecase {
-	c := cache.New(3*time.Minute, 5*time.Minute)
+	c := cache.New(1*time.Minute, 4*time.Minute)
 	return &VacancyUsecase{
 		vacancyRepo:  vacRepo,
 		skillRepo:    skillRepo,
@@ -81,8 +81,34 @@ func (vu *VacancyUsecase) GetVacancyById(id uint) (model.Vacancy, error) {
 	return vu.vacancyRepo.GetVacancyById(id)
 }
 
-func (vu *VacancyUsecase) FilterVacancies(filter model.VacancyFilter) ([]model.Vacancy, error) {
-	return vu.vacancyRepo.GetFilteredVacancies(filter)
+func (vu *VacancyUsecase) FilterVacancies(
+	filter model.VacancyFilter, page, size int,
+) ([]model.Vacancy, int, error) {
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 {
+		size = 5
+	}
+	offset := (page - 1) * size
+
+	keyBytes, _ := json.Marshal(filter)
+	cacheKey := "count:" + string(keyBytes)
+
+	var total int
+	if x, found := vu.countCache.Get(cacheKey); found {
+		total = x.(int)
+	} else {
+		cnt, err := vu.vacancyRepo.CountFilteredVacancies(filter)
+		if err != nil {
+			return nil, 0, fmt.Errorf("count filtered: %v", err)
+		}
+		total = cnt
+		vu.countCache.Set(cacheKey, total, cache.DefaultExpiration)
+	}
+
+	vacs, err := vu.vacancyRepo.GetFilteredVacancies(filter, size, offset)
+	return vacs, total, err
 }
 
 func (vu *VacancyUsecase) CreateVacancy(v *model.Vacancy) error {
@@ -244,4 +270,8 @@ func (vu *VacancyUsecase) UpdateVacancy(employerID uint, vac *model.Vacancy, ski
 	}
 
 	return nil
+}
+
+func (vu *VacancyUsecase) GetAllRegions() ([]string, error) {
+	return vu.vacancyRepo.GetAllRegions()
 }

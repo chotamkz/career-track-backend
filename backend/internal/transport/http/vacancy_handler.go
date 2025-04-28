@@ -98,39 +98,54 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 		Schedule:   c.Query("schedule"),
 	}
 	if salaryStr := c.Query("salary_from"); salaryStr != "" {
-		if s, err := strconv.ParseFloat(salaryStr, 64); err == nil {
-			filter.SalaryFrom = s
-		} else {
+		s, err := strconv.ParseFloat(salaryStr, 64)
+		if err != nil {
 			vh.logger.Errorf("Invalid salary_from: %v", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid salary_from"})
 			return
 		}
+		filter.SalaryFrom = s
+	}
+
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(c.DefaultQuery("size", "5"))
+	if err != nil || size < 1 || size > 100 {
+		size = 20
 	}
 
 	mlSkills := c.Query("ml_skills")
-
-	var response interface{}
-	var err error
-
 	if mlSkills != "" {
-		response, err = vh.vacancyUsecase.GetRecommendedVacancies(filter, mlSkills)
+		recs, err := vh.vacancyUsecase.GetRecommendedVacancies(filter, mlSkills)
 		if err != nil {
 			vh.logger.Errorf("Failed to get recommended vacancies: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get recommendations"})
 			return
 		}
-	} else {
-		response, err = vh.vacancyUsecase.FilterVacancies(filter)
-		if err != nil {
-			vh.logger.Errorf("Failed to filter vacancies: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to filter vacancies"})
-			return
-		}
+		c.JSON(http.StatusOK, gin.H{
+			"page":      page,
+			"size":      size,
+			"vacancies": recs,
+		})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"vacancies": response})
-}
+	vacs, total, err := vh.vacancyUsecase.FilterVacancies(filter, page, size)
+	if err != nil {
+		vh.logger.Errorf("Failed to filter vacancies: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to filter vacancies"})
+		return
+	}
 
+	c.JSON(http.StatusOK, gin.H{
+		"page":       page,
+		"size":       size,
+		"totalCount": total,
+		"vacancies":  vacs,
+	})
+}
 func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	var input struct {
 		Title          string   `json:"title"`
@@ -307,4 +322,14 @@ func (h *VacancyHandler) UpdateVacancyHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vac)
+}
+
+func (vh *VacancyHandler) GetRegionsHandler(c *gin.Context) {
+	regions, err := vh.vacancyUsecase.GetAllRegions()
+	if err != nil {
+		vh.logger.Errorf("GetAllRegions failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load regions"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"regions": regions})
 }

@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/vacancies/${id}`,
     GET_BY_ID: (id) => `/vacancies/${id}`,
     APPLY: (id) => `/vacancies/${id}/apply`,
+    GET_REGIONS: '/vacancies/regions',
   },
   HACKATHONS: {
     GET_ALL: '/hackathons',
@@ -91,6 +92,20 @@ export const vacancyService = {
       const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${page}&size=${size}`);
       return response.data;
     } catch (error) {
+      return handleApiError(error);
+    }
+  },
+  
+  /**
+   * Получить список всех доступных регионов для фильтрации вакансий
+   * @returns {Promise<Array<string>>} Массив регионов
+   */
+  getRegions: async () => {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.VACANCIES.GET_REGIONS);
+      return response.data.regions || [];
+    } catch (error) {
+      console.error('Error fetching regions:', error);
       return handleApiError(error);
     }
   },
