@@ -9,6 +9,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 from functools import lru_cache
 from datetime import datetime, timedelta
+from collections import Counter
+import nltk
+nltk.download('punkt_tab', quiet=True)
+from nltk.util import ngrams
+from nltk.tokenize import word_tokenize
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO,
@@ -24,6 +29,8 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 VECTORIZER_PATH = os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl")
 KNN_MODEL_PATH = os.path.join(MODEL_DIR, "knn_model.pkl")
 MODEL_TIMESTAMP_PATH = os.path.join(MODEL_DIR, "model_timestamp.txt")
+NGRAMS_PATH = os.path.join(MODEL_DIR, "ngrams_data.pkl")
+
 
 class JobRecommendationSystem:
     def __init__(self):
@@ -31,6 +38,8 @@ class JobRecommendationSystem:
         self.vectorizer = None
         self.knn_model = None
         self.vacancies_df = None
+        self.common_ngrams = None
+        self.skills_index = {}  # Индекс навыков для быстрого доступа
         self.initialize_models()
 
     def preprocess_text(self, text):
@@ -79,6 +88,28 @@ class JobRecommendationSystem:
             logger.error(f"Error loading vacancies: {e}")
             return pd.DataFrame(columns=["id", "key_skills"])
 
+    def extract_common_ngrams(self, texts, min_count=2):
+        """Извлекает часто встречающиеся n-граммы из корпуса текстов"""
+        all_ngrams = Counter()
+
+        for text in texts:
+            # Использование безопасной токенизации
+            try:
+                words = word_tokenize(self.preprocess_text(text))
+                # Извлекаем биграммы и триграммы
+                for n in range(2, 4):  # Биграммы и триграммы
+                    text_ngrams = list(ngrams(words, n))
+                    all_ngrams.update([" ".join(gram) for gram in text_ngrams])
+            except Exception as e:
+                logger.warning(f"Error tokenizing text: {e}")
+
+        # Фильтруем по частоте
+        common_ngrams = {gram for gram, count in all_ngrams.items()
+                         if count >= min_count}
+
+        logger.info(f"Extracted {len(common_ngrams)} common n-grams")
+        return common_ngrams
+
     def train_models(self, df):
         """Обучает модели с улучшенными параметрами"""
         logger.info("Training recommendation models...")
@@ -86,10 +117,17 @@ class JobRecommendationSystem:
             # Обработка текста навыков
             df["key_skills"] = df["key_skills"].fillna("").apply(self.preprocess_text)
 
+            # Извлечение часто встречающихся n-грамм
+            self.common_ngrams = self.extract_common_ngrams(df["key_skills"])
+
+            # Сохраняем n-граммы
+            with open(NGRAMS_PATH, "wb") as f:
+                pickle.dump(self.common_ngrams, f)
+
             # Улучшенный векторизатор с учетом N-грамм и ограничением признаков
             vectorizer = TfidfVectorizer(
                 max_features=1000,
-                ngram_range=(1, 2),  # Учитываем униграммы и биграммы
+                ngram_range=(1, 3),  # Учитываем униграммы, биграммы и триграммы
                 min_df=2  # Минимальная частота документов
             )
             X = vectorizer.fit_transform(df["key_skills"])
@@ -121,7 +159,7 @@ class JobRecommendationSystem:
 
     def models_need_update(self):
         """Проверяет, нужно ли обновить модели"""
-        if not os.path.exists(VECTORIZER_PATH) or not os.path.exists(KNN_MODEL_PATH):
+        if not os.path.exists(VECTORIZER_PATH) or not os.path.exists(KNN_MODEL_PATH) or not os.path.exists(NGRAMS_PATH):
             return True
 
         if os.path.exists(MODEL_TIMESTAMP_PATH):
@@ -131,6 +169,39 @@ class JobRecommendationSystem:
                 return datetime.now() - timestamp > MODEL_CACHE_TTL
 
         return True
+
+    def extract_skills_from_text(self, text):
+        """Извлекает навыки из текста, учитывая n-граммы"""
+        if not text:
+            return set()
+
+        text = self.preprocess_text(text)
+
+        try:
+            words = word_tokenize(text)
+        except Exception as e:
+            logger.warning(f"Tokenization error: {e}, falling back to simple split")
+            words = text.split()
+
+        # Получаем все возможные n-граммы из текста
+        extracted_skills = set()
+
+        # Сначала проверяем более длинные n-граммы (триграммы, затем биграммы)
+        for n in range(3, 1, -1):
+            text_ngrams = list(ngrams(words, n))
+            for gram in text_ngrams:
+                gram_text = " ".join(gram)
+                if gram_text in self.common_ngrams:
+                    extracted_skills.add(gram_text)
+                    # Удаляем слова, входящие в найденную n-грамму
+                    for word in gram:
+                        if word in words:
+                            words.remove(word)
+
+        # Добавляем оставшиеся отдельные слова
+        extracted_skills.update(words)
+
+        return extracted_skills
 
     def initialize_models(self):
         """Инициализирует или загружает модели"""
@@ -145,10 +216,36 @@ class JobRecommendationSystem:
                     self.vectorizer = pickle.load(f)
                 with open(KNN_MODEL_PATH, "rb") as f:
                     self.knn_model = pickle.load(f)
+                with open(NGRAMS_PATH, "rb") as f:
+                    self.common_ngrams = pickle.load(f)
                 self.vacancies_df = self.load_vacancies_from_db()
+
+            # Создаем структуры данных для каждой вакансии
+            for _, row in self.vacancies_df.iterrows():
+                vacancy_id = row['id']
+                skills_text = row['key_skills']
+
+                # Извлекаем навыки для вакансии
+                skills = self.extract_skills_from_text(skills_text)
+
+                # Сохраняем навыки в индексе
+                self.skills_index[vacancy_id] = skills
+
+            logger.info(f"Initialized skills index for {len(self.skills_index)} vacancies")
+
         except Exception as e:
             logger.error(f"Error initializing models: {e}")
             raise
+
+    def extract_skills_list(self, skills_text):
+        """Извлекает список навыков из текста с улучшенной обработкой"""
+        if isinstance(skills_text, list):
+            # Если уже список, обрабатываем каждый элемент
+            return [str(skill).strip() for skill in skills_text]
+        elif isinstance(skills_text, str):
+            # Если строка, разделяем по запятым
+            return [skill.strip() for skill in skills_text.split(',')]
+        return []
 
     def parse_skills(self, skills_text):
         """Парсинг входных навыков с обработкой различных форматов"""
@@ -160,77 +257,91 @@ class JobRecommendationSystem:
         return str(skills_text)
 
     def recommend_jobs(self, student_skills, top_n=5):
+        """Рекомендует вакансии на основе навыков студента"""
         try:
             start_time = datetime.now()
             logger.info(f"Processing recommendation request for skills: {student_skills[:100]}...")
 
-        # Обработка входных навыков
+            # Обработка входных навыков
             skills_text = self.parse_skills(student_skills)
-            processed_skills = set(self.preprocess_text(skills_text).split())
 
-            logger.info(f"Processed skills: {processed_skills}")  # Отладочный лог
+            # Извлекаем навыки из текста запроса
+            student_skills_set = self.extract_skills_from_text(skills_text)
+            logger.info(f"Extracted student skills: {student_skills_set}")
 
-            if not processed_skills:
+            if not student_skills_set:
                 logger.warning("Empty skills provided, returning empty recommendations")
                 return []
 
-        # Проверяем наличие вакансий
+            # Проверяем наличие вакансий
             if self.vacancies_df is None or self.vacancies_df.empty:
-                logg
-                er.warning("No vacancies data available")
+                logger.warning("No vacancies data available")
                 return []
 
-        # Векторизация навыков пользователя
-            student_vector = self.vectorizer.transform([" ".join(processed_skills)])
+            # Векторизация навыков пользователя
+            student_vector = self.vectorizer.transform([skills_text])
 
-        # Получение ближайших соседей с учетом минимального количества
-            n_neighbors = min(top_n, len(self.vacancies_df), self.knn_model.n_neighbors)
+            # Получение ближайших соседей с учетом минимального количества
+            n_neighbors = min(top_n * 2, len(self.vacancies_df), self.knn_model.n_neighbors)
             distances, indices = self.knn_model.kneighbors(student_vector, n_neighbors=n_neighbors)
 
-        # Формирование рекомендаций в расширенном формате
+            # Формирование рекомендаций
             recommendations = []
             for idx, dist in zip(indices[0], distances[0]):
-                row = self.vacancies_df.iloc[idx]
-                vac_id = int(row["id"])
+                vac_id = int(self.vacancies_df.iloc[idx]["id"])
                 sim_score = float((1 - dist).round(4))  # Повышаем точность
 
-            # Если сходство слишком низкое, пропускаем
+                # Если сходство слишком низкое, пропускаем
                 if sim_score < 0.1:
                     continue
 
-            # Важно: vacancy_skills должны быть предобработаны так же, как и processed_skills
-                vacancy_skills_text = row["key_skills"]
-                vacancy_skills = set(self.preprocess_text(vacancy_skills_text).split())
+                # Получаем навыки вакансии
+                vacancy_skills = self.skills_index.get(vac_id, set())
 
-            # Теперь сравнение будет корректным
-                matching_skills = list(vacancy_skills.intersection(processed_skills))
-                missing = list(vacancy_skills - processed_skills)
+                if not vacancy_skills:
+                    continue
 
-            # Вычисляем процент соответствия на основе имеющихся навыков
+                # Находим совпадающие и отсутствующие навыки
+                matching_skills = student_skills_set.intersection(vacancy_skills)
+                missing_skills = vacancy_skills.difference(student_skills_set)
+
+                # Сортируем навыки для лучшего представления
+                matching_skills = sorted(list(matching_skills))
+                missing_skills = sorted(list(missing_skills))
+
+                # Вычисляем процент соответствия
+                total_skills = len(vacancy_skills)
+                skills_matched = len(matching_skills)
+
                 match_percentage = 0
-                if vacancy_skills:
-                    match_percentage = round(len(matching_skills) / len(vacancy_skills) * 100)
+                if total_skills > 0:
+                    match_percentage = round(skills_matched / total_skills * 100)
 
-                logger.info(f"Vacancy {vac_id} - Found matches: {matching_skills}")  # Отладка
+                logger.info(f"Vacancy {vac_id} - Found matches: {matching_skills}")
 
-            # Создаем объект рекомендации с расширенной информацией
+                # Создаем объект рекомендации
                 recommendations.append({
                     "vacancy_id": vac_id,
                     "similarity_score": sim_score,
-                    "match_percentage": match_percentage,  # Процент соответствия
-                    "missing_skills": missing,
+                    "match_percentage": match_percentage,
+                    "missing_skills": missing_skills,
                     "matching_skills": matching_skills,
-                    "total_skills_required": len(vacancy_skills),
-                    "skills_matched": len(matching_skills)
+                    "total_skills_required": total_skills,
+                    "skills_matched": skills_matched
                 })
 
-        # Сортируем по проценту соответствия
+            # Сортируем по проценту соответствия
             recommendations.sort(key=lambda x: x["match_percentage"], reverse=True)
+
+            # Ограничиваем количество результатов
+            recommendations = recommendations[:top_n]
 
             logger.info(f"Recommendation completed in {(datetime.now() - start_time).total_seconds():.2f} seconds")
             return recommendations
         except Exception as e:
             logger.error(f"Error in recommendation process: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
 
 
@@ -262,6 +373,8 @@ def recommend():
         })
     except Exception as e:
         logger.error(f"API error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 @app.route("/health", methods=["GET"])
