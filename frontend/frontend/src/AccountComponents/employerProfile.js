@@ -185,9 +185,9 @@ const EmployerProfile = () => {
               <>
                 <h2>{profile.name || "Название компании"}</h2>
                 <p className="email">{profile.email || "email@company.com"}</p>
-                <p className="description">
+            <p className="description">
                   {profile.description || "Описание компании отсутствует"}
-                </p>
+            </p>
                 <button 
                   className="edit-button" 
                   onClick={handleEditClick}
@@ -245,26 +245,26 @@ const EmployerProfile = () => {
           </>
         ) : (
           <>
-            <p>
-              <strong>Веб-сайт:</strong>{" "}
+        <p>
+          <strong>Веб-сайт:</strong>{" "}
               {profile.website ? (
-                <a
+          <a
                   href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+            target="_blank"
+            rel="noopener noreferrer"
+          >
                   {profile.website}
-                </a>
+          </a>
               ) : (
                 "Не указан"
               )}
-            </p>
-            <p>
+        </p>
+        <p>
               <strong>Отрасль:</strong> {profile.industry || "Не указана"}
-            </p>
-            <p>
+        </p>
+        <p>
               <strong>Размер компании:</strong> {profile.size || "Не указан"}
-            </p>
+        </p>
           </>
         )}
       </div>

@@ -67,30 +67,32 @@ func (pr *ProfileRepo) UpdateEmployerProfile(profile *model.EmployerProfile) err
 }
 
 func (pr *ProfileRepo) GetStudentProfile(userID uint) (model.StudentProfile, error) {
-	var profile model.StudentProfile
-	query := `SELECT user_id, name, education 
-			  FROM student_profiles WHERE user_id = $1`
-	err := pr.DB.QueryRow(query, userID).Scan(&profile.UserID, &profile.Name, &profile.Education)
-	if err != nil {
-		return model.StudentProfile{}, fmt.Errorf("GetStudentProfile: %w", err)
-	}
-	return profile, nil
+	const q = `
+      SELECT user_id, name, education,
+             COALESCE(city, '') AS city,
+             status,
+             COALESCE(phone, '') AS phone
+      FROM student_profiles
+      WHERE user_id = $1
+    `
+	var p model.StudentProfile
+	err := pr.DB.QueryRow(q, userID).
+		Scan(&p.UserID, &p.Name, &p.Education, &p.City, &p.Status, &p.Phone)
+	return p, err
 }
 
-func (pr *ProfileRepo) UpdateStudentProfile(profile *model.StudentProfile) error {
-	query := `UPDATE student_profiles 
-			  SET name = $1, education = $2
-			  WHERE user_id = $3`
-	res, err := pr.DB.Exec(query, profile.Name, profile.Education, profile.UserID)
-	if err != nil {
-		return err
-	}
-	rows, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows == 0 {
-		return fmt.Errorf("no student profile updated")
-	}
-	return nil
+func (pr *ProfileRepo) UpdateStudentProfile(p *model.StudentProfile) error {
+	const q = `
+      UPDATE student_profiles SET
+        name = $1,
+        education = $2,
+        city = $3,
+        status = $4,
+        phone = $5
+      WHERE user_id = $6
+    `
+	_, err := pr.DB.Exec(q,
+		p.Name, p.Education, p.City, p.Status, p.Phone, p.UserID,
+	)
+	return err
 }

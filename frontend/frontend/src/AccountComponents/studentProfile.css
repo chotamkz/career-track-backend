@@ -43,13 +43,13 @@
     background-color: #0056b3;
 }
 
-.profile-input {
-    display: block;
-    width: 100%;
-    padding: 8px;
+.student-profile .profile-input {
     margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 14px;
 }
 
 .resume-section, .saved-jobs, .application-history, .recommendations {
@@ -110,11 +110,11 @@
 
 .error {
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     background-color: #f8d7da;
     color: #721c24;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .resume-info {
@@ -146,4 +146,80 @@
 
 .cancel-button:hover {
     background-color: #5a6268;
+}
+
+/* Стили для переключателя статуса */
+.status-toggle {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.status-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.status-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #007bff;
+}
+
+.job-status {
+    font-weight: 500;
+    color: #0066cc;
+    margin-top: 8px;
+    padding: 5px 10px;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.student-edit-button {
+    margin-top: 15px;
+    padding: 8px 20px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.student-edit-button:hover {
+    background-color: #0052a3;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.edit-buttons .student-edit-button {
+    margin-top: 0;
+}
+
+.validation-error {
+    padding: 8px;
+    margin-bottom: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.error {
+    padding: 8px;
+    margin-bottom: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 4px;
+    font-size: 14px;
 }

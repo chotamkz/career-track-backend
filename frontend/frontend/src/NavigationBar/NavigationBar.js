@@ -110,7 +110,7 @@ function NavigationBar() {
                 <Link to="/">
                     <img src={smallLogo} alt="TalentBridge Logo" className="logo-image" />
                 </Link>
-            </div>
+                    </div>
             
             {/* Кнопка мобильного меню */}
             <button 

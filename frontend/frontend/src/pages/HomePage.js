@@ -187,7 +187,7 @@ function HomePage() {
 
     return (
         <div className="App">
-            <NavigationBar />
+                <NavigationBar />
 
             {/* Hero Section */}
             <section className="hero-section">
@@ -203,14 +203,14 @@ function HomePage() {
                         <Link to="/vacancies" className="hero-btn">Найти вакансии</Link>
                         <Link to="/login" className="hero-btn hero-btn-secondary">Войти</Link>
                     </div>
-                </div>
+            </div>
             </section>
 
             {/* Slider Section - оптимизированный с мемоизированными компонентами */}
-            <div className="FullWidthSliderWrapper">
-                <div 
-                    className="FullWidthSlider" 
-                    ref={sliderRef}
+             <div className="FullWidthSliderWrapper">
+                            <div
+                                className="FullWidthSlider"
+                                ref={sliderRef}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
@@ -223,8 +223,8 @@ function HomePage() {
                             isActive={currentSlide === index}
                         />
                     ))}
-                </div>
-                
+                                </div>
+
                 {/* Слайдер навигация и стрелки */}
                 <div className="slider-nav">
                     <button 
@@ -250,8 +250,8 @@ function HomePage() {
                     >
                         &gt;
                     </button>
-                </div>
-            </div>
+                                    </div>
+                                </div>
 
             {/* Features Section */}
             <section className="features-section">
@@ -292,8 +292,8 @@ function HomePage() {
                                 Откликайтесь на интересующие вас позиции всего в несколько кликов и отслеживайте их статус
                             </p>
                         </div>
-                    </div>
-                </div>
+                                    </div>
+                                </div>
             </section>
 
             {/* Categories Section */}
@@ -306,8 +306,8 @@ function HomePage() {
                             <div className="category-content">
                                 <h3 className="category-title">Разработка</h3>
                                 <p className="category-count">125 вакансий</p>
-                            </div>
-                        </div>
+                                    </div>
+                                </div>
                         <div className="category-card">
                             <img src="https://images.unsplash.com/photo-1558655146-d09347e92766" alt="Data Science" className="category-img" />
                             <div className="category-content">
@@ -321,12 +321,12 @@ function HomePage() {
                                 <h3 className="category-title">UX/UI Дизайн</h3>
                                 <p className="category-count">64 вакансии</p>
                             </div>
-                        </div>
-                    </div>
+            </div>
+            </div>
                 </div>
             </section>
 
-            <FooterComp />
+                <FooterComp />
         </div>
     );
 }

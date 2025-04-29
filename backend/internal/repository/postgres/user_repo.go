@@ -62,3 +62,15 @@ func (ur *UserRepo) GetUserByEmail(email string) (model.User, error) {
 	}
 	return user, nil
 }
+
+func (ur *UserRepo) GetByID(userID uint) (model.User, error) {
+	const q = `
+      SELECT id, email, user_type, created_at, updated_at
+      FROM users
+      WHERE id = $1
+    `
+	var u model.User
+	err := ur.DB.QueryRow(q, userID).
+		Scan(&u.ID, &u.Email, &u.UserType, &u.CreatedAt, &u.UpdatedAt)
+	return u, err
+}

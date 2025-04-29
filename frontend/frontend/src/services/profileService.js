@@ -15,7 +15,16 @@ export const studentProfileService = {
   // Обновление профиля студента
   updateProfile: async (profileData) => {
     try {
-      const response = await apiClient.put(API_ENDPOINTS.STUDENTS.UPDATE, profileData);
+      // Подготавливаем данные для отправки на сервер
+      const dataToSend = {
+        name: profileData.name,
+        education: profileData.education,
+        city: profileData.city || "",
+        status: profileData.status || false,
+        phone: profileData.phone || ""
+      };
+      
+      const response = await apiClient.put(API_ENDPOINTS.STUDENTS.UPDATE, dataToSend);
       return response.data;
     } catch (error) {
       return handleApiError(error);

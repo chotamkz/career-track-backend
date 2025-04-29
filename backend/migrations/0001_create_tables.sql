@@ -10,7 +10,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS student_profiles (
     user_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
-    education TEXT
+    education TEXT,
+    city TEXT,
+    status BOOLEAN NOT NULL DEFAULT FALSE,
+    phone TEXT
 );
 
 CREATE TABLE IF NOT EXISTS employer_profiles (

@@ -33,6 +33,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	skillRepo := postgres.NewSkillRepo(db)
 	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, skillRepo, cfg.MLServiceURL)
 	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db), vacancyRepo)
+	userUsecase := usecase.NewUserUsecase(postgres.NewUserRepo(db, logger))
 	vacancyHandler := NewVacancyHandler(vacancyUsecase, appUsecase, logger, cfg)
 	router.GET("/api/v1/vacancies", vacancyHandler.ListVacanciesHandler)
 	router.GET("/api/v1/vacancies/:id", middleware.OptionalAuth(cfg.JWTSecret), vacancyHandler.DetailVacancyHandler)
@@ -52,15 +53,15 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	router.POST("/api/v1/auth/login", authHandler.Login)
 
 	employerProfileUsecase := usecase.NewEmployerProfileUsecase(profileRepo, logger)
-	employerProfileHandler := NewEmployerProfileHandler(employerProfileUsecase, logger)
+	employerProfileHandler := NewEmployerProfileHandler(employerProfileUsecase, userUsecase, logger)
 	router.GET("/api/v1/employers/me", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.GetEmployerProfile)
-	router.PUT("/api/v1/employers/:id", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.UpdateEmployerProfile)
+	router.PUT("/api/v1/employers/me", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.UpdateEmployerProfile)
 	router.POST("/api/v1/employers/profile", middleware.RequireEmployer(cfg.JWTSecret), employerProfileHandler.CreateEmployerProfileHandler)
 
 	studentProfileUsecase := usecase.NewStudentProfileUsecase(profileRepo, logger)
-	studentProfileHandler := NewStudentProfileHandler(studentProfileUsecase, logger)
+	studentProfileHandler := NewStudentProfileHandler(studentProfileUsecase, userUsecase, logger)
 	router.GET("/api/v1/students/me", middleware.RequireStudent(cfg.JWTSecret), studentProfileHandler.GetStudentProfile)
-	router.PUT("/api/v1/students/:id", studentProfileHandler.UpdateStudentProfile)
+	router.PUT("/api/v1/students/me", middleware.RequireStudent(cfg.JWTSecret), studentProfileHandler.UpdateStudentProfile)
 	router.POST("/api/v1/students/profile", studentProfileHandler.CreateStudentProfileHandler)
 
 	hackathonRepo := postgres.NewHackathonRepo(db)

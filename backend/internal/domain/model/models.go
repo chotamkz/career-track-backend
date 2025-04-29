@@ -45,6 +45,9 @@ type StudentProfile struct {
 	UserID    uint   `json:"userId" db:"user_id"`
 	Name      string `json:"name" db:"name"`
 	Education string `json:"education" db:"education"`
+	City      string `json:"city" db:"city"`
+	Status    bool   `json:"status" db:"status"`
+	Phone     string `json:"phone" db:"phone"`
 }
 
 type EmployerProfile struct {
