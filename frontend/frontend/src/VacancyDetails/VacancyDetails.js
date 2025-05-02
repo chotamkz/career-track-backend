@@ -11,8 +11,8 @@ const VacancyDetails = () => {
   const [vacancy, setVacancy] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [saved, setSaved] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [coverLetter, setCoverLetter] = useState("");
   const [applying, setApplying] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
@@ -59,16 +59,10 @@ const VacancyDetails = () => {
     navigate('/vacancies');
   };
 
-  // Функция для сохранения вакансии
-  const handleSaveVacancy = () => {
-    setSaved(!saved);
-    // Здесь можно добавить логику сохранения вакансии в избранное
-  };
-
   // Открыть модальное окно отклика
   const openApplyModal = () => {
     if (!isAuthenticated()) {
-      navigate('/login');
+      setShowLoginModal(true);
       return;
     }
     
@@ -78,6 +72,23 @@ const VacancyDetails = () => {
     }
     
     setShowApplyModal(true);
+  };
+
+  // Закрыть модальное окно авторизации
+  const closeLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
+  // Перенаправление на страницу регистрации
+  const handleRedirectToRegister = () => {
+    navigate('/auth/student/register');
+    closeLoginModal();
+  };
+
+  // Перенаправление на страницу входа
+  const handleRedirectToLogin = () => {
+    navigate('/auth/student');
+    closeLoginModal();
   };
 
   // Закрыть модальное окно отклика
@@ -132,8 +143,8 @@ const VacancyDetails = () => {
 
   // Получить первую букву компании для логотипа
   const getCompanyInitial = () => {
-    if (!vacancy || !vacancy.title) return "?";
-    return vacancy.title.charAt(0).toUpperCase();
+    if (!vacancy || !vacancy.companyName) return "?";
+    return vacancy.companyName.charAt(0).toUpperCase();
   };
 
   // Форматирование даты
@@ -196,7 +207,7 @@ const VacancyDetails = () => {
           <div className="employer-logo">
             {getCompanyInitial()}
           </div>
-          <span className="employer-name">Работодатель ID: {vacancy.employerId}</span>
+          <span className="employer-name">{vacancy.companyName || "Название компании не указано"}</span>
         </div>
         
         {vacancy.work_schedule && (
@@ -285,18 +296,47 @@ const VacancyDetails = () => {
           <button 
             className="apply-btn" 
             onClick={openApplyModal}
-            disabled={!isStudent}
           >
             Откликнуться на вакансию
           </button>
         )}
-        <button 
-          className="save-btn" 
-          onClick={handleSaveVacancy}
-        >
-          {saved ? "Сохранено" : "Сохранить вакансию"}
-        </button>
       </div>
+
+      {/* Модальное окно для авторизации */}
+      {showLoginModal && (
+        <div className="modal-overlay">
+          <div className="apply-modal">
+            <div className="modal-header">
+              <h3>Требуется авторизация</h3>
+              <button className="close-modal" onClick={closeLoginModal}>×</button>
+            </div>
+            
+            <div className="login-required-content">
+              <div className="login-icon">👨‍💻</div>
+              <h4>Для отклика на вакансию требуется авторизация</h4>
+              <p>
+                Чтобы откликнуться на эту вакансию, вам необходимо войти или зарегистрироваться 
+                как студент.
+              </p>
+              
+              <div className="login-options">
+                <button 
+                  className="modal-button primary" 
+                  onClick={handleRedirectToLogin}
+                >
+                  Войти
+                </button>
+                <button 
+                  className="modal-button secondary register-btn" 
+                  onClick={handleRedirectToRegister}
+                >
+                  Зарегистрироваться
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Модальное окно для отклика на вакансию */}
       {showApplyModal && (
@@ -333,6 +373,11 @@ const VacancyDetails = () => {
                 <div className="modal-content">
                   <div className="vacancy-title-small">
                     <strong>Вакансия:</strong> {vacancy.title}
+                    {vacancy.companyName && (
+                      <div className="vacancy-company-small">
+                        <strong>Компания:</strong> {vacancy.companyName}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="form-group">

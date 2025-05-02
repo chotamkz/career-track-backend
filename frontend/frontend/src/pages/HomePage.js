@@ -201,7 +201,7 @@ function HomePage() {
                     </p>
                     <div className="hero-buttons">
                         <Link to="/vacancies" className="hero-btn">Найти вакансии</Link>
-                        <Link to="/login" className="hero-btn hero-btn-secondary">Войти</Link>
+                        <Link to="/auth/student" className="hero-btn hero-btn-secondary">Войти</Link>
                     </div>
             </div>
             </section>

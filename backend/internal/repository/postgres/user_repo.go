@@ -22,17 +22,50 @@ func (ur *UserRepo) EnsureEmployerExists(employerID uint, companyName string) er
 	dummyEmail := generateDummyEmail(companyName)
 	dummyPassword := "dummy"
 
-	query := `
-		INSERT INTO users (id, email, password, user_type, created_at, updated_at)
-		VALUES ($1, $2, $3, 'EMPLOYER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-		ON CONFLICT (id) DO NOTHING
-	`
-
-	_, err := ur.DB.Exec(query, employerID, dummyEmail, dummyPassword)
+	tx, err := ur.DB.Begin()
 	if err != nil {
-		ur.Logger.Errorf("Error in EnsureEmployerExists: %v", err)
+		ur.Logger.Errorf("Error starting transaction: %v", err)
+		return err
 	}
-	return err
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
+
+	userQuery := `
+        INSERT INTO users (id, email, password, user_type, created_at, updated_at)
+        VALUES ($1, $2, $3, 'EMPLOYER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        ON CONFLICT (id) DO NOTHING
+    `
+
+	_, err = tx.Exec(userQuery, employerID, dummyEmail, dummyPassword)
+	if err != nil {
+		ur.Logger.Errorf("Error inserting user: %v", err)
+		return err
+	}
+
+	profileQuery := `
+        INSERT INTO employer_profiles (user_id, company_name, company_description, contact_info)
+        VALUES ($1, $2, '', '')
+        ON CONFLICT (user_id) 
+        DO UPDATE SET company_name = $2 WHERE employer_profiles.company_name = '' OR employer_profiles.company_name IS NULL
+    `
+
+	_, err = tx.Exec(profileQuery, employerID, companyName)
+	if err != nil {
+		ur.Logger.Errorf("Error inserting employer profile: %v", err)
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		ur.Logger.Errorf("Error committing transaction: %v", err)
+		return err
+	}
+
+	return nil
 }
 
 func generateDummyEmail(companyName string) string {

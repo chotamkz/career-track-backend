@@ -416,6 +416,12 @@
   font-size: 15px;
 }
 
+.vacancy-company-small {
+  margin-top: 8px;
+  color: #4a5568;
+  font-size: 15px;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -696,5 +702,61 @@
   
   .application-date {
     margin-left: 0;
+  }
+}
+
+/* Стили для модального окна авторизации */
+.login-required-content {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.login-icon {
+  width: 70px;
+  height: 70px;
+  background-color: #3182ce;
+  color: white;
+  font-size: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.login-required-content h4 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #2d3748;
+}
+
+.login-required-content p {
+  color: #4a5568;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.login-options {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.register-btn {
+  background-color: #fff;
+  color: #3182ce;
+  border: 1px solid #3182ce;
+}
+
+.register-btn:hover {
+  background-color: #ebf8ff;
+}
+
+/* Адаптивная верстка для кнопок в модальном окне авторизации */
+@media (max-width: 480px) {
+  .login-options {
+    flex-direction: column;
+    gap: 10px;
   }
 } 

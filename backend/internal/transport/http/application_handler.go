@@ -113,7 +113,7 @@ func (ah *ApplicationHandler) GetStudentApplicationsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"applications": apps})
 }
 
-func (h *ApplicationHandler) GetApplicationsForVacancyHandler(c *gin.Context) {
+func (ah *ApplicationHandler) GetApplicationsForVacancyHandler(c *gin.Context) {
 	vid, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid vacancy id"})
@@ -124,12 +124,12 @@ func (h *ApplicationHandler) GetApplicationsForVacancyHandler(c *gin.Context) {
 	empVal, _ := c.Get("user")
 	employerID := empVal.(uint)
 
-	apps, err := h.appUsecase.GetApplicationsForVacancy(employerID, vacancyID)
+	apps, err := ah.appUsecase.GetApplicationsWithStudentProfiles(employerID, vacancyID)
 	if err != nil {
 		if err == usecase.ErrNotVacancyOwner {
 			c.JSON(http.StatusForbidden, gin.H{"error": "You do not own this vacancy"})
 		} else {
-			h.logger.Errorf("GetApplicationsForVacancy: %v", err)
+			ah.logger.Errorf("GetApplicationsForVacancy: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load applications"})
 		}
 		return

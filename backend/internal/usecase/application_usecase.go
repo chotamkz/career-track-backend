@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
+	"github.com/chotamkz/career-track-backend/internal/util"
 	"time"
 )
 
@@ -14,14 +15,22 @@ var (
 )
 
 type ApplicationUsecase struct {
-	appRepo     repository.ApplicationRepository
-	vacancyRepo repository.VacancyRepository
+	appRepo      repository.ApplicationRepository
+	vacancyRepo  repository.VacancyRepository
+	profileRepo  repository.StudentProfileRepository
+	employerRepo repository.EmployerProfileRepository
+	userRepo     repository.UserRepository
+	logger       *util.Logger
 }
 
-func NewApplicationUsecase(appRepo repository.ApplicationRepository, vacRepo repository.VacancyRepository) *ApplicationUsecase {
+func NewApplicationUsecase(appRepo repository.ApplicationRepository, profileRepo repository.StudentProfileRepository, employerRepo repository.EmployerProfileRepository, userRepo repository.UserRepository, vacRepo repository.VacancyRepository, logger *util.Logger) *ApplicationUsecase {
 	return &ApplicationUsecase{
-		appRepo:     appRepo,
-		vacancyRepo: vacRepo,
+		appRepo:      appRepo,
+		vacancyRepo:  vacRepo,
+		profileRepo:  profileRepo,
+		employerRepo: employerRepo,
+		userRepo:     userRepo,
+		logger:       logger,
 	}
 }
 
@@ -44,16 +53,56 @@ func (au *ApplicationUsecase) ChangeApplicationStatus(appID uint, newStatus mode
 	return au.appRepo.UpdateApplicationStatus(appID, newStatus)
 }
 
-func (au *ApplicationUsecase) GetStudentApplications(studentID uint) ([]model.Application, error) {
-	return au.appRepo.GetApplicationsByStudentID(studentID)
+func (au *ApplicationUsecase) GetStudentApplications(studentID uint) ([]model.ApplicationForStudent, error) {
+	apps, err := au.appRepo.GetApplicationsWithVacanciesAndEmployers(studentID)
+	if err != nil {
+		return nil, err
+	}
+	return apps, nil
+}
+
+func (au *ApplicationUsecase) GetApplicationsWithStudentProfiles(employerID, vacancyID uint) ([]model.ApplicationWithStudent, error) {
+	vac, err := au.vacancyRepo.GetVacancyById(vacancyID)
+	if err != nil {
+		return nil, err
+	}
+	if vac.EmployerID != employerID {
+		return nil, ErrNotVacancyOwner
+	}
+
+	apps, err := au.appRepo.GetApplicationsByVacancyID(vacancyID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []model.ApplicationWithStudent
+	for _, app := range apps {
+		profile, err := au.profileRepo.GetStudentProfile(app.StudentID)
+		if err != nil {
+			au.logger.Errorf("cannot load student profile %d: %v", app.StudentID, err)
+			continue
+		}
+		user, err := au.userRepo.GetByID(app.StudentID)
+		if err != nil {
+			au.logger.Errorf("cannot load user %d: %v", app.StudentID, err)
+			continue
+		}
+
+		item := model.ApplicationWithStudent{
+			Application:  app,
+			StudentName:  profile.Name,
+			Education:    profile.Education,
+			City:         profile.City,
+			Phone:        profile.Phone,
+			StudentEmail: user.Email,
+		}
+		result = append(result, item)
+	}
+	return result, nil
 }
 
 func (au *ApplicationUsecase) GetApplicationByID(appID uint) (model.Application, error) {
 	return au.appRepo.GetApplicationByID(appID)
-}
-
-func (au *ApplicationUsecase) GetApplicationByStudentAndVacancy(studentID, vacancyID uint) (model.Application, error) {
-	return au.appRepo.GetByStudentAndVacancy(studentID, vacancyID)
 }
 
 func (au *ApplicationUsecase) GetApplicationsForVacancy(

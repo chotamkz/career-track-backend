@@ -26,17 +26,16 @@ func (vr *VacancyRepo) CountVacancies() (int, error) {
 }
 
 func (vr *VacancyRepo) GetVacancies(limit, offset int) ([]model.Vacancy, error) {
-	query := strings.TrimSpace(`
+	query := `
         SELECT 
-          id, title, requirements, location, posted_date, employer_id, created_at,
-          salary_from, salary_to, salary_currency, salary_gross, vacancy_url,
-          work_schedule, experience
+            id, title, requirements, location, posted_date, employer_id, created_at,
+            salary_from, salary_to, salary_currency, salary_gross, vacancy_url,
+            work_schedule, experience
         FROM vacancies
         ORDER BY posted_date DESC
         LIMIT $1 OFFSET $2
-    `)
+    `
 	rows, err := vr.DB.Query(query, limit, offset)
-
 	if err != nil {
 		return nil, fmt.Errorf("ListVacancies query: %v", err)
 	}
@@ -47,7 +46,8 @@ func (vr *VacancyRepo) GetVacancies(limit, offset int) ([]model.Vacancy, error) 
 		var v model.Vacancy
 		if err := rows.Scan(
 			&v.ID, &v.Title, &v.Requirements,
-			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo, &v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
+			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo,
+			&v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
 		); err != nil {
 			return nil, fmt.Errorf("ListVacancies scan: %v", err)
 		}
@@ -61,24 +61,61 @@ func (vr *VacancyRepo) GetVacancies(limit, offset int) ([]model.Vacancy, error) 
 
 func (vr *VacancyRepo) UpsertVacancy(v *model.Vacancy) error {
 	query := `
-		INSERT INTO vacancies (title, description, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-		ON CONFLICT (vacancy_url) DO UPDATE SET
-			title = EXCLUDED.title,
-			description = EXCLUDED.description,
-			requirements = EXCLUDED.requirements,
-			location = EXCLUDED.location,
-			posted_date = EXCLUDED.posted_date,
-			employer_id = EXCLUDED.employer_id,
-			salary_from = EXCLUDED.salary_from,
-			salary_to = EXCLUDED.salary_to,
-			salary_currency = EXCLUDED.salary_currency,
-			salary_gross = EXCLUDED.salary_gross,
-			work_schedule = EXCLUDED.work_schedule,
-			experience = EXCLUDED.experience
-		RETURNING id
-	`
-	return vr.DB.QueryRow(query, v.Title, v.Description, v.Requirements, v.Location, v.PostedDate, v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency, v.SalaryGross, v.VacancyURL, v.WorkSchedule, v.Experience).Scan(&v.ID)
+        WITH upsert AS (
+            INSERT INTO vacancies (
+                title, description, requirements, location, posted_date, employer_id, created_at,
+                salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            ON CONFLICT (vacancy_url) WHERE vacancy_url IS NOT NULL 
+            DO UPDATE SET
+                title = EXCLUDED.title,
+                description = EXCLUDED.description,
+                requirements = EXCLUDED.requirements,
+                location = EXCLUDED.location,
+                posted_date = EXCLUDED.posted_date,
+                employer_id = EXCLUDED.employer_id,
+                salary_from = EXCLUDED.salary_from,
+                salary_to = EXCLUDED.salary_to,
+                salary_currency = EXCLUDED.salary_currency,
+                salary_gross = EXCLUDED.salary_gross,
+                work_schedule = EXCLUDED.work_schedule,
+                experience = EXCLUDED.experience
+            RETURNING id
+        )
+        SELECT id FROM upsert
+        UNION ALL
+        SELECT id FROM vacancies WHERE vacancy_url = $12 AND $12 IS NOT NULL
+        LIMIT 1
+    `
+
+	var id uint
+	var err error
+
+	if !v.VacancyURL.Valid || v.VacancyURL.String == "" {
+		insertQuery := `
+            INSERT INTO vacancies (
+                title, description, requirements, location, posted_date, employer_id, created_at,
+                salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            RETURNING id
+        `
+		err = vr.DB.QueryRow(insertQuery, v.Title, v.Description, v.Requirements, v.Location, v.PostedDate,
+			v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency,
+			v.SalaryGross, v.VacancyURL, v.WorkSchedule, v.Experience).Scan(&id)
+	} else {
+		err = vr.DB.QueryRow(query, v.Title, v.Description, v.Requirements, v.Location, v.PostedDate,
+			v.EmployerID, v.CreatedAt, v.SalaryFrom, v.SalaryTo, v.SalaryCurrency,
+			v.SalaryGross, v.VacancyURL.String, v.WorkSchedule, v.Experience).Scan(&id)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	v.ID = id
+	return nil
 }
 
 func (vr *VacancyRepo) UpdateVacancy(v *model.Vacancy) error {
@@ -133,6 +170,95 @@ func (vr *VacancyRepo) GetVacancyById(id uint) (model.Vacancy, error) {
 	}
 	v.Skills = skills
 	return v, nil
+}
+
+func (vr *VacancyRepo) GetVacancyWithDetails(id uint) (model.VacancyDetailResponse, error) {
+	query := `
+        SELECT 
+            v.id, v.title, v.description, v.requirements, v.location, 
+            v.posted_date, v.employer_id, v.created_at, v.salary_from, v.salary_to, 
+            v.salary_currency, v.salary_gross, v.vacancy_url, v.work_schedule, v.experience,
+            e.company_name
+        FROM 
+            vacancies v
+        JOIN 
+            employer_profiles e ON v.employer_id = e.user_id
+        WHERE 
+            v.id = $1
+    `
+
+	var result model.VacancyDetailResponse
+	var v model.Vacancy
+
+	err := vr.DB.QueryRow(query, id).Scan(
+		&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location,
+		&v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo,
+		&v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
+		&result.CompanyName,
+	)
+	if err != nil {
+		return model.VacancyDetailResponse{}, fmt.Errorf("GetVacancyWithDetails: %w", err)
+	}
+
+	// Получаем навыки для вакансии
+	skills, err := vr.getSkillsForVacancy(v.ID)
+	if err != nil {
+		return model.VacancyDetailResponse{}, fmt.Errorf("GetVacancyWithDetails skills: %w", err)
+	}
+	v.Skills = skills
+
+	result.Vacancy = v
+	return result, nil
+}
+
+func (vr *VacancyRepo) GetVacancyWithDetailsAndApplication(id uint, studentID uint) (model.VacancyDetailResponse, error) {
+	query := `
+        SELECT 
+            v.id, v.title, v.description, v.requirements, v.location, 
+            v.posted_date, v.employer_id, v.created_at, v.salary_from, v.salary_to, 
+            v.salary_currency, v.salary_gross, v.vacancy_url, v.work_schedule, v.experience,
+            e.company_name,
+            a.status
+        FROM 
+            vacancies v
+        JOIN 
+            employer_profiles e ON v.employer_id = e.user_id
+        LEFT JOIN 
+            (SELECT vacancy_id, status FROM applications 
+             WHERE student_id = $2 AND vacancy_id = $1
+             ORDER BY submitted_date DESC LIMIT 1) a ON v.id = a.vacancy_id
+        WHERE 
+            v.id = $1
+    `
+
+	var result model.VacancyDetailResponse
+	var v model.Vacancy
+	var appStatus sql.NullString
+
+	err := vr.DB.QueryRow(query, id, studentID).Scan(
+		&v.ID, &v.Title, &v.Description, &v.Requirements, &v.Location,
+		&v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo,
+		&v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
+		&result.CompanyName,
+		&appStatus,
+	)
+	if err != nil {
+		return model.VacancyDetailResponse{}, fmt.Errorf("GetVacancyWithDetailsAndApplication: %w", err)
+	}
+
+	skills, err := vr.getSkillsForVacancy(v.ID)
+	if err != nil {
+		return model.VacancyDetailResponse{}, fmt.Errorf("GetVacancyWithDetailsAndApplication skills: %w", err)
+	}
+	v.Skills = skills
+
+	if appStatus.Valid {
+		status := appStatus.String
+		result.ApplicationStatus = (*model.ApplicationStatus)(&status)
+	}
+
+	result.Vacancy = v
+	return result, nil
 }
 
 func (vr *VacancyRepo) CountFilteredVacancies(filter model.VacancyFilter) (int, error) {
@@ -288,14 +414,15 @@ func (vr *VacancyRepo) InsertVacancySkill(vacancyID uint, skillName string) erro
 
 func (vr *VacancyRepo) getSkillsForVacancy(vacancyID uint) ([]string, error) {
 	query := `
-		SELECT s.name 
-		FROM vacancy_skills vs
-		JOIN skills s ON vs.skill_id = s.id
-		WHERE vs.vacancy_id = $1
-	`
+        SELECT s.name
+        FROM vacancy_skills vs
+        JOIN skills s ON vs.skill_id = s.id
+        WHERE vs.vacancy_id = $1
+    `
+
 	rows, err := vr.DB.Query(query, vacancyID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getSkillsForVacancy: %w", err)
 	}
 	defer rows.Close()
 
@@ -303,10 +430,15 @@ func (vr *VacancyRepo) getSkillsForVacancy(vacancyID uint) ([]string, error) {
 	for rows.Next() {
 		var skill string
 		if err := rows.Scan(&skill); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("getSkillsForVacancy scan: %w", err)
 		}
 		skills = append(skills, skill)
 	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("getSkillsForVacancy rows: %w", err)
+	}
+
 	return skills, nil
 }
 
@@ -443,4 +575,48 @@ func (vr *VacancyRepo) GetAllRegions() ([]string, error) {
 		return nil, fmt.Errorf("GetAllRegions rows: %v", err)
 	}
 	return regions, nil
+}
+
+func (vr *VacancyRepo) GetVacanciesWithApplicationStatus(limit, offset int, studentID uint) ([]model.Vacancy, error) {
+	query := `
+        SELECT 
+            v.id, v.title, v.requirements, v.location, v.posted_date, v.employer_id, v.created_at,
+            v.salary_from, v.salary_to, v.salary_currency, v.salary_gross, v.vacancy_url,
+            v.work_schedule, v.experience,
+            CASE WHEN a.vacancy_id IS NOT NULL AND a.status != 'REJECTED' THEN true ELSE false END AS applied
+        FROM 
+            vacancies v
+        LEFT JOIN 
+            (SELECT vacancy_id, status FROM applications WHERE student_id = $3 AND status != 'REJECTED') a 
+            ON v.id = a.vacancy_id
+        ORDER BY 
+            v.posted_date DESC
+        LIMIT $1 OFFSET $2
+    `
+
+	rows, err := vr.DB.Query(query, limit, offset, studentID)
+	if err != nil {
+		return nil, fmt.Errorf("GetVacanciesWithApplicationStatus query: %v", err)
+	}
+	defer rows.Close()
+
+	var vacancies []model.Vacancy
+	for rows.Next() {
+		var v model.Vacancy
+		if err := rows.Scan(
+			&v.ID, &v.Title, &v.Requirements,
+			&v.Location, &v.PostedDate, &v.EmployerID, &v.CreatedAt, &v.SalaryFrom, &v.SalaryTo,
+			&v.SalaryCurrency, &v.SalaryGross, &v.VacancyURL, &v.WorkSchedule, &v.Experience,
+			&v.Applied,
+		); err != nil {
+			return nil, fmt.Errorf("GetVacanciesWithApplicationStatus scan: %v", err)
+		}
+		vacancies = append(vacancies, v)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetVacanciesWithApplicationStatus rows: %v", err)
+	}
+
+	return vacancies, nil
 }

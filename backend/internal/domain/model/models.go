@@ -81,6 +81,7 @@ type Vacancy struct {
 	WorkSchedule   string         `json:"work_schedule" db:"work_schedule"`
 	Experience     string         `json:"experience" db:"experience"`
 	Skills         []string       `json:"skills,omitempty" db:"-"`
+	Applied        bool           `json:"applied,omitempty" db:"-"`
 }
 
 type Application struct {

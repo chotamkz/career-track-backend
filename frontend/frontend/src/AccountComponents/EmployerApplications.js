@@ -120,15 +120,37 @@ const EmployerApplications = () => {
       console.log("Parsed applications:", applicationsData);
       
       // Дополняем заявки информацией о студентах и вакансиях
-      // В реальном API эта информация может быть уже включена в ответ
-      const enhancedApplications = applicationsData.map(app => ({
-        ...app,
-        vacancyTitle: vacancies.find(v => v.id === app.vacancyId)?.title || `Вакансия #${app.vacancyId}`,
-        applicantName: app.studentName || `Студент #${app.studentId}`,
-        applicantEmail: app.studentEmail || 'не указан',
-        applicationDate: app.submittedDate || app.createdAt || new Date().toISOString(),
-        status: app.status || "PENDING"
-      }));
+      const enhancedApplications = applicationsData.map(app => {
+        // Определяем, имеет ли объект вложенную структуру (как в новом API)
+        const applicationData = app.application || app;
+        const studentData = app.studentName ? app : applicationData;
+        
+        return {
+          // Информация о заявке
+          id: applicationData.id,
+          studentId: applicationData.studentId,
+          vacancyId: applicationData.vacancyId,
+          coverLetter: applicationData.coverLetter,
+          submittedDate: applicationData.submittedDate,
+          status: applicationData.status || "APPLIED",
+          updatedDate: applicationData.updatedDate,
+          
+          // Информация о вакансии
+          vacancyTitle: vacancies.find(v => v.id === applicationData.vacancyId)?.title || `Вакансия #${applicationData.vacancyId}`,
+          
+          // Информация о студенте
+          studentName: app.studentName || `Студент #${applicationData.studentId}`,
+          applicantName: app.studentName || `Студент #${applicationData.studentId}`,
+          applicantEmail: app.email || 'не указан',
+          applicationDate: applicationData.submittedDate || applicationData.createdAt || new Date().toISOString(),
+          
+          // Новые поля данных студента
+          education: app.education || "Не указано",
+          city: app.city || "Не указан",
+          phone: app.phone || "Не указан",
+          email: app.email || "Не указан"
+        };
+      });
       
       setAllApplications(enhancedApplications);
       applyFiltersAndPagination(enhancedApplications);
@@ -364,8 +386,25 @@ const EmployerApplications = () => {
                 
                 <div className="employer-applications__applicant-info">
                   <span className="employer-applications__applicant-name">
-                    {application.applicantName}
+                    {application.studentName || application.applicantName}
                   </span>
+                  <div className="employer-applications__applicant-details">
+                    {application.email && (
+                      <span className="employer-applications__applicant-email">
+                        ✉️ {application.email}
+                      </span>
+                    )}
+                    {application.city && (
+                      <span className="employer-applications__applicant-city">
+                        📍 {application.city}
+                      </span>
+                    )}
+                    {application.education && (
+                      <span className="employer-applications__applicant-education">
+                        🎓 {application.education}
+                      </span>
+                    )}
+                  </div>
                   <span className="employer-applications__date">
                     {formatDate(application.applicationDate)}
                   </span>
@@ -415,12 +454,27 @@ const EmployerApplications = () => {
             <div className="employer-applications__details-info">
               <div className="employer-applications__details-row">
                 <span className="employer-applications__details-label">Соискатель:</span>
-                <span className="employer-applications__details-value">{selectedApplication.applicantName}</span>
+                <span className="employer-applications__details-value">{selectedApplication.studentName || selectedApplication.applicantName}</span>
               </div>
               
               <div className="employer-applications__details-row">
                 <span className="employer-applications__details-label">Email:</span>
-                <span className="employer-applications__details-value">{selectedApplication.applicantEmail}</span>
+                <span className="employer-applications__details-value">{selectedApplication.email || selectedApplication.applicantEmail}</span>
+              </div>
+
+              <div className="employer-applications__details-row">
+                <span className="employer-applications__details-label">Телефон:</span>
+                <span className="employer-applications__details-value">{selectedApplication.phone || "Не указан"}</span>
+              </div>
+
+              <div className="employer-applications__details-row">
+                <span className="employer-applications__details-label">Образование:</span>
+                <span className="employer-applications__details-value">{selectedApplication.education || "Не указано"}</span>
+              </div>
+
+              <div className="employer-applications__details-row">
+                <span className="employer-applications__details-label">Город:</span>
+                <span className="employer-applications__details-value">{selectedApplication.city || "Не указан"}</span>
               </div>
               
               <div className="employer-applications__details-row">

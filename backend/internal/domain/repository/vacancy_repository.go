@@ -17,4 +17,7 @@ type VacancyRepository interface {
 	UpdateVacancy(vac *model.Vacancy) error
 	SetSkills(vacancyID uint, skillIDs []uint) error
 	GetAllRegions() ([]string, error)
+	GetVacanciesWithApplicationStatus(limit, offset int, studentID uint) ([]model.Vacancy, error)
+	GetVacancyWithDetails(id uint) (model.VacancyDetailResponse, error)
+	GetVacancyWithDetailsAndApplication(id uint, studentID uint) (model.VacancyDetailResponse, error)
 }

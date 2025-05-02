@@ -2,12 +2,14 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: white;
 }
 
 .applications-content {
   flex: 1;
   margin-top: 120px;
   padding-bottom: 50px;
+  background-color: white;
 }
 
 /* Адаптивность для мобильных устройств */

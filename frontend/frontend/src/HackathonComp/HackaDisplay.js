@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./HackaDisplay.css";
 import { hackathonService } from '../services/api';
 
@@ -24,8 +24,10 @@ const hackathonImages = [
 
 const HackaDisplay = () => {
   const [hackathons, setHackathons] = useState([]);
+  const [filteredHackathons, setFilteredHackathons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchHackathons = async () => {
@@ -45,6 +47,7 @@ const HackaDisplay = () => {
         }));
 
         setHackathons(hackathonsWithImages);
+        setFilteredHackathons(hackathonsWithImages);
         setError(null);
       } catch (err) {
         setError('Не удалось загрузить данные хакатонов');
@@ -56,6 +59,21 @@ const HackaDisplay = () => {
 
     fetchHackathons();
   }, []);
+
+  // Эффект для обработки изменений в параметрах URL
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const query = searchParams.get('query');
+    
+    if (query) {
+      const filtered = hackathons.filter(hackathon => 
+        hackathon.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredHackathons(filtered);
+    } else {
+      setFilteredHackathons(hackathons);
+    }
+  }, [location.search, hackathons]);
 
   const calculateDaysLeft = (startDate) => {
     const today = new Date();
@@ -74,8 +92,10 @@ const HackaDisplay = () => {
             <p>Загрузка хакатонов...</p>
           ) : error ? (
             <p className="error-message">{error}</p>
+          ) : filteredHackathons.length === 0 ? (
+            <p className="no-results">По вашему запросу хакатонов не найдено</p>
           ) : (
-            hackathons.map((hackathon) => (
+            filteredHackathons.map((hackathon) => (
               <div key={hackathon.id} className="hackathon-card">
                 <div className="hackathon-image" style={{ backgroundImage: `url(${hackathon.image})` }}>
                   {/* Изображение хакатона как фон */}
@@ -125,9 +145,6 @@ const HackaDisplay = () => {
           </table>
         </div>
       </div>
-      <Link style={{ textDecoration: 'none', color: 'white' }} to="/hackatons-storage">
-        <button className="view-all-button">Все хакатоны</button>
-      </Link>
     </div>
   );
 };

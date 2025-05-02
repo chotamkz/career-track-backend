@@ -9,4 +9,5 @@ type ApplicationRepository interface {
 	GetApplicationByID(appID uint) (model.Application, error)
 	GetByStudentAndVacancy(studentID, vacancyID uint) (model.Application, error)
 	GetApplicationsByVacancyID(vacancyID uint) ([]model.Application, error)
+	GetApplicationsWithVacanciesAndEmployers(studentID uint) ([]model.ApplicationForStudent, error)
 }

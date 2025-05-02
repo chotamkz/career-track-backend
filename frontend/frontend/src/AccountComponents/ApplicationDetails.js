@@ -234,38 +234,32 @@ const ApplicationDetails = () => {
               </div>
               
               <div className="application-company-info">
-                <span>{application.companyName || "Компания не указана"}</span>
+                <span className="application-company-name">{application.companyName || "Компания не указана"}</span>
                 {application.location && (
                   <span className="application-location">📍 {application.location}</span>
                 )}
               </div>
               
-              {application.updateDate && application.updateDate !== application.submittedDate && (
+              {application.updatedDate && application.updatedDate !== application.submittedDate && (
                 <div className="application-date">
-                  <span>Обновлено: {new Date(application.updateDate).toLocaleDateString()}</span>
+                  <span>Обновлено: {new Date(application.updatedDate).toLocaleDateString()}</span>
                 </div>
               )}
               
               {application.submittedDate && (
                 <div className="application-date">
-                  <span>Дата подачи: {new Date(application.submittedDate).toLocaleDateString()}</span>
+                  <span>Отправлено: {new Date(application.submittedDate).toLocaleDateString()}</span>
                 </div>
               )}
-              
-              {application.feedback && (
-                <div className="application-feedback">
-                  <h4>Отзыв от работодателя:</h4>
-                  <p>{application.feedback}</p>
-                </div>
-              )}
-              
+
               {application.coverLetter && (
-                <div className="application-cover-letter">
-                  <details>
-                    <summary>Сопроводительное письмо</summary>
-                    <p>{application.coverLetter}</p>
-                  </details>
-                </div>
+                <details 
+                  className="application-cover-letter"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <summary>Сопроводительное письмо</summary>
+                  <p>{application.coverLetter}</p>
+                </details>
               )}
             </div>
           ))}

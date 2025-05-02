@@ -58,7 +58,8 @@ func main() {
 	//--parsing hh vacancies
 	/*	userRepo := postgres.NewUserRepo(dbConn, logger)
 		vacancyRepo := postgres.NewVacancyRepo(dbConn)
-		vacancyUse := usecase.NewVacancyUsecase(vacancyRepo)
+		skillRepo := postgres.NewSkillRepo(dbConn)
+		vacancyUse := usecase.NewVacancyUsecase(vacancyRepo, skillRepo, cfg.MLServiceURL)
 
 		vacancyScheduler := scheduler.NewVacancyScheduler(
 			dbConn,

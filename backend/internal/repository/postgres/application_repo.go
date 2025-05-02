@@ -129,3 +129,46 @@ func (ar *ApplicationRepo) GetApplicationsByVacancyID(vacancyID uint) ([]model.A
 	}
 	return apps, rows.Err()
 }
+
+func (ar *ApplicationRepo) GetApplicationsWithVacanciesAndEmployers(studentID uint) ([]model.ApplicationForStudent, error) {
+	query := `
+        SELECT 
+            a.id, a.vacancy_id, a.cover_letter, a.submitted_date, a.status, a.updated_date,
+            v.title AS vacancy_title,
+            e.company_name
+        FROM 
+            applications a
+        JOIN 
+            vacancies v ON a.vacancy_id = v.id
+        JOIN 
+            employer_profiles e ON v.employer_id = e.user_id
+        WHERE 
+            a.student_id = $1
+        ORDER BY 
+            a.submitted_date DESC
+    `
+
+	rows, err := ar.DB.Query(query, studentID)
+	if err != nil {
+		return nil, fmt.Errorf("GetApplicationsWithVacanciesAndEmployers: %v", err)
+	}
+	defer rows.Close()
+
+	var results []model.ApplicationForStudent
+	for rows.Next() {
+		var app model.ApplicationForStudent
+		if err := rows.Scan(
+			&app.ID, &app.VacancyID, &app.CoverLetter, &app.SubmittedDate,
+			&app.Status, &app.UpdatedDate, &app.VacancyTitle, &app.CompanyName,
+		); err != nil {
+			return nil, fmt.Errorf("GetApplicationsWithVacanciesAndEmployers scan: %v", err)
+		}
+		results = append(results, app)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetApplicationsWithVacanciesAndEmployers rows: %v", err)
+	}
+
+	return results, nil
+}

@@ -5,12 +5,11 @@ import { isAuthenticated } from "../services/authService";
 
 const EmployerProfile = () => {
   const [profile, setProfile] = useState({
-    name: "",
+    userId: null,
     email: "",
-    description: "",
-    website: "",
-    industry: "",
-    size: "",
+    companyName: "",
+    companyDescription: "",
+    contactInfo: "",
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -142,23 +141,15 @@ const EmployerProfile = () => {
               <>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name || ""}
+                  name="companyName"
+                  value={formData.companyName || ""}
                   onChange={handleInputChange}
                   className="company-input"
                   placeholder="Название компании"
                 />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email || ""}
-                  onChange={handleInputChange}
-                  className="company-input"
-                  placeholder="Email"
-                />
                 <textarea
-                  name="description"
-                  value={formData.description || ""}
+                  name="companyDescription"
+                  value={formData.companyDescription || ""}
                   onChange={handleInputChange}
                   className="company-textarea"
                   placeholder="Описание компании"
@@ -183,11 +174,11 @@ const EmployerProfile = () => {
               </>
             ) : (
               <>
-                <h2>{profile.name || "Название компании"}</h2>
+                <h2>{profile.companyName || "Название компании"}</h2>
                 <p className="email">{profile.email || "email@company.com"}</p>
-            <p className="description">
-                  {profile.description || "Описание компании отсутствует"}
-            </p>
+                <p className="description">
+                  {profile.companyDescription || "Описание компании отсутствует"}
+                </p>
                 <button 
                   className="edit-button" 
                   onClick={handleEditClick}
@@ -206,65 +197,23 @@ const EmployerProfile = () => {
           <>
             <div className="overview-form">
               <div className="form-group">
-                <label>Веб-сайт:</label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website || ""}
+                <label>Контактная информация:</label>
+                <textarea
+                  name="contactInfo"
+                  value={formData.contactInfo || ""}
                   onChange={handleInputChange}
-                  placeholder="https://example.com"
+                  className="company-textarea"
+                  placeholder="Контактная информация"
                 />
-              </div>
-              <div className="form-group">
-                <label>Отрасль:</label>
-                <input
-                  type="text"
-                  name="industry"
-                  value={formData.industry || ""}
-                  onChange={handleInputChange}
-                  placeholder="Сфера деятельности"
-                />
-              </div>
-              <div className="form-group">
-                <label>Размер компании:</label>
-                <select 
-                  name="size" 
-                  value={formData.size || ""}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Выберите размер</option>
-                  <option value="1-10 сотрудников">1-10 сотрудников</option>
-                  <option value="11-50 сотрудников">11-50 сотрудников</option>
-                  <option value="51-200 сотрудников">51-200 сотрудников</option>
-                  <option value="201-500 сотрудников">201-500 сотрудников</option>
-                  <option value="501-1000 сотрудников">501-1000 сотрудников</option>
-                  <option value="1001+ сотрудников">1001+ сотрудников</option>
-                </select>
               </div>
             </div>
           </>
         ) : (
           <>
-        <p>
-          <strong>Веб-сайт:</strong>{" "}
-              {profile.website ? (
-          <a
-                  href={profile.website}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-                  {profile.website}
-          </a>
-              ) : (
-                "Не указан"
-              )}
-        </p>
-        <p>
-              <strong>Отрасль:</strong> {profile.industry || "Не указана"}
-        </p>
-        <p>
-              <strong>Размер компании:</strong> {profile.size || "Не указан"}
-        </p>
+            <p>
+              <strong>Контактная информация:</strong>{" "}
+              {profile.contactInfo || "Не указана"}
+            </p>
           </>
         )}
       </div>

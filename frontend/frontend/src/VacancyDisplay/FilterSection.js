@@ -32,7 +32,9 @@ const FilterSection = memo(({
   // Отслеживание изменения размера окна для управления видимостью фильтра
   useEffect(() => {
     const handleResize = () => {
-      setIsFilterVisible(window.innerWidth > 768);
+      if (window.innerWidth > 768) {
+        setIsFilterVisible(true);
+      }
     };
     
     window.addEventListener('resize', handleResize);
@@ -183,7 +185,7 @@ const FilterSection = memo(({
       </button>
       
       {isFilterVisible && (
-        <div className="filter-section">
+        <div className="filter-section mobile-filter-persistent">
           <h3 className="filter-title">Ключевые слова</h3>
           <input
             type="text"
@@ -192,7 +194,13 @@ const FilterSection = memo(({
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
             onKeyDown={handleInputKeyDown}
-            onBlur={triggerSearch}
+            onBlur={(e) => {
+              // Предотвращаем скрытие фильтра и запускаем поиск
+              e.preventDefault();
+              if (e.target.value !== initialKeywords) {
+                triggerSearch();
+              }
+            }}
           />
           <div className="filter-checkboxes">
             <label className="filter-checkbox-label">
@@ -233,7 +241,13 @@ const FilterSection = memo(({
               value={mlSkills}
               onChange={(e) => setMlSkills(e.target.value)}
               onKeyDown={handleInputKeyDown}
-              onBlur={triggerSearch}
+              onBlur={(e) => {
+                // Предотвращаем скрытие фильтра и запускаем поиск
+                e.preventDefault();
+                if (e.target.value !== initialMlSkills) {
+                  triggerSearch();
+                }
+              }}
             />
           </div>
           <div className="skills-hint">

@@ -1281,22 +1281,4 @@
       gap: 10px;
     }
   }
-
-  .mobile-filter-persistent {
-    position: relative;
-    z-index: 100;
-  }
-
-  /* Исправление для мобильного ввода */
-  @media (max-width: 768px) {
-    .mobile-filter-persistent {
-      position: static;
-      display: block !important;
-    }
-    
-    .mobile-filter-persistent input:focus {
-      position: relative;
-      z-index: 101;
-    }
-  }
   

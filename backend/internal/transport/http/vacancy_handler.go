@@ -15,18 +15,20 @@ import (
 )
 
 type VacancyHandler struct {
-	vacancyUsecase *usecase.VacancyUsecase
-	logger         *util.Logger
-	cfg            *config.Config
-	appUsecase     *usecase.ApplicationUsecase
+	vacancyUsecase    *usecase.VacancyUsecase
+	logger            *util.Logger
+	cfg               *config.Config
+	appUsecase        *usecase.ApplicationUsecase
+	empProfileUsecase *usecase.EmployerProfileUsecase
 }
 
-func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, appUsecase *usecase.ApplicationUsecase, logger *util.Logger, cfg *config.Config) *VacancyHandler {
+func NewVacancyHandler(vacUsecase *usecase.VacancyUsecase, appUsecase *usecase.ApplicationUsecase, empProfileUsecase *usecase.EmployerProfileUsecase, logger *util.Logger, cfg *config.Config) *VacancyHandler {
 	return &VacancyHandler{
-		vacancyUsecase: vacUsecase,
-		appUsecase:     appUsecase,
-		logger:         logger,
-		cfg:            cfg,
+		vacancyUsecase:    vacUsecase,
+		appUsecase:        appUsecase,
+		empProfileUsecase: empProfileUsecase,
+		logger:            logger,
+		cfg:               cfg,
 	}
 }
 
@@ -40,7 +42,14 @@ func (vh *VacancyHandler) ListVacanciesHandler(c *gin.Context) {
 		size = 5
 	}
 
-	vacancies, total, err := vh.vacancyUsecase.ListVacancies(page, size)
+	var studentID *uint
+	if val, exists := c.Get("user"); exists {
+		if id, ok := val.(uint); ok {
+			studentID = &id
+		}
+	}
+
+	vacancies, total, err := vh.vacancyUsecase.ListVacancies(page, size, studentID)
 	if err != nil {
 		vh.logger.Errorf("ListVacancies failed: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancies"})
@@ -64,27 +73,20 @@ func (vh *VacancyHandler) DetailVacancyHandler(c *gin.Context) {
 	}
 	vacancyID := uint(vid64)
 
-	vac, err := vh.vacancyUsecase.GetVacancyById(vacancyID)
-	if err != nil {
-		vh.logger.Errorf("Failed to get vacancy %d: %v", vacancyID, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancy"})
-		return
-	}
-
-	resp := model.VacancyDetailResponse{Vacancy: vac}
-
+	var studentID *uint
 	if ut, exists := c.Get("userType"); exists && ut == string(model.UserTypeStudent) {
 		if uidVal, ok := c.Get("user"); ok {
-			if studentID, ok2 := uidVal.(uint); ok2 {
-				app, err := vh.appUsecase.GetApplicationByStudentAndVacancy(studentID, vacancyID)
-				if err == nil {
-					resp.ApplicationStatus = &app.Status
-				}
-				if err != nil && err != sql.ErrNoRows {
-					vh.logger.Errorf("Error fetching app for student %d on vacancy %d: %v", studentID, vacancyID, err)
-				}
+			if sid, ok2 := uidVal.(uint); ok2 {
+				studentID = &sid
 			}
 		}
+	}
+
+	resp, err := vh.vacancyUsecase.GetVacancyWithDetails(vacancyID, studentID)
+	if err != nil {
+		vh.logger.Errorf("Failed to get vacancy details %d: %v", vacancyID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load vacancy details"})
+		return
 	}
 
 	c.JSON(http.StatusOK, resp)
@@ -146,6 +148,7 @@ func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 		"vacancies":  vacs,
 	})
 }
+
 func (vh *VacancyHandler) CreateVacancyHandler(c *gin.Context) {
 	var input struct {
 		Title          string   `json:"title"`

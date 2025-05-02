@@ -123,6 +123,15 @@ func (h *EmployerProfileHandler) UpdateEmployerProfile(c *gin.Context) {
 		return
 	}
 
-	// 5) отдаем свежий профиль
 	c.JSON(http.StatusOK, profile)
+}
+
+func (h *EmployerProfileHandler) GetCompanyNames(c *gin.Context) {
+	names, err := h.usecase.GetAllCompanyNames()
+	if err != nil {
+		h.logger.Errorf("GetAllCompanyNames failed: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load company names"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"companyNames": names})
 }

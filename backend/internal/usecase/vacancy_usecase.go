@@ -10,6 +10,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 )
@@ -45,13 +46,7 @@ func NewVacancyUsecase(vacRepo repository.VacancyRepository, skillRepo repositor
 	}
 }
 
-func (vu *VacancyUsecase) ListVacancies(page, size int) ([]model.Vacancy, int, error) {
-	if page < 1 {
-		page = 1
-	}
-	if size < 1 {
-		size = 5
-	}
+func (vu *VacancyUsecase) ListVacancies(page, size int, studentID *uint) ([]model.Vacancy, int, error) {
 	offset := (page - 1) * size
 
 	var total int
@@ -66,19 +61,28 @@ func (vu *VacancyUsecase) ListVacancies(page, size int) ([]model.Vacancy, int, e
 		vu.countCache.Set("vacancyTotalCount", total, cache.DefaultExpiration)
 	}
 
-	if size == 0 {
-		return nil, total, nil
+	if studentID != nil {
+		vacancies, err := vu.vacancyRepo.GetVacanciesWithApplicationStatus(size, offset, *studentID)
+		if err != nil {
+			return nil, 0, fmt.Errorf("cannot list vacancies with application status: %v", err)
+		}
+		return vacancies, total, nil
 	}
 
-	vacs, err := vu.vacancyRepo.GetVacancies(size, offset)
+	vacancies, err := vu.vacancyRepo.GetVacancies(size, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("cannot list vacancies: %v", err)
 	}
-	return vacs, total, nil
+
+	return vacancies, total, nil
 }
 
-func (vu *VacancyUsecase) GetVacancyById(id uint) (model.Vacancy, error) {
-	return vu.vacancyRepo.GetVacancyById(id)
+func (vu *VacancyUsecase) GetVacancyWithDetails(id uint, studentID *uint) (model.VacancyDetailResponse, error) {
+	if studentID != nil {
+		return vu.vacancyRepo.GetVacancyWithDetailsAndApplication(id, *studentID)
+	}
+
+	return vu.vacancyRepo.GetVacancyWithDetails(id)
 }
 
 func (vu *VacancyUsecase) FilterVacancies(
@@ -205,6 +209,10 @@ func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, ml
 			})
 		}
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].MatchPercentage > result[j].MatchPercentage
+	})
 
 	return result, nil
 }
