@@ -243,69 +243,6 @@ const StudentProfile = () => {
           </div>
         </div>
       </div>
-
-      <div className="resume-section">
-        <h3>Резюме</h3>
-        <div className="resume-upload-box">
-          {profile.hasResume ? (
-            <div className="resume-info">
-              <p>Ваше резюме загружено</p>
-              <a 
-                href={profile.resumeUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="resume-link"
-              >
-                Просмотреть резюме
-              </a>
-            </div>
-          ) : (
-          <p>Загрузите своё резюме</p>
-          )}
-          <input 
-            type="file" 
-            className="upload-input" 
-            onChange={handleResumeUpload}
-            accept=".pdf,.doc,.docx" 
-          />
-        </div>
-      </div>
-
-      <div className="saved-jobs">
-        <h3>Сохраненные вакансии</h3>
-        <div className="job-list">
-          {savedVacancies.length > 0 ? (
-            savedVacancies.map((vacancy) => (
-              <div className="job-card" key={vacancy.id}>
-                {vacancy.title} - {vacancy.companyName}
-              </div>
-            ))
-          ) : (
-            <div className="empty-list">У вас нет сохраненных вакансий</div>
-          )}
-        </div>
-      </div>
-
-      <div className="application-history">
-        <h3>История заявок</h3>
-        <div className="job-list">
-          {applications.length > 0 ? (
-            applications.map((app) => (
-              <div className="job-card" key={app.id}>
-                {app.vacancyTitle} - {app.companyName}
-                <span className="application-status">{app.status}</span>
-              </div>
-            ))
-          ) : (
-        <div className="history-box">В настоящий момент у вас нет активных заявок</div>
-          )}
-        </div>
-      </div>
-
-      <div className="recommendations">
-        <h3>Рекомендации</h3>
-        <div className="recommendation-box">Упс... ваша лента рекомендаций пуста</div>
-      </div>
     </div>
   );
 };

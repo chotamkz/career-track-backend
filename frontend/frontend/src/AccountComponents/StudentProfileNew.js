@@ -316,33 +316,6 @@ const StudentProfile = () => {
           </div>
         </div>
       </div>
-
-      <div className="resume-section">
-        <h3>Резюме</h3>
-        <div className="resume-upload-box">
-          {profile.hasResume ? (
-            <div className="resume-info">
-              <p>Ваше резюме загружено</p>
-              <a 
-                href={profile.resumeUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="resume-link"
-              >
-                Просмотреть резюме
-              </a>
-            </div>
-          ) : (
-          <p>Загрузите своё резюме</p>
-          )}
-          <input 
-            type="file" 
-            className="upload-input" 
-            onChange={handleResumeUpload}
-            accept=".pdf,.doc,.docx" 
-          />
-        </div>
-      </div>
     </div>
   );
 };
