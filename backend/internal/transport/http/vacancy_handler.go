@@ -94,10 +94,11 @@ func (vh *VacancyHandler) DetailVacancyHandler(c *gin.Context) {
 
 func (vh *VacancyHandler) FilterVacanciesHandler(c *gin.Context) {
 	filter := model.VacancyFilter{
-		Keywords:   c.Query("keywords"),
-		Region:     c.Query("region"),
-		Experience: c.Query("experience"),
-		Schedule:   c.Query("schedule"),
+		Keywords:    c.Query("keywords"),
+		Region:      c.Query("region"),
+		Experience:  c.Query("experience"),
+		Schedule:    c.Query("schedule"),
+		CompanyName: c.Query("company_name"),
 	}
 	if salaryStr := c.Query("salary_from"); salaryStr != "" {
 		s, err := strconv.ParseFloat(salaryStr, 64)

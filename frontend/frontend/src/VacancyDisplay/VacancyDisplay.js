@@ -55,9 +55,35 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   }, [currentPage]);
 
   useEffect(() => {
-    // Вызываем handleSearch при любом изменении searchQuery, включая пустые строки
-    handleSearch(searchFilters);
+    // Вызываем поиск только при изменении поискового запроса из основного поисковика
+    if (searchQuery) {
+      const searchParams = {
+        keywords: searchQuery.trim(),
+        page: currentPage,
+        size: vacanciesPerPage
+      };
+      
+      // Выполняем поиск с использованием только searchQuery, не затрагивая фильтры
+      searchVacanciesWithQuery(searchParams);
+    } else {
+      // Если searchQuery пустой, загружаем все вакансии
+      fetchVacancies();
+    }
   }, [searchQuery]);
+
+  // Обновляем эффект, чтобы учитывать searchQuery при изменении страницы
+  useEffect(() => {
+    if (searchQuery) {
+      const searchParams = {
+        keywords: searchQuery.trim(),
+        page: currentPage,
+        size: vacanciesPerPage
+      };
+      searchVacanciesWithQuery(searchParams);
+    } else {
+      fetchVacancies();
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     fetchRegions();
@@ -66,12 +92,12 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
   const fetchVacancies = async () => {
     setLoading(true);
     try {
-      if (cache[currentPage]) {
+      if (!searchQuery && cache[currentPage]) {
         setVacancies(cache[currentPage]);
         setLoading(false);
         const totalP = Math.ceil(totalCount / vacanciesPerPage);
         if (currentPage < totalP && !cache[currentPage + 1]) {
-          apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage + 1}&size=${vacanciesPerPage}`)
+          apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage}&size=${vacanciesPerPage}`)
             .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
             .catch(() => {});
         }
@@ -82,12 +108,15 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       
       setVacancies(data.vacancies || []);
       setTotalCount(data.totalCount || 0);
-      setCache(prev => ({ ...prev, [currentPage]: data.vacancies }));
-      const totalP = Math.ceil((data.totalCount || 0) / vacanciesPerPage);
-      if (currentPage < totalP) {
-        apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage + 1}&size=${vacanciesPerPage}`)
-          .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
-          .catch(() => {});
+      
+      if (!searchQuery) {
+        setCache(prev => ({ ...prev, [currentPage]: data.vacancies }));
+        const totalP = Math.ceil((data.totalCount || 0) / vacanciesPerPage);
+        if (currentPage < totalP) {
+          apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage + 1}&size=${vacanciesPerPage}`)
+            .then(res => setCache(prev => ({ ...prev, [currentPage + 1]: res.data.vacancies })))
+            .catch(() => {});
+        }
       }
     } catch (err) {
       setError(err.message || "Ошибка загрузки вакансий");
@@ -107,12 +136,46 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
     }
   };
 
+  // Новая функция для поиска только по searchQuery без влияния на фильтры
+  const searchVacanciesWithQuery = async (searchParams) => {
+    setLoading(true);
+    try {
+      if (Object.keys(searchParams).length > 0) {
+        // Добавляем проверку для пустых ключевых слов
+        if (!searchParams.keywords || searchParams.keywords.trim() === "") {
+          fetchVacancies();
+          return;
+        }
+        
+        // Обязательно используем текущую страницу для сохранения пагинации
+        const response = await vacancyService.searchVacancies({
+          ...searchParams,
+          page: currentPage
+        });
+        
+        if (response) {
+          setVacancies(response.vacancies || []);
+          setTotalCount(response.totalCount || 0);
+          
+          // Сбрасываем кэш, так как мы получаем новые результаты поиска
+          setCache({});
+        }
+      }
+    } catch (err) {
+      console.error("Ошибка поиска вакансий:", err);
+      setError(err.message || "Ошибка загрузки вакансий");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSearch = useCallback(async (filters) => {
     setLoading(true);
     try {
+      // Не обновляем filters.keywords из searchQuery, чтобы избежать дублирования
       const updatedFilters = {
         ...searchFilters,
-        keywords: filters.keywords,
+        keywords: filters.keywords, // Используем только значение из поля фильтра
         ml_skills: filters.mlSkills,
         experience: filters.experience,
         locations: filters.locations,
@@ -123,7 +186,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       
       onFiltersChange(updatedFilters);
 
-      const hasKeywords = filters.keywords?.trim() !== "";
+      const hasKeywords = (filters.keywords || searchQuery)?.trim() !== "";
       const hasKeywordFilter = filters.keywordFilter?.title || 
                               filters.keywordFilter?.company || 
                               filters.keywordFilter?.description;
@@ -153,7 +216,6 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
           salary_from: searchFilters.salary || undefined,
           schedule: searchFilters.schedule || undefined,
           ml_skills: filters.mlSkills?.trim() || undefined,
-          query: searchQuery || undefined,
           page: currentPage,
           size: vacanciesPerPage
         };
@@ -171,8 +233,8 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         console.log("Поисковый запрос:", searchParams);
 
         if (Object.keys(searchParams).length > 0) {
-          const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.SEARCH}?${new URLSearchParams(searchParams)}`);
-          data = response.data;
+          const response = await vacancyService.searchVacancies(searchParams);
+          data = response;
         } else {
           const response = await apiClient.get(`${API_ENDPOINTS.VACANCIES.GET_ALL}?page=${currentPage}&size=${vacanciesPerPage}`);
           data = response.data;
@@ -186,7 +248,7 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
       setTotalCount(data.totalCount || 0);
 
       if (hasKeywords && hasKeywordFilter) {
-        const keywords = filters.keywords.toLowerCase().trim();
+        const keywords = (filters.keywords || searchQuery).toLowerCase().trim();
         console.log("Пример вакансии:", data.vacancies[0]);
         const filteredData = (data.vacancies || []).filter(vacancy => {
           const matchesTitle = filters.keywordFilter?.title && 
@@ -204,22 +266,13 @@ function VacancyDisplay({ searchFilters, searchQuery, onFiltersChange }) {
         setTotalCount(filteredData.length);
       }
       
-      if (searchQuery !== undefined) {
-        if (searchQuery.trim() !== "") {
-          const query = searchQuery.toLowerCase().trim();
-          const filteredData = (data.vacancies || []).filter(vacancy => 
-            vacancy.title?.toLowerCase().includes(query) || 
-            vacancy.company_name?.toLowerCase().includes(query) || 
-            vacancy.description?.toLowerCase().includes(query) || 
-            vacancy.requirements?.toLowerCase().includes(query)
-          );
-          
-          setVacancies(filteredData);
-          setTotalCount(filteredData.length);
-        }
+      // Убираем дополнительную фильтрацию по searchQuery, так как она уже учтена в API запросе
+      // и может приводить к неверному количеству страниц
+      
+      // При первом поиске устанавливаем страницу на 1, при переключении страниц - сохраняем текущую
+      if (JSON.stringify(filters) !== JSON.stringify(searchFilters)) {
+        setCurrentPage(1);
       }
-
-      setCurrentPage(1);
     } catch (err) {
       console.error("Ошибка поиска вакансий:", err);
       setError(err.message || "Ошибка загрузки вакансий");

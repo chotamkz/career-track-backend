@@ -31,6 +31,13 @@ const SearchBar = ({ onSearch, initialQuery = "" }) => {
         }
     }
 
+    const handleInputChange = (e) => {
+        setSearchQuery(e.target.value);
+        if (!e.target.value.trim()) {
+            onSearch("");
+        }
+    }
+
     return (
         <div className="searchContainer">
             <div className={`search-bar ${isFocused ? 'focused' : ''}`}>
@@ -40,7 +47,7 @@ const SearchBar = ({ onSearch, initialQuery = "" }) => {
                     className="search-input"
                     placeholder="Поиск вакансии..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyPress={handleKeyPress}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}

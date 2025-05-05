@@ -262,12 +262,16 @@ func (vr *VacancyRepo) GetVacancyWithDetailsAndApplication(id uint, studentID ui
 }
 
 func (vr *VacancyRepo) CountFilteredVacancies(filter model.VacancyFilter) (int, error) {
-	query := `SELECT COUNT(*) FROM vacancies WHERE 1=1`
+	query := `
+		SELECT COUNT(*) 
+		FROM vacancies v
+		JOIN employer_profiles ep ON v.employer_id = ep.user_id
+		WHERE 1=1`
 	var args []interface{}
 	idx := 1
 
 	if filter.Keywords != "" {
-		query += fmt.Sprintf(" AND (title ILIKE $%d OR description ILIKE $%d)", idx, idx)
+		query += fmt.Sprintf(" AND (v.title ILIKE $%d OR v.description ILIKE $%d)", idx, idx)
 		args = append(args, "%"+filter.Keywords+"%")
 		idx++
 	}
@@ -275,25 +279,30 @@ func (vr *VacancyRepo) CountFilteredVacancies(filter model.VacancyFilter) (int, 
 		regions := strings.Split(filter.Region, ",")
 		var conds []string
 		for _, r := range regions {
-			conds = append(conds, fmt.Sprintf("location ILIKE $%d", idx))
+			conds = append(conds, fmt.Sprintf("v.location ILIKE $%d", idx))
 			args = append(args, "%"+strings.TrimSpace(r)+"%")
 			idx++
 		}
 		query += " AND (" + strings.Join(conds, " OR ") + ")"
 	}
 	if filter.Experience != "" {
-		query += fmt.Sprintf(" AND experience = $%d", idx)
+		query += fmt.Sprintf(" AND v.experience = $%d", idx)
 		args = append(args, filter.Experience)
 		idx++
 	}
 	if filter.SalaryFrom > 0 {
-		query += fmt.Sprintf(" AND salary_from >= $%d", idx)
+		query += fmt.Sprintf(" AND v.salary_from >= $%d", idx)
 		args = append(args, filter.SalaryFrom)
 		idx++
 	}
 	if filter.Schedule != "" {
-		query += fmt.Sprintf(" AND work_schedule = $%d", idx)
+		query += fmt.Sprintf(" AND v.work_schedule = $%d", idx)
 		args = append(args, filter.Schedule)
+		idx++
+	}
+	if filter.CompanyName != "" {
+		query += fmt.Sprintf(" AND ep.company_name ILIKE $%d", idx)
+		args = append(args, "%"+filter.CompanyName+"%")
 		idx++
 	}
 
@@ -304,14 +313,16 @@ func (vr *VacancyRepo) CountFilteredVacancies(filter model.VacancyFilter) (int, 
 
 func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter, limit, offset int) ([]model.Vacancy, error) {
 	query := `
-		SELECT id, title, requirements, location, posted_date, employer_id, created_at, salary_from, salary_to, salary_currency, salary_gross, vacancy_url, work_schedule, experience 
-		FROM vacancies 
+		SELECT v.id, v.title, v.requirements, v.location, v.posted_date, v.employer_id, v.created_at, 
+		       v.salary_from, v.salary_to, v.salary_currency, v.salary_gross, v.vacancy_url, v.work_schedule, v.experience 
+		FROM vacancies v
+		JOIN employer_profiles ep ON v.employer_id = ep.user_id
 		WHERE 1=1`
 	var args []interface{}
 	argIdx := 1
 
 	if filter.Keywords != "" {
-		query += fmt.Sprintf(" AND (title ILIKE $%d OR description ILIKE $%d)", argIdx, argIdx)
+		query += fmt.Sprintf(" AND (v.title ILIKE $%d OR v.description ILIKE $%d)", argIdx, argIdx)
 		args = append(args, "%"+filter.Keywords+"%")
 		argIdx++
 	}
@@ -321,7 +332,7 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter, limit, o
 		for _, region := range regions {
 			region = strings.TrimSpace(region)
 			if region != "" {
-				regionConds = append(regionConds, fmt.Sprintf("location ILIKE $%d", argIdx))
+				regionConds = append(regionConds, fmt.Sprintf("v.location ILIKE $%d", argIdx))
 				args = append(args, "%"+region+"%")
 				argIdx++
 			}
@@ -331,22 +342,27 @@ func (vr *VacancyRepo) GetFilteredVacancies(filter model.VacancyFilter, limit, o
 		}
 	}
 	if filter.Experience != "" {
-		query += fmt.Sprintf(" AND experience = $%d", argIdx)
+		query += fmt.Sprintf(" AND v.experience = $%d", argIdx)
 		args = append(args, filter.Experience)
 		argIdx++
 	}
 	if filter.SalaryFrom > 0 {
-		query += fmt.Sprintf(" AND salary_from >= $%d", argIdx)
+		query += fmt.Sprintf(" AND v.salary_from >= $%d", argIdx)
 		args = append(args, filter.SalaryFrom)
 		argIdx++
 	}
 	if filter.Schedule != "" {
-		query += fmt.Sprintf(" AND work_schedule = $%d", argIdx)
+		query += fmt.Sprintf(" AND v.work_schedule = $%d", argIdx)
 		args = append(args, filter.Schedule)
 		argIdx++
 	}
+	if filter.CompanyName != "" {
+		query += fmt.Sprintf(" AND ep.company_name ILIKE $%d", argIdx)
+		args = append(args, "%"+filter.CompanyName+"%")
+		argIdx++
+	}
 
-	query += fmt.Sprintf(" ORDER BY posted_date DESC LIMIT $%d OFFSET $%d", argIdx, argIdx+1)
+	query += fmt.Sprintf(" ORDER BY v.posted_date DESC LIMIT $%d OFFSET $%d", argIdx, argIdx+1)
 	args = append(args, limit, offset)
 
 	rows, err := vr.DB.Query(query, args...)
@@ -583,11 +599,11 @@ func (vr *VacancyRepo) GetVacanciesWithApplicationStatus(limit, offset int, stud
             v.id, v.title, v.requirements, v.location, v.posted_date, v.employer_id, v.created_at,
             v.salary_from, v.salary_to, v.salary_currency, v.salary_gross, v.vacancy_url,
             v.work_schedule, v.experience,
-            CASE WHEN a.vacancy_id IS NOT NULL AND a.status != 'REJECTED' THEN true ELSE false END AS applied
+            CASE WHEN a.vacancy_id IS NOT NULL THEN true ELSE false END AS applied
         FROM 
             vacancies v
         LEFT JOIN 
-            (SELECT vacancy_id, status FROM applications WHERE student_id = $3 AND status != 'REJECTED') a 
+            (SELECT vacancy_id, status FROM applications WHERE student_id = $3) a 
             ON v.id = a.vacancy_id
         ORDER BY 
             v.posted_date DESC

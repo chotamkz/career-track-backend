@@ -613,7 +613,7 @@
     
     .vacancy-card h2 {
       font-size: 17px;
-      padding-right: 36px;
+      padding-right: 70px;
       font-weight: 700;
     }
     
@@ -746,6 +746,29 @@
     
     .vacancy-display {
       gap: 15px;
+    }
+    
+    /* Дополнительные настройки для мобильного отображения индикатора соответствия */
+    .match-indicator {
+      top: 12px;
+      right: 12px;
+    }
+    
+    .match-circle {
+      width: 28px;
+      height: 28px;
+      font-size: 11px;
+      margin-bottom: 3px;
+    }
+    
+    .match-text {
+      font-size: 10px;
+      padding: 1px 6px;
+    }
+    
+    .vacancy-card h2 {
+      padding-right: 60px;
+      font-size: 16px;
     }
     
     /* Делаем фильтр более компактным */

@@ -26,8 +26,12 @@ function VacancyPage() {
   const updateUrlParams = (filters, query) => {
     const params = new URLSearchParams();
 
-    if (query) params.set("query", query);
+    if (query) {
+      params.set("query", query);
+    }
+    
     if (filters.keywords) params.set("keywords", filters.keywords);
+    
     if (filters.experience) params.set("experience", filters.experience);
     if (filters.ml_skills) params.set("ml_skills", filters.ml_skills);
     if (filters.locations.length > 0) params.set("region", filters.locations.join(","));

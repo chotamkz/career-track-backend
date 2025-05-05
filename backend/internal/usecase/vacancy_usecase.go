@@ -32,15 +32,17 @@ type MLResponse struct {
 type VacancyUsecase struct {
 	vacancyRepo  repository.VacancyRepository
 	skillRepo    repository.SkillRepository
+	employerRepo repository.EmployerRepository
 	mlServiceURL string
 	countCache   *cache.Cache
 }
 
-func NewVacancyUsecase(vacRepo repository.VacancyRepository, skillRepo repository.SkillRepository, mlServiceURL string) *VacancyUsecase {
+func NewVacancyUsecase(vacRepo repository.VacancyRepository, skillRepo repository.SkillRepository, employerRepo repository.EmployerRepository, mlServiceURL string) *VacancyUsecase {
 	c := cache.New(1*time.Minute, 4*time.Minute)
 	return &VacancyUsecase{
 		vacancyRepo:  vacRepo,
 		skillRepo:    skillRepo,
+		employerRepo: employerRepo,
 		mlServiceURL: mlServiceURL,
 		countCache:   c,
 	}
@@ -164,18 +166,18 @@ func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, ml
 		return nil, fmt.Errorf("failed to fetch vacancies by IDs: %v", err)
 	}
 
-	lcKeywords := strings.ToLower(filter.Keywords)
-	lcRegion := strings.ToLower(filter.Region)
-	lcExperience := strings.ToLower(filter.Experience)
-	lcSchedule := strings.ToLower(filter.Schedule)
-
-	var filteredVacancies []model.Vacancy
+	var preFilteredVacancies []model.Vacancy
 	for _, v := range vacancies {
 		lcTitle := strings.ToLower(v.Title)
 		lcDesc := strings.ToLower(v.Description)
 		lcLocation := strings.ToLower(v.Location)
 		lcVacExperience := strings.ToLower(v.Experience)
 		lcVacSchedule := strings.ToLower(v.WorkSchedule)
+
+		lcKeywords := strings.ToLower(filter.Keywords)
+		lcRegion := strings.ToLower(filter.Region)
+		lcExperience := strings.ToLower(filter.Experience)
+		lcSchedule := strings.ToLower(filter.Schedule)
 
 		if lcKeywords != "" && !strings.Contains(lcTitle, lcKeywords) && !strings.Contains(lcDesc, lcKeywords) {
 			continue
@@ -192,11 +194,62 @@ func (vu *VacancyUsecase) GetRecommendedVacancies(filter model.VacancyFilter, ml
 		if lcSchedule != "" && !strings.Contains(lcVacSchedule, lcSchedule) {
 			continue
 		}
-		filteredVacancies = append(filteredVacancies, v)
+
+		preFilteredVacancies = append(preFilteredVacancies, v)
+	}
+
+	if filter.CompanyName == "" {
+		var result []model.VacancyMLResponse
+		for _, v := range preFilteredVacancies {
+			if rec, ok := recMap[v.ID]; ok {
+				result = append(result, model.VacancyMLResponse{
+					Vacancy:             v,
+					SimilarityScore:     rec.SimilarityScore,
+					MatchPercentage:     rec.MatchPercentage,
+					MatchingSkills:      rec.MatchingSkills,
+					MissingSkills:       rec.MissingSkills,
+					SkillsMatched:       rec.SkillsMatched,
+					TotalSkillsRequired: rec.TotalSkillsRequired,
+				})
+			}
+		}
+
+		sort.Slice(result, func(i, j int) bool {
+			return result[i].MatchPercentage > result[j].MatchPercentage
+		})
+
+		return result, nil
+	}
+
+	employerIDs := make([]uint, 0, len(preFilteredVacancies))
+	for _, v := range preFilteredVacancies {
+		employerIDs = append(employerIDs, v.EmployerID)
+	}
+
+	employers, err := vu.employerRepo.GetEmployersByIDs(employerIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch employer profiles: %v", err)
+	}
+
+	employerMap := make(map[uint]model.EmployerProfile)
+	for _, emp := range employers {
+		employerMap[emp.UserID] = emp
+	}
+
+	lcCompanyName := strings.ToLower(filter.CompanyName)
+	var finalVacancies []model.Vacancy
+
+	for _, v := range preFilteredVacancies {
+		if emp, ok := employerMap[v.EmployerID]; ok {
+			lcEmpCompanyName := strings.ToLower(emp.CompanyName)
+			if strings.Contains(lcEmpCompanyName, lcCompanyName) {
+				finalVacancies = append(finalVacancies, v)
+			}
+		}
 	}
 
 	var result []model.VacancyMLResponse
-	for _, v := range filteredVacancies {
+	for _, v := range finalVacancies {
 		if rec, ok := recMap[v.ID]; ok {
 			result = append(result, model.VacancyMLResponse{
 				Vacancy:             v,

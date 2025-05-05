@@ -39,6 +39,26 @@ apiClient.interceptors.response.use(
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
+      
+      // Если запрос был к API заявок и вернулся 404, преобразуем это в пустой массив заявок
+      if (error.response.status === 404 && 
+         (error.config.url.includes('applications') || error.config.url.includes('заявки'))) {
+        console.log('Обработка случая отсутствия заявок как пустого массива');
+        return Promise.resolve({ 
+          data: { applications: [] },
+          status: 200
+        });
+      }
+      
+      // Если запрос был к API вакансий работодателя и вернулся 404, преобразуем это в пустой массив вакансий
+      if (error.response.status === 404 && 
+         (error.config.url.includes('employers/me/vacancies'))) {
+        console.log('Обработка случая отсутствия вакансий работодателя как пустого массива');
+        return Promise.resolve({ 
+          data: { vacancies: [] },
+          status: 200
+        });
+      }
     }
     return Promise.reject(error);
   }
@@ -265,11 +285,27 @@ export const hackathonService = {
 export const applicationService = {
   getMyApplications: async () => {
     try {
-      // Затем делаем реальный запрос к API
+      // Делаем запрос к API
       const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.GET_MY_APPLICATIONS);
+      
+      // Если ответ пустой, но успешный - значит заявок нет
+      if (response.status === 200 && 
+          (!response.data || 
+           (Array.isArray(response.data) && response.data.length === 0) ||
+           (response.data && response.data.applications && Array.isArray(response.data.applications) && response.data.applications.length === 0))) {
+        return { applications: [] };
+      }
+      
       return response.data;
     } catch (error) {
       console.error('Error in getMyApplications:', error);
+      
+      // Если ошибка 404, значит заявок нет
+      if (error.response && error.response.status === 404) {
+        return { applications: [] };
+      }
+      
+      // Обрабатываем другие ошибки
       return handleApiError(error);
     }
   },
@@ -313,6 +349,50 @@ export const applicationService = {
       return response.data;
     } catch (error) {
       throw handleApiError(error);
+    }
+  }
+};
+
+// Сервисные функции для работы с вакансиями работодателя
+export const employerVacanciesService = {
+  getMyVacancies: async (page = 0, size = 5, search = '') => {
+    try {
+      const params = new URLSearchParams();
+      
+      if (page > 0) {
+        params.append('page', page);
+      }
+      
+      params.append('size', size);
+      
+      if (search) {
+        params.append('search', search);
+      }
+      
+      const url = `${API_ENDPOINTS.EMPLOYERS.VACANCIES}${params.toString() ? '?' + params.toString() : ''}`;
+      
+      const response = await apiClient.get(url);
+      return response.data;
+    } catch (error) {
+      // Если ошибка 404, считаем что вакансий нет
+      if (error.response && error.response.status === 404) {
+        return { vacancies: [], totalCount: 0, totalPages: 0 };
+      }
+      
+      return handleApiError(error);
+    }
+  },
+  
+  deleteVacancy: async (id) => {
+    try {
+      const response = await apiClient.delete(API_ENDPOINTS.VACANCIES.DELETE(id));
+      return { 
+        success: true, 
+        status: response.status,
+        message: 'Вакансия успешно удалена'
+      };
+    } catch (error) {
+      return handleApiError(error);
     }
   }
 };

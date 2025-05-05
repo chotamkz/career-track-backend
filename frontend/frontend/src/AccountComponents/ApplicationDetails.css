@@ -266,12 +266,49 @@
 
 .no-applications {
   text-align: center;
-  padding: 30px;
-  color: #6b7280;
-  font-style: italic;
+  padding: 40px 20px;
   background-color: #f9fafb;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px dashed #d1d5db;
+  margin: 20px auto;
+  max-width: 500px;
+  color: #6b7280;
+}
+
+.no-applications-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.no-applications p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #4b5563;
+}
+
+.no-applications-subtext {
+  font-size: 14px !important;
+  color: #6b7280 !important;
+  margin-bottom: 20px !important;
+}
+
+.search-vacancies-btn {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 15px;
+}
+
+.search-vacancies-btn:hover {
+  background-color: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
 }
 
 /* Медиа-запросы для адаптивности */

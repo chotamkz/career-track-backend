@@ -11,7 +11,6 @@ const ApplicationDetails = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [debugInfo, setDebugInfo] = useState(null);
 
-  // Константа с фиксированными статусами заявок
   const APPLICATION_STATUSES = [
     { value: 'APPLIED', label: 'Новая заявка', icon: '📋', color: 'blue' },
     { value: 'CV_SCREENING', label: 'Рассмотрение резюме', icon: '👀', color: 'yellow' },
@@ -32,44 +31,76 @@ const ApplicationDetails = () => {
         setDebugInfo(null);
         
         console.log("Начинаем запрос заявок...");
-        const result = await applicationService.getMyApplications();
-        console.log("Получен ответ API:", result);
         
-        if (result.error) {
-          setError(result.error);
-          setDebugInfo({
-            error: result.error,
-            status: result.status,
-            timestamp: new Date().toISOString()
-          });
-        } else {
-          // Проверяем структуру ответа, сервер возвращает объект с полем applications
-          if (result && result.applications && Array.isArray(result.applications)) {
-            setApplications(result.applications);
-            console.log(`Получено ${result.applications.length} заявок`);
-          } else if (Array.isArray(result)) {
-            // На случай, если API изменится и будет возвращать массив напрямую
-            setApplications(result);
-            console.log(`Получено ${result.length} заявок`);
+        try {
+          const result = await applicationService.getMyApplications();
+          console.log("Получен ответ API:", result);
+          
+          
+          if (result && result.error) {
+            
+            if (result.error.includes("не найдены") || 
+                result.error.includes("отсутствуют") || 
+                result.error.includes("not found") || 
+                result.error.includes("applications") || 
+                result.error.includes("заявки") || 
+                result.status === 404) {
+              console.log("Заявки отсутствуют. Возвращаем пустой массив.");
+              setApplications([]);
+            } else {
+              
+              throw new Error(result.error);
+            }
           } else {
-            setError("Сервер вернул некорректные данные");
-            setDebugInfo({
-              receivedData: result,
-              expectedType: "Array или объект с полем applications",
-              actualType: typeof result,
-              timestamp: new Date().toISOString()
-            });
+            
+            if (result && result.applications && Array.isArray(result.applications)) {
+              setApplications(result.applications);
+              console.log(`Получено ${result.applications.length} заявок`);
+            } else if (Array.isArray(result)) {
+              setApplications(result);
+              console.log(`Получено ${result.length} заявок`);
+            } else {
+              
+              console.log("Неизвестный формат данных для заявок. Возвращаем пустой массив:", result);
+              setApplications([]);
+            }
+          }
+        } catch (innerError) {
+          
+          if (innerError && innerError.message && (
+              innerError.message.includes("не найдены") ||
+              innerError.message.includes("отсутствуют") ||
+              innerError.message.includes("not found") ||
+              innerError.message.includes("applications") ||
+              innerError.message.includes("заявки"))) {
+            console.log("Обработка ошибки как отсутствие заявок:", innerError.message);
+            setApplications([]);
+          } else {
+            throw innerError;
           }
         }
+        
       } catch (err) {
-        const errorMessage = "Не удалось загрузить заявки: " + (err.message || "Неизвестная ошибка");
-        setError(errorMessage);
         console.error("Error fetching applications:", err);
-        setDebugInfo({
-          errorMessage,
-          stack: err.stack,
-          timestamp: new Date().toISOString()
-        });
+        
+        
+        if (err && err.message && (
+            err.message.includes("не найдены") ||
+            err.message.includes("отсутствуют") ||
+            err.message.includes("not found") ||
+            err.message.includes("applications") ||
+            err.message.includes("заявки"))) {
+          console.log("Обработка ошибки как отсутствие заявок во внешнем блоке:", err.message);
+          setApplications([]);
+        } else {
+          const errorMessage = "Не удалось загрузить заявки: " + (err.message || "Неизвестная ошибка");
+          setError(errorMessage);
+          setDebugInfo({
+            errorMessage,
+            stack: err.stack,
+            timestamp: new Date().toISOString()
+          });
+        }
       } finally {
         setLoading(false);
       }
@@ -78,13 +109,13 @@ const ApplicationDetails = () => {
     fetchApplications();
   }, []);
 
-  // Функция для преобразования статуса API в человекочитаемый текст
+  
   const getStatusText = (apiStatus) => {
     const statusObj = APPLICATION_STATUSES.find(s => s.value === apiStatus.toUpperCase());
     return statusObj ? statusObj.label : apiStatus;
   };
 
-  // Функция для преобразования человекочитаемого статуса в API-статус
+  
   const getApiStatus = (filterName) => {
     if (filterName === "all") {
       return APPLICATION_STATUSES.map(status => status.value);
@@ -141,16 +172,16 @@ const ApplicationDetails = () => {
       return applications;
     }
     
-    // Получаем соответствующие API-статусы
+    
     const apiStatuses = getApiStatus(selectedFilter);
     
-    // Фильтруем по статусу
+    
     return applications.filter(app => 
       apiStatuses.includes(app.status.toUpperCase())
     );
   };
 
-  // Функция для перехода на страницу вакансии
+  
   const handleViewVacancy = (vacancyId) => {
     navigate(`/vacancies/${vacancyId}`);
   };
@@ -160,6 +191,29 @@ const ApplicationDetails = () => {
   }
 
   if (error) {
+    
+    if (error.includes("не найдены") || 
+        error.includes("отсутствуют") || 
+        error.includes("not found") || 
+        error.includes("applications") || 
+        error.includes("заявки")) {
+      
+      return (
+        <div className="application-details-container">
+          <h2 className="application-details-title">Мои заявки</h2>
+          <div className="no-applications">
+            <div className="no-applications-icon">📩</div>
+            <p>У вас пока нет заявок на вакансии</p>
+            <p className="no-applications-subtext">Отправьте отклик на интересующую вас вакансию, чтобы она появилась здесь</p>
+            <button className="search-vacancies-btn" onClick={() => navigate('/vacancies/search')}>
+              Найти вакансии
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    
     return (
       <div className="application-error">
         <p>{error}</p>
@@ -174,6 +228,23 @@ const ApplicationDetails = () => {
   }
 
   const filteredApplications = filterApplications();
+
+  
+  if (applications.length === 0) {
+    return (
+      <div className="application-details-container">
+        <h2 className="application-details-title">Мои заявки</h2>
+        <div className="no-applications">
+          <div className="no-applications-icon">📩</div>
+          <p>У вас пока нет заявок на вакансии</p>
+          <p className="no-applications-subtext">Отправьте отклик на интересующую вас вакансию, чтобы она появилась здесь</p>
+          <button className="search-vacancies-btn" onClick={() => navigate('/vacancies/search')}>
+            Найти вакансии
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="application-details-container">

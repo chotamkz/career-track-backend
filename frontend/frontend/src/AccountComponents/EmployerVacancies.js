@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EmployerVacancies.css';
-import { apiClient, API_ENDPOINTS, handleApiError, vacancyService } from '../services/api';
+import { apiClient, API_ENDPOINTS, handleApiError, vacancyService, employerVacanciesService } from '../services/api';
 import EmployerVacancyForm from './EmployerVacancyForm';
 import EmployerVacancyDetails from './EmployerVacancyDetails';
 
@@ -38,59 +38,70 @@ const EmployerVacancies = () => {
   const fetchVacancies = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      let url = `${API_ENDPOINTS.EMPLOYERS.VACANCIES}`;
+      // Используем новый сервис для получения вакансий
+      const result = await employerVacanciesService.getMyVacancies(
+        currentPage > 1 ? currentPage - 1 : 0, 
+        5, 
+        searchTerm
+      );
       
-      const params = new URLSearchParams();
+      console.log('Vacancies response:', result);
       
-      if (currentPage > 1) {
-        params.append('page', currentPage - 1);
-      }
-      
-      params.append('size', '5');
-      
-      if (searchTerm) {
-        params.append('search', searchTerm);
-      }
-      
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
-      
-      console.log('Fetching vacancies from:', url);
-      
-      const response = await apiClient.get(url);
-      console.log('Vacancies response:', response.data);
-      
-      let vacanciesData = [];
-      
-      if (response.data && response.data.vacancies && Array.isArray(response.data.vacancies)) {
-        vacanciesData = response.data.vacancies;
-        console.log('Found vacancies in "vacancies" field:', vacanciesData.length);
-      } else if (response.data && response.data.content && Array.isArray(response.data.content)) {
-        vacanciesData = response.data.content;
-        console.log('Found vacancies in "content" field:', vacanciesData.length);
-      } else if (Array.isArray(response.data)) {
-        vacanciesData = response.data;
-        console.log('Vacancies data is an array:', vacanciesData.length);
+      // Обрабатываем успешный ответ
+      if (result.error) {
+        // Если вернулась ошибка - и это не связано с отсутствием вакансий
+        if (result.error.includes("вакансии не найдены") || 
+            result.error.includes("vacancies not found") ||
+            result.error.includes("отсутствуют") ||
+            result.error.includes("нет вакансий")) {
+          setVacancies([]);
+          setTotalPages(1);
+        } else {
+          throw new Error(result.error);
+        }
       } else {
-        console.error('Unexpected data format:', response.data);
-        throw new Error('Неожиданный формат данных от сервера');
+        // Получаем массив вакансий из ответа
+        let vacanciesData = [];
+        
+        if (result && result.vacancies && Array.isArray(result.vacancies)) {
+          vacanciesData = result.vacancies;
+        } else if (result && result.content && Array.isArray(result.content)) {
+          vacanciesData = result.content;
+        } else if (Array.isArray(result)) {
+          vacanciesData = result;
+        } else {
+          // Если формат ответа некорректный, считаем что вакансий нет
+          vacanciesData = [];
+        }
+        
+        setVacancies(vacanciesData);
+        
+        // Определяем количество страниц
+        if (result && result.totalPages) {
+          setTotalPages(result.totalPages);
+        } else {
+          const totalItems = vacanciesData.length;
+          const itemsPerPage = 5;
+          setTotalPages(Math.max(1, Math.ceil(totalItems / itemsPerPage)));
+        }
       }
-      
-      setVacancies(vacanciesData);
-      
-      if (response.data && response.data.totalPages) {
-        setTotalPages(response.data.totalPages);
-      } else {
-        const totalItems = vacanciesData.length;
-        const itemsPerPage = 5;
-        setTotalPages(Math.max(1, Math.ceil(totalItems / itemsPerPage)));
-      }
-      
     } catch (error) {
-      console.error('Error fetching vacancies:', error);
-      setError(handleApiError(error).error || "Не удалось загрузить вакансии");
+      console.error('Error in fetchVacancies:', error);
+      
+      // Если ошибка связана с отсутствием вакансий, не показываем ее пользователю
+      if (error.message && (
+          error.message.includes("вакансии не найдены") || 
+          error.message.includes("vacancies not found") ||
+          error.message.includes("отсутствуют") ||
+          error.message.includes("нет вакансий"))) {
+        console.log('Error indicates no vacancies, showing empty state');
+        setVacancies([]);
+      } else {
+        // Реальная ошибка, показываем пользователю
+        setError(handleApiError(error).error || "Не удалось загрузить вакансии");
+      }
     } finally {
       setLoading(false);
     }
@@ -132,10 +143,11 @@ const EmployerVacancies = () => {
       setDeleting(true);
       setError(null);
       
-      const result = await vacancyService.deleteVacancy(confirmDelete);
+      // Используем сервис для удаления вакансий
+      const result = await employerVacanciesService.deleteVacancy(confirmDelete);
       
       if (result.success) {
-        // Успешное удаление (204 No Content)
+        // Успешное удаление
         setVacancies(prevVacancies => 
           prevVacancies.filter(vacancy => vacancy.id !== confirmDelete)
         );
@@ -143,12 +155,6 @@ const EmployerVacancies = () => {
       } else {
         // Обработка ошибок удаления
         setError(result.error || "Не удалось удалить вакансию");
-        
-        // При определенных ошибках (401 - истек токен) может потребоваться перенаправление
-        if (result.status === 401) {
-          // Здесь можно добавить редирект на страницу входа при необходимости
-          // window.location.href = '/auth/employer';
-        }
       }
     } catch (error) {
       setError("Произошла ошибка при удалении вакансии");
@@ -194,6 +200,36 @@ const EmployerVacancies = () => {
   
   if (loading && vacancies.length === 0) {
     return <div className="employer-vacancies__loading">Загрузка вакансий...</div>;
+  }
+  
+  // Обработка ошибки - если ошибка связана с отсутствием вакансий, не показываем ее
+  if (error && !(error.includes("вакансии не найдены") || 
+                error.includes("vacancies not found") ||
+                error.includes("отсутствуют") ||
+                error.includes("нет вакансий"))) {
+    return (
+      <div className="employer-vacancies">
+        <div className="employer-vacancies__header">
+          <h2 className="employer-vacancies__title">Мои вакансии</h2>
+          <button 
+            className="employer-vacancies__add-btn"
+            onClick={handleAddVacancy}
+          >
+            Добавить вакансию
+          </button>
+        </div>
+        <div className="employer-vacancies__error">{error}</div>
+        <div className="employer-vacancies__empty">
+          <p>Не удалось загрузить вакансии. Попробуйте создать новую вакансию:</p>
+          <button 
+            className="employer-vacancies__create-btn"
+            onClick={handleAddVacancy}
+          >
+            Создать вакансию
+          </button>
+        </div>
+      </div>
+    );
   }
   
   return (

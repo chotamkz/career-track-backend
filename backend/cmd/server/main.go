@@ -26,7 +26,7 @@ const (
 	dbPingTimeout     = 30 * time.Second
 
 	schedulerPerPage     = 50
-	schedulerTotalPages  = 4
+	schedulerTotalPages  = 5
 	schedulerRefreshRate = 1 * time.Hour
 
 	shutdownTimeout = 30 * time.Second

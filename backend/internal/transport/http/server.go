@@ -36,7 +36,7 @@ func NewServer(cfg *config.Config, db *sql.DB, logger *util.Logger) *http.Server
 	hackathonRepo := postgres.NewHackathonRepo(db)
 	profileRepo := postgres.NewProfileRepo(db, logger)
 
-	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, skillRepo, cfg.MLServiceURL)
+	vacancyUsecase := usecase.NewVacancyUsecase(vacancyRepo, skillRepo, employerRepo, cfg.MLServiceURL)
 	appUsecase := usecase.NewApplicationUsecase(postgres.NewApplicationRepo(db), profileRepo, profileRepo, userRepo, vacancyRepo, logger)
 	userUsecase := usecase.NewUserUsecase(postgres.NewUserRepo(db, logger))
 	employerProfileUsecase := usecase.NewEmployerProfileUsecase(profileRepo, employerRepo, logger)

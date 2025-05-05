@@ -20,7 +20,7 @@ const EmployerApplications = () => {
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Константа с фиксированными статусами заявок
+  
   const APPLICATION_STATUSES = [
     { value: 'APPLIED', label: 'Новая заявка', icon: '📋', color: 'blue' },
     { value: 'CV_SCREENING', label: 'Рассмотрение резюме', icon: '👀', color: 'yellow' },
@@ -31,7 +31,7 @@ const EmployerApplications = () => {
     { value: 'REJECTED', label: 'Кандидат отклонен', icon: '❌', color: 'red' },
   ];
 
-  // Эффект для управления классом modal-open при открытии модальных окон
+  
   useEffect(() => {
     if (selectedApplication) {
       document.body.classList.add('modal-open');
@@ -49,13 +49,13 @@ const EmployerApplications = () => {
   }, []);
 
   useEffect(() => {
-    // Если выбрана вакансия, загружаем заявки для неё
+    
     if (selectedVacancyId) {
       fetchApplicationsForVacancy(selectedVacancyId);
     }
   }, [selectedVacancyId]);
 
-  // Эффект для фильтрации и пагинации на стороне клиента
+  
   useEffect(() => {
     if (allApplications.length > 0) {
       applyFiltersAndPagination();
@@ -67,7 +67,7 @@ const EmployerApplications = () => {
       const response = await apiClient.get(API_ENDPOINTS.EMPLOYERS.VACANCIES);
       console.log("Vacancies response:", response.data);
       
-      // Извлекаем вакансии из ответа сервера
+      
       let vacanciesData = [];
       if (response.data && response.data.vacancies && Array.isArray(response.data.vacancies)) {
         vacanciesData = response.data.vacancies;
@@ -80,7 +80,7 @@ const EmployerApplications = () => {
       console.log("Parsed vacancies:", vacanciesData);
       setVacancies(vacanciesData);
       
-      // Если есть вакансии, выбираем первую для загрузки заявок
+      
       if (vacanciesData.length > 0) {
         const firstVacancyId = vacanciesData[0].id;
         setSelectedVacancyId(firstVacancyId);
@@ -103,11 +103,11 @@ const EmployerApplications = () => {
       setLoading(true);
       console.log(`Fetching applications for vacancy: ${vacancyId}`);
       
-      // Используем правильный эндпоинт для получения заявок по вакансии
+      
       const response = await apiClient.get(API_ENDPOINTS.APPLICATIONS.GET_VACANCY_APPLICATIONS(vacancyId));
       console.log("Applications response:", response.data);
       
-      // Извлекаем заявки из ответа сервера
+      
       let applicationsData = [];
       if (response.data && response.data.applications && Array.isArray(response.data.applications)) {
         applicationsData = response.data.applications;
@@ -119,14 +119,14 @@ const EmployerApplications = () => {
       
       console.log("Parsed applications:", applicationsData);
       
-      // Дополняем заявки информацией о студентах и вакансиях
+      
       const enhancedApplications = applicationsData.map(app => {
-        // Определяем, имеет ли объект вложенную структуру (как в новом API)
+        
         const applicationData = app.application || app;
         const studentData = app.studentName ? app : applicationData;
         
         return {
-          // Информация о заявке
+          
           id: applicationData.id,
           studentId: applicationData.studentId,
           vacancyId: applicationData.vacancyId,
@@ -135,16 +135,16 @@ const EmployerApplications = () => {
           status: applicationData.status || "APPLIED",
           updatedDate: applicationData.updatedDate,
           
-          // Информация о вакансии
+          
           vacancyTitle: vacancies.find(v => v.id === applicationData.vacancyId)?.title || `Вакансия #${applicationData.vacancyId}`,
           
-          // Информация о студенте
+          
           studentName: app.studentName || `Студент #${applicationData.studentId}`,
           applicantName: app.studentName || `Студент #${applicationData.studentId}`,
           applicantEmail: app.email || 'не указан',
           applicationDate: applicationData.submittedDate || applicationData.createdAt || new Date().toISOString(),
           
-          // Новые поля данных студента
+          
           education: app.education || "Не указано",
           city: app.city || "Не указан",
           phone: app.phone || "Не указан",
@@ -162,26 +162,26 @@ const EmployerApplications = () => {
     }
   };
 
-  // Функция для применения фильтров и пагинации на клиенте
+  
   const applyFiltersAndPagination = (apps = allApplications) => {
-    // Фильтрация по статусу
+    
     let filteredApps = [...apps];
     if (filter !== "ALL") {
       filteredApps = filteredApps.filter(app => app.status === filter);
     }
 
-    // Устанавливаем общее количество страниц
+    
     const totalItems = filteredApps.length;
     const calculatedTotalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
     setTotalPages(calculatedTotalPages || 1);
 
-    // Если текущая страница больше, чем общее количество страниц, сбрасываем на первую
+    
     if (currentPage > calculatedTotalPages && calculatedTotalPages > 0) {
       setCurrentPage(1);
       return;
     }
 
-    // Пагинация
+    
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const paginatedApps = filteredApps.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     
@@ -192,42 +192,42 @@ const EmployerApplications = () => {
     const vacancyId = e.target.value;
     setSelectedVacancyId(vacancyId);
     setFilterByVacancy(vacancyId);
-    setCurrentPage(1); // Сбрасываем на первую страницу при изменении вакансии
+    setCurrentPage(1); 
   };
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
       setIsLoading(true);
       
-      // Находим текущий статус для отображения в уведомлении
+      
       const oldStatus = applications.find(app => app.id === applicationId)?.status;
       const newStatusLabel = APPLICATION_STATUSES.find(s => s.value === newStatus)?.label;
 
       await applicationService.updateApplicationStatus(null, applicationId, newStatus);
       
-      // Обновляем статус заявки в локальном состоянии
+      
       setApplications(applications.map(app => 
         app.id === applicationId ? { ...app, status: newStatus } : app
       ));
       
-      // Также обновляем статус в общем списке заявок
+      
       setAllApplications(allApplications.map(app => 
         app.id === applicationId ? { ...app, status: newStatus } : app
       ));
       
-      // Обновляем статус в выбранной заявке, если она открыта
+      
       if (selectedApplication && selectedApplication.id === applicationId) {
         setSelectedApplication(prev => ({ ...prev, status: newStatus }));
       }
       
-      // Показываем уведомление об успешном обновлении
+      
       setNotification({
         visible: true,
         message: `Статус изменен на "${newStatusLabel}"`,
         type: "success"
       });
       
-      // Скрываем уведомление через 3 секунды
+      
       setTimeout(() => {
         setNotification({ visible: false, message: "", type: "" });
       }, 3000);
@@ -256,7 +256,7 @@ const EmployerApplications = () => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
-    setCurrentPage(1); // Сбрасываем на первую страницу при изменении фильтра
+    setCurrentPage(1); 
   };
 
   const getStatusText = (status) => {
@@ -303,7 +303,7 @@ const EmployerApplications = () => {
     return <div className="employer-applications__loading">Загрузка заявок...</div>;
   }
 
-  // Если у работодателя нет вакансий, показываем сообщение
+  
   if (vacancies.length === 0) {
     return (
       <div className="employer-applications">

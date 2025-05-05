@@ -3,7 +3,9 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"github.com/chotamkz/career-track-backend/internal/domain/model"
 	"github.com/chotamkz/career-track-backend/internal/domain/repository"
+	"strings"
 )
 
 type EmployerRepo struct {
@@ -39,4 +41,50 @@ func (r *EmployerRepo) GetAllCompanyNames() ([]string, error) {
 		return nil, fmt.Errorf("GetAllCompanyNames rows: %v", err)
 	}
 	return names, nil
+}
+
+func (er *EmployerRepo) GetEmployersByIDs(employerIDs []uint) ([]model.EmployerProfile, error) {
+	if len(employerIDs) == 0 {
+		return []model.EmployerProfile{}, nil
+	}
+
+	placeholders := make([]string, len(employerIDs))
+	args := make([]interface{}, len(employerIDs))
+
+	for i, id := range employerIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	query := fmt.Sprintf(`
+		SELECT user_id, company_name, company_description, contact_info
+		FROM employer_profiles
+		WHERE user_id IN (%s)`,
+		strings.Join(placeholders, ","))
+
+	rows, err := er.DB.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("GetEmployersByIDs query: %v", err)
+	}
+	defer rows.Close()
+
+	var employers []model.EmployerProfile
+	for rows.Next() {
+		var emp model.EmployerProfile
+		if err := rows.Scan(
+			&emp.UserID,
+			&emp.CompanyName,
+			&emp.CompanyDescription,
+			&emp.ContactInfo,
+		); err != nil {
+			return nil, fmt.Errorf("scan employer profile: %v", err)
+		}
+		employers = append(employers, emp)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return employers, nil
 }
